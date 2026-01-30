@@ -1,4 +1,5 @@
 import {
+  Settings2,
   User,
   MapPin,
   Clock,
@@ -17,6 +18,14 @@ export default function CourseCard({
 }) {
   return (
     <div className="relative bg-[#FFEB83] rounded-2xl p-4 shadow space-y-3">
+
+      {/* setting button */}
+      <button
+        onClick={onSetting}
+        className="absolute top-3 right-3 p-1 rounded-full hover:bg-white/60 transition"
+      >
+        <Settings2 size={24} className="text-[#4F6DB8]" />
+      </button>
 
       {/* header */}
       <div className="flex items-center gap-3">

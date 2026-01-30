@@ -6,6 +6,7 @@ import ResetPassword from "./pages/Reset-Password";
 import NewPassword from "./pages/New-Password";
 import CheckEmail from "./pages/Check-email";
 import HomeStudent from "./pages/Student-Home";
+import HomeProf from "./pages/Prof-Home";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/reset/new-password" element={<NewPassword />} />
         <Route path="/reset/check-email" element={<CheckEmail />} />
         <Route path="/student/home" element={<HomeStudent />} />
+        <Route path="/prof/home" element={<HomeProf />} />
       </Routes>
     </BrowserRouter>
   );
