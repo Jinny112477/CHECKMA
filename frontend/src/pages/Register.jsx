@@ -28,10 +28,10 @@ export default function Login() {
 
                 {/* title */}
                 <div className=" sm:mt-15">
-                    <h1 className="mt-12 text-5xl sm:text-5xl font-bold text-[#4969B2]">
+                    <h1 className="mt-[20px] text-5xl sm:text-5xl font-bold text-[#4969B2]">
                         Register
                     </h1>
-                    <p className="mt-3">
+                    <p className="mt-[8px]">
                         <span className="text-[#95A9D7] font-light">
                             Hello{" "}
                         </span>
@@ -42,7 +42,7 @@ export default function Login() {
                 </div>
 
                 {/* form box */}
-                <div className="mt-7 sm:mt-5 bg-[#FFEB83] rounded-2xl p-4 sm:p-5">
+                <div className="mt-[2px] sm:mt-5 bg-[#FFEB83] rounded-2xl p-4 sm:p-5">
 
                     {/* email */}
                     <div className="mb-5">
