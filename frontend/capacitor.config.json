@@ -1,5 +1,5 @@
 {
-  "appId": "com.example.app",
-  "appName": "checkma-v1.1.0",
+  "appId": "com.checkma.app",
+  "appName": "CHECKMA",
   "webDir": "dist"
 }
