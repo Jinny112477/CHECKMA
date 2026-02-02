@@ -36,7 +36,7 @@ export default function HomeStudent() {
   const joinRef = useRef(null);
 
   /* ===== mock data (เพิ่มการ์ดจากตรงนี้) ===== */
-  const DEV_EMPTY = false; // true = ไม่มีวิชา ทดสอบการแสดง empty state
+  const DEV_EMPTY = true; // true = ไม่มีวิชา ทดสอบการแสดง empty state
 
   const courses = DEV_EMPTY
     ? []

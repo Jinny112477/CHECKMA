@@ -10,7 +10,6 @@ import HomeProf from "./pages/Prof-Home";
 
 function App() {
   return (
-    <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
@@ -21,7 +20,6 @@ function App() {
         <Route path="/student/home" element={<HomeStudent />} />
         <Route path="/prof/home" element={<HomeProf />} />
       </Routes>
-    </BrowserRouter>
   );
 }
 
