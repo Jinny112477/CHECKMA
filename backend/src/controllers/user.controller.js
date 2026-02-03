@@ -1,7 +1,7 @@
 import { supabase } from '../config/supabase.js'
 
 //POST/api/users
-exports.registerUser = async (req, res) => {
+export const registerUser = async (req, res) => {
   try {
     const {email, username, password} = req.body;
 
@@ -29,7 +29,7 @@ exports.registerUser = async (req, res) => {
 };
 
 //GET/api/users
-exports.getUsers = async (req, res) => {
+export const getUsers = async (req, res) => {
   const { data, error } = await supabase
     .from('users')
     .select('id, email, username, created_at');
@@ -42,7 +42,7 @@ exports.getUsers = async (req, res) => {
 };
 
 //GET/api/users/:id
-exports.getUserById = async (req, res) => {
+export const getUserById = async (req, res) => {
   const { id } = req.params;
 
   const { data, error } = await supabase

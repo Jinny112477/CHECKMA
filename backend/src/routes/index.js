@@ -1,15 +1,8 @@
 import express from 'express'
-import cors from 'cors'
-import router from './routes/index.js'
+import usersRoutes from './users.routes.js'
 
-const app = express()
+const router = express.Router()
 
-app.use(cors())
-app.use(express.json())
+router.use('/users', usersRoutes)
 
-// mount root router
-app.use('/api', router)
-
-app.listen(5000, () => {
-  console.log('API running on port 5000')
-})
+export default router
