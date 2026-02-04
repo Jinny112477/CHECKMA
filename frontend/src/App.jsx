@@ -7,6 +7,8 @@ import NewPassword from "./pages/New-Password";
 import CheckEmail from "./pages/Check-email";
 import HomeStudent from "./pages/Student-Home";
 import HomeProf from "./pages/Prof-Home";
+import JoinStudent from "./pages/Student-Join";
+import CreateProf from "./pages/Prof-Create";
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
         <Route path="/reset/check-email" element={<CheckEmail />} />
         <Route path="/student/home" element={<HomeStudent />} />
         <Route path="/prof/home" element={<HomeProf />} />
+        <Route path="/student/join" element={<JoinStudent />} />
+        <Route path="/prof/create" element={<CreateProf />} />
       </Routes>
   );
 }
