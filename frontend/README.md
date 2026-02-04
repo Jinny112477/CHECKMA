@@ -15,3 +15,4 @@ git pull #After checkout use this command line
 npm install(First time)
 npm bulid (First time)
 npm run preview
+git
