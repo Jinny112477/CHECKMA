@@ -7,7 +7,10 @@ import {
 import { Link } from "react-router-dom";
 
 export default function CreateProf() {
-    const [time, setTime] = useState("");
+    const [startTime, setStartTime] = useState("");
+    const [endTime, setEndTime] = useState("");
+    const [day, setDay] = useState("");
+
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#FFEB83] font-quicksand px-4">
@@ -121,18 +124,28 @@ export default function CreateProf() {
                                     <label className="text-sm font-semibold text-white mb-1 block">
                                             Start time
                                     </label> 
-                                    <input
-                                        type="time"
-                                        className="w-full px-4 py-3 rounded-xl bg-white outline-none"
+                                    <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)}
+                                        className={`
+                                            w-full px-4 py-3 rounded-xl bg-white outline-none
+                                            ${startTime
+                                            ? "text-black font-semibold"
+                                            : "text-[#9DB2E3] font-normal"
+                                            }
+                                        `}
                                     />
                                 </div>
                                 <div>
                                     <label className="text-sm font-semibold text-white mb-1 block">
                                             End time
                                     </label> 
-                                    <input
-                                        type="time"
-                                        className="w-full px-4 py-3 rounded-xl bg-white outline-none"
+                                    <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)}
+                                        className={`
+                                            w-full px-4 py-3 rounded-xl bg-white outline-none
+                                            ${startTime
+                                            ? "text-black font-semibold"
+                                            : "text-[#9DB2E3] font-normal"
+                                            }
+                                        `}
                                     />
                                 </div>
                             </div>
@@ -142,15 +155,14 @@ export default function CreateProf() {
                                 <label className="text-sm font-semibold text-white mb-1 block">
                                     Day
                                 </label>
-                                <select
-                                    className="
-                                    w-full px-4 py-3
-                                    rounded-xl
-                                    bg-white
-                                    text-black
-                                    font-normal
-                                    outline-none
-                                    "
+                                <select value={day} onChange={(e) => setDay(e.target.value)}
+                                    className={`
+                                        w-full px-4 py-3 rounded-xl bg-white outline-none
+                                        ${day
+                                        ? "text-black font-semibold"
+                                        : "text-[#9DB2E3] font-normal"
+                                        }
+                                    `}
                                 >
                                     <option value="" disabled selected>Day</option>
                                     <option>Monday</option>
