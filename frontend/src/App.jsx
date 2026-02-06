@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -10,7 +10,29 @@ import HomeProf from "./pages/Prof-Home";
 import JoinStudent from "./pages/Student-Join";
 import CreateProf from "./pages/Prof-Create";
 
+import { useEffect } from "react";
+import { supabase } from "/supabaseClient";
+import { useNavigate } from "react-router-dom";
+
 function App() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_IN" && session) {
+      navigate("/student/home");
+    }
+
+    if (event === "SIGNED_OUT") {
+      navigate("/");
+    }
+  });
+
+  return () => subscription.unsubscribe();
+}, []);
+
   return (
       <Routes>
         <Route path="/" element={<Home />} />

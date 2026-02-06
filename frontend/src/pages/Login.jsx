@@ -1,19 +1,26 @@
 import { useState } from "react";
-import {
-  ArrowLeft,
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
-} from "lucide-react";
+import { ArrowLeft, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "/supabaseClient";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
+  const logInWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+
+    if (error) {
+      console.log(error.message);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FFFBEA] font-quicksand px-4">
-
       {/* phone / app container */}
       <div
         className="
@@ -26,7 +33,6 @@ export default function Login() {
           px-6 pt-10
         "
       >
-
         {/* back arrow */}
         <Link to="/" className="absolute top-6 left-6 text-[#FFAC75]">
           <ArrowLeft size={32} />
@@ -38,18 +44,13 @@ export default function Login() {
             Login
           </h1>
           <p className="mt-3">
-            <span className="text-[#697EAE] font-semibold">
-              Welcome back{" "}
-            </span>
-            <span className="text-[#95A9D7] font-light">
-              my friend!
-            </span>
+            <span className="text-[#697EAE] font-semibold">Welcome back </span>
+            <span className="text-[#95A9D7] font-light">my friend!</span>
           </p>
         </div>
 
         {/* form box */}
         <div className="mt-7 sm:mt-9 bg-[#FFEB83] rounded-2xl p-4 sm:p-5">
-
           {/* email */}
           <div className="mb-5">
             <label className="flex items-center gap-2 text-sm font-semibold text-[#4969B2] mb-1">
@@ -103,11 +104,11 @@ export default function Login() {
           {/* forgot password */}
           <div className="mt-2 text-left">
             <Link
-            to="/reset-password"
-            className="underline text-sm text-[#718DCC] hover:text-[#4969B2] transition"
-          >
-            Forgot your password?
-          </Link>
+              to="/reset-password"
+              className="underline text-sm text-[#718DCC] hover:text-[#4969B2] transition"
+            >
+              Forgot your password?
+            </Link>
           </div>
         </div>
 
@@ -127,14 +128,13 @@ export default function Login() {
         {/* divider */}
         <div className="flex items-center my-6">
           <div className="flex-1 h-px bg-[#4969B2]" />
-          <span className="px-3 text-sm text-[#4969B2]">
-            or continue with
-          </span>
+          <span className="px-3 text-sm text-[#4969B2]">or continue with</span>
           <div className="flex-1 h-px bg-[#4969B2]" />
         </div>
 
         {/* google button */}
         <button
+          onClick={logInWithGoogle}
           className="
             w-full border-2 border-black
             bg-white py-3 sm:py-4
@@ -143,14 +143,8 @@ export default function Login() {
             hover:bg-gray-100 transition
           "
         >
-          <img
-            src="/googleicon.svg"
-            alt="Google"
-            className="w-5 h-5"
-          />
-          <span className="font-medium">
-            Login with Google
-          </span>
+          <img src="/googleicon.svg" alt="Google" className="w-5 h-5" />
+          <span className="font-medium">Login with Google</span>
         </button>
 
         {/* register */}
@@ -163,7 +157,6 @@ export default function Login() {
             Register Now!
           </Link>
         </p>
-
       </div>
     </div>
   );
