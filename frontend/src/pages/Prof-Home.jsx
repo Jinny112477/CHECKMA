@@ -116,9 +116,11 @@ export default function HomeStudent() {
 
             <img src="/CHECKMA-logo-white.svg" className="h-7" />
 
-            <button className="w-10 h-10 rounded-full bg-[#9DB2E3] flex items-center justify-center">
-              <img src="/NongCheck.svg" className="w-[30px] h-[30px]" />
-            </button>
+            <Link>
+              <button className="w-10 h-10 rounded-full bg-[#9DB2E3] flex items-center justify-center">
+                <img src="/NongCheck.svg" className="w-[30px] h-[30px]" />
+              </button>
+            </Link>
           </header>
 
           {openMenu && (
