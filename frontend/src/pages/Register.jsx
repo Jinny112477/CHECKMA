@@ -2,6 +2,8 @@ import { useState } from "react";
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, User, AtSign } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { supabase } from "/supabaseClient";
+
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -9,6 +11,7 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  // Signup handler API call
   const handleSignup = async () => {
     try {
       const res = await fetch("http://localhost:5000/api/users", {
@@ -35,6 +38,19 @@ export default function Login() {
     } catch (err) {
       console.error(err);
       alert("Server error");
+    }
+  };
+
+  const SignUpWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+
+    if (error) {
+      console.log(error.message);
     }
   };
 
@@ -165,8 +181,8 @@ export default function Login() {
 
         {/* login button */}
         <button
-            onClick={handleSignup}
-            className="mt-6 sm:mt-8 w-full bg-[#4969B2] text-white py-3 sm:py-4
+          onClick={handleSignup}
+          className="mt-6 sm:mt-8 w-full bg-[#4969B2] text-white py-3 sm:py-4
                     rounded-2xl font-semibold hover:bg-[#3E5FA3] transition"
         >
           Sign up
@@ -181,6 +197,7 @@ export default function Login() {
 
         {/* google button */}
         <button
+          onClick={SignUpWithGoogle}
           className="mt-3 w-full border-2 border-black bg-white py-3 sm:py-4
                     rounded-2xl flex items-center justify-center gap-3 hover:bg-gray-100 transition"
         >
