@@ -11,36 +11,6 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  // Signup handler API call
-  const handleSignup = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          username,
-          password,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        alert(data.message);
-        return;
-      }
-
-      alert("User registered!");
-      console.log(data);
-    } catch (err) {
-      console.error(err);
-      alert("Server error");
-    }
-  };
-
   const SignUpWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -181,7 +151,6 @@ export default function Login() {
 
         {/* login button */}
         <button
-          onClick={handleSignup}
           className="mt-6 sm:mt-8 w-full bg-[#4969B2] text-white py-3 sm:py-4
                     rounded-2xl font-semibold hover:bg-[#3E5FA3] transition"
         >
