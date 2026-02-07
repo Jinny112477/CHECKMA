@@ -36,11 +36,13 @@ function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
   );
 }
 
-export default function ProfileStudent() {
+
+export default function ProfileProf() {
   const [openMenu, setOpenMenu] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
   const [profileImage, setProfileImage] = useState("/NongCheckprofile.png");     {/* profileImage คือรูปที่เอาไปแสดง, defualt คือรูปน้องเช็ค */}
   const fileInputRef = useRef(null);
+
 
   const headerRef = useRef(null);
   const joinRef = useRef(null);
@@ -68,7 +70,7 @@ export default function ProfileStudent() {
     }
   }
 
-
+  
   return(
     <div className="min-h-screen w-full flex justify-center bg-white">
       <div className="relative w-full max-w-[390px] h-screen bg-[#4F6DB8] flex flex-col overflow-hidden">
@@ -89,7 +91,7 @@ export default function ProfileStudent() {
             <img src="/CHECKMA-logo-white.svg" className="h-7" />
 
             {/* house */}
-            <Link to="/student/home" className="flex items-center justify-center text-white">
+            <Link to="/prof/home" className="flex items-center justify-center text-white">
               <House size={28} />
             </Link>
           </header>
@@ -99,7 +101,7 @@ export default function ProfileStudent() {
               <MenuItem
                   icon={Settings}
                   label="Setting"
-                  to="/student/profile"
+                  to="/prof/profile"
                   onClick={() => setOpenMenu(false)}
               />
               <MenuItem
@@ -138,6 +140,7 @@ export default function ProfileStudent() {
                 hover:scale-105 transition
                 "
               >
+                
                 <Pencil size={20} className="text-white" onClick={() => fileInputRef.current.click()}/>
                 <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageChange} className="hidden" />
               </button>
@@ -149,7 +152,7 @@ export default function ProfileStudent() {
 
             {/* account id */}
             <h1 className="text-3xl font-bold text-[#4969B2] mt-20 text-center">
-              STUDENT
+              PROFESSOR
             </h1>
 
             <div className="flex-1">
@@ -189,45 +192,6 @@ export default function ProfileStudent() {
                   className="w-full px-4 py-3 outline-none bg-transparent
                   placeholder:text-[#000000] placeholder:font-bold"
                   />
-                </div>
-              </div>
-
-              {/* student number  */}
-              <div className="m-2">
-                <div className="flex items-center bg-white rounded-xl font-semibold relative">
-                  <input
-                  type="text"
-                  placeholder="Student Number"
-                  className="w-full px-4 py-3 pr-10 outline-none bg-transparent
-                  placeholder:text-[#9DB2E3] placeholder:font-light"
-                  />
-                  <Pencil size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#FFAC75]" />
-                </div>
-              </div>
-
-              {/* faculty  */}
-              <div className="m-2">
-                <div className="flex items-center bg-white rounded-xl font-semibold relative">
-                  <input 
-                  type="text"
-                  placeholder="Faculty"
-                  className="w-full px-4 py-3 pr-10 outline-none bg-transparent
-                  placeholder:text-[#9DB2E3] placeholder:font-light"
-                  />
-                  <Pencil size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#FFAC75]" />
-                </div>
-              </div>
-
-              {/* major  */}
-              <div className="m-2">
-                <div className="flex items-center bg-white rounded-xl font-semibold relative">
-                  <input 
-                  type="text"
-                  placeholder="Major"
-                  className="w-full px-4 py-3 pr-10 outline-none bg-transparent
-                  placeholder:text-[#9DB2E3] placeholder:font-light"
-                  />
-                  <Pencil size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#FFAC75]" />
                 </div>
               </div>
             </div>
