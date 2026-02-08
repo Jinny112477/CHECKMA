@@ -151,6 +151,9 @@ export default function ProfileStudent() {
             <h1 className="text-3xl font-bold text-[#4969B2] mt-20 text-center">
               STUDENT
             </h1>
+            <p className="text-sm text-[#7C95CF] font-bold text-center">
+              @checkma
+            </p>
 
             <div className="flex-1">
               {/* firstname + surname */}
