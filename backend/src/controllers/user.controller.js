@@ -1,50 +1,82 @@
 import { supabase } from "../../supabaseClient.js";
 import bcrypt from "bcrypt";
 
+//username generate
+export const generateUsername = async (supabase, base) => {
+  let username = base.toLowerCase().replace(/[^a-z0-9_]/g, "");
+  let suffix = 0;
+
+  while (true) {
+    const { data } = await supabase
+      .from("users")
+      .select("id")
+      .eq("username", suffix ? `${username}${suffix}` : username)
+      .maybeSingle();
+
+    if (!data) {
+      return suffix ? `${username}${suffix}` : username;
+    }
+
+    suffix++;
+  }
+};
+
 // POST /api/users/sync
 export const syncUserProfile = async (req, res) => {
   try {
-    const { user } = req.body;
+    const token = req.headers.authorization?.replace("Bearer ", "");
+    if (!token) {
+      return res.status(401).json({ error: "Missing token" });
+    }
 
-    if (!user?.id || !user?.email) {
-      return res.status(400).json({ error: "Invalid user data" });
+    // get user from token
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser(token);
+
+    if (error || !user) {
+      return res.status(401).json({ error: "Invalid token" });
     }
 
     const provider = user.app_metadata?.provider || "email";
 
-    const username =
-      user.user_metadata?.username ||
-      user.user_metadata?.full_name ||
-      user.email.split("@")[0];
+    let username;
 
-    const avatar_url =
-      user.user_metadata?.avatar_url ||
-      user.user_metadata?.picture ||
-      null;
-
-    const { error } = await supabase
-      .from("users")
-      .upsert(
-        {
-          id: user.id,
-          email: user.email,
-          username,
-          provider,
-          avatar_url,
-        },
-        { onConflict: "id" }
-      );
-
-    if (error) {
-      console.error("Supabase error:", error);
-      return res.status(500).json({ error: "Failed to sync user profile" });
+    // EMAIL signup → username already chosen
+    if (provider === "email") {
+      username = user.user_metadata?.username;
+      if (!username) {
+        return res.status(400).json({ error: "Username required" });
+      }
     }
 
-    return res.status(200).json({
-      message: "User profile synced successfully",
+    // GOOGLE signup → auto-generate username
+    if (provider === "google") {
+      const base = user.user_metadata?.full_name || user.email.split("@")[0];
+
+      username = await generateUsername(supabase, base);
+    }
+
+    const avatar_url =
+      user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
+
+    const { error: dbError } = await supabase.from("users").insert({
+      id: user.id,
+      email: user.email,
+      username,
+      provider,
+      avatar_url,
     });
+
+    if (dbError) {
+      console.error(dbError);
+      return res.status(500).json({ error: "Database insert failed" });
+    }
+
+    return res.status(200).json({ message: "User synced" });
   } catch (err) {
-    console.error("Server error:", err);
-    return res.status(500).json({ error: "Internal server error" });
+    console.error(err);
+    return res.status(500).json({ error: "Server error" });
   }
 };

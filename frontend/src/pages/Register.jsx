@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, User, AtSign } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "../../supabaseClient.js";
@@ -26,11 +26,15 @@ export default function Login() {
         return;
       }
 
-      if (data?.user) {
-        await fetch("/api/users/sync", {
+      if (!error && data.user) {
+        await fetch("http://localhost:5000/api/users/sync", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ user: data.user }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user: data.user,
+          }),
         });
       }
     } catch (err) {
@@ -38,6 +42,27 @@ export default function Login() {
       alert("Something went wrong");
     }
   };
+
+  useEffect(() => {
+    const syncUser = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.user) return;
+
+      await fetch("http://localhost:5000/api/users/sync", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ user: session.user }),
+      });
+    };
+
+    syncUser();
+  }, []);
 
   const SignUpWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -179,7 +204,7 @@ export default function Login() {
 
         {/* login button */}
         <button
-        onClick={handleSignUp}
+          onClick={handleSignUp}
           className="mt-6 sm:mt-8 w-full bg-[#4969B2] text-white py-3 sm:py-4
                     rounded-2xl font-semibold hover:bg-[#3E5FA3] transition"
         >

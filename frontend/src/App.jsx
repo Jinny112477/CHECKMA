@@ -10,30 +10,9 @@ import HomeProf from "./pages/Prof-Home";
 import JoinStudent from "./pages/Student-Join";
 import CreateProf from "./pages/Prof-Create";
 
-import { useEffect } from "react";
-import { supabase } from "/supabaseClient";
-import { useNavigate } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 function App() {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        navigate("/student/home"); //Redirect ชั่วคราวหลัง Login/Signup ด้วย Google OAuth
-      }
-
-      if (event === "SIGNED_OUT") {
-        navigate("/");
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
   return (
     <Routes>
       <Route path="/" element={<Home />} />
@@ -43,7 +22,6 @@ function App() {
       <Route path="/reset/new-password" element={<NewPassword />} />
       <Route path="/reset/check-email" element={<CheckEmail />} />
 
-      {/* protected routes */}
       <Route
         path="/student/home"
         element={

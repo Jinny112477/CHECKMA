@@ -5,6 +5,6 @@ import {
 
 const router = Router()
 
-router.post('/', syncUserProfile)     // POST /api/users/sync
+router.post('/sync', syncUserProfile)     // POST /api/users/sync
 
 export default router
