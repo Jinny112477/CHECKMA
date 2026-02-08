@@ -23,43 +23,13 @@ function App() {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/reset/new-password" element={<NewPassword />} />
       <Route path="/reset/check-email" element={<CheckEmail />} />
-
-      <Route
-        path="/student/home"
-        element={
-          <ProtectedRoute>
-            <HomeStudent />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/prof/home"
-        element={
-          <ProtectedRoute>
-            <HomeProf />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/student/join"
-        element={
-          <ProtectedRoute>
-            <JoinStudent />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/prof/create"
-        element={
-          <ProtectedRoute>
-            <CreateProf />
-          </ProtectedRoute>
-        }
-      />
-
-        <Route path="/student/profile" element={<ProfileStudent />}/>
-        <Route path="/prof/profile" element={<ProfileProf />}/>
-      </Routes>
+      <Route path="/student/home" element={<ProtectedRoute><HomeStudent /></ProtectedRoute>}/>
+      <Route path="/prof/home" element={<ProtectedRoute><HomeProf /></ProtectedRoute>}/>
+      <Route path="/student/join" element={<ProtectedRoute><JoinStudent /></ProtectedRoute>}/>
+      <Route path="/prof/create" element={<ProtectedRoute><CreateProf /></ProtectedRoute>}/>
+      <Route path="/student/profile" element={<ProfileStudent />} />
+      <Route path="/prof/profile" element={<ProfileProf />} />
+    </Routes>
   );
 }
 
