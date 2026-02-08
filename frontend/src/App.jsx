@@ -23,7 +23,7 @@ function App() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" && session) {
-        navigate("/student/home");
+        navigate("/student/home"); //Redirect ชั่วคราวหลัง Login/Signup ด้วย Google OAuth
       }
 
       if (event === "SIGNED_OUT") {

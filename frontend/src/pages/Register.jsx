@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, User, AtSign } from "lucide-react";
 import { Link } from "react-router-dom";
-
-import { supabase } from "/supabaseClient";
+import { supabase } from "../../supabaseClient.js";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -10,6 +9,35 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const handleSignUp = async () => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { username },
+        },
+      });
+
+      if (error) {
+        console.error(error.message);
+        alert(error.message);
+        return;
+      }
+
+      if (data?.user) {
+        await fetch("/api/users/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user: data.user }),
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    }
+  };
 
   const SignUpWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -151,6 +179,7 @@ export default function Login() {
 
         {/* login button */}
         <button
+        onClick={handleSignUp}
           className="mt-6 sm:mt-8 w-full bg-[#4969B2] text-white py-3 sm:py-4
                     rounded-2xl font-semibold hover:bg-[#3E5FA3] transition"
         >
