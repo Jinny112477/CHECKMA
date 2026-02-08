@@ -1,14 +1,10 @@
 import { Router } from 'express'
 import {
-  getUsers,
-  getUserById,
-  registerUser
+  syncUserProfile
 } from '../controllers/user.controller.js'
 
 const router = Router()
 
-router.get('/', getUsers)          // GET /users
-router.get('/:id', getUserById)    // GET /users/:id
-router.post('/', registerUser)     // POST /users
+router.post('/', syncUserProfile)     // POST /api/users/sync
 
 export default router

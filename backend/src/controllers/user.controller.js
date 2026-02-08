@@ -1,60 +1,50 @@
-import { supabase } from '../config/supabase.js'
-import bcrypt from 'bcrypt'
+import { supabase } from "../../supabaseClient.js";
+import bcrypt from "bcrypt";
 
-//POST/api/users
-export const registerUser = async (req, res) => {
+// POST /api/users/sync
+export const syncUserProfile = async (req, res) => {
   try {
-    const {email, username, password} = req.body;
+    const { user } = req.body;
 
-    if (!email || !username || !password) {
-      return res.status(400).json({ message: 'Email, username, and password are required.' });
+    if (!user?.id || !user?.email) {
+      return res.status(400).json({ error: "Invalid user data" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const provider = user.app_metadata?.provider || "email";
 
-    const { data, error } = await supabase
-      .from('users')
-      .insert([{ email, username, password: hashedPassword }])
-      .select()
-      .single();
+    const username =
+      user.user_metadata?.username ||
+      user.user_metadata?.full_name ||
+      user.email.split("@")[0];
 
-      if(error) {
-        return res.status(400).json({ message: error.message });
-      }
+    const avatar_url =
+      user.user_metadata?.avatar_url ||
+      user.user_metadata?.picture ||
+      null;
 
-      res.status(201).json(data);
+    const { error } = await supabase
+      .from("users")
+      .upsert(
+        {
+          id: user.id,
+          email: user.email,
+          username,
+          provider,
+          avatar_url,
+        },
+        { onConflict: "id" }
+      );
 
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({ error: "Failed to sync user profile" });
+    }
+
+    return res.status(200).json({
+      message: "User profile synced successfully",
+    });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Server error:", err);
+    return res.status(500).json({ error: "Internal server error" });
   }
-};
-
-//GET/api/users
-export const getUsers = async (req, res) => {
-  const { data, error } = await supabase
-    .from('users')
-    .select('id, email, username, created_at');
-
-  if(error) {
-    return res.status(500).json({ message: error.message });
-  }
-
-  res.status(200).json(data);
-};
-
-//GET/api/users/:id
-export const getUserById = async (req, res) => {
-  const { id } = req.params;
-
-  const { data, error } = await supabase
-    .from('users')
-    .select('id, email, username, created_at')
-    .eq('id', id)
-    .single();
-
-  if(error) {
-    return res.status(404).json({ message: 'User not found' });
-  }
-
-  res.status(200).json(data);
 };
