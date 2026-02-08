@@ -79,11 +79,11 @@ export default function CreateProf() {
                                 <label className="flex items-center gap-2 text-sm font-semibold text-[#FFFFFF] mb-1">
                                     Class name
                                 </label>
-                                <div className="flex items-center bg-white rounded-xl px-3 font-semibold">
+                                <div className="flex items-center bg-white rounded-xl font-semibold">
                                     <input
                                     type="text"
                                     placeholder="Name"
-                                    className="w-full px-3 py-3 outline-none bg-transparent
+                                    className="w-full px-4 py-3 outline-none bg-transparent
                                     placeholder:text-[#9DB2E3] placeholder:font-normal"
                                     />
                                 </div>
@@ -157,7 +157,7 @@ export default function CreateProf() {
                                 </label>
                                 <select value={day} onChange={(e) => setDay(e.target.value)}
                                     className={`
-                                        w-full px-4 py-3 rounded-xl bg-white outline-none
+                                        w-full px-3 py-3 rounded-xl bg-white outline-none
                                         ${day
                                         ? "text-black font-semibold"
                                         : "text-[#9DB2E3] font-normal"
@@ -180,11 +180,11 @@ export default function CreateProf() {
                                 <label className="flex items-center gap-2 text-sm font-semibold text-[#FFFFFF] mb-1">
                                     Room
                                 </label>
-                                <div className="flex items-center bg-white rounded-xl px-3 font-semibold">
+                                <div className="flex items-center bg-white rounded-xl font-semibold">
                                     <input
                                     type="text"
                                     placeholder="Room"
-                                    className="w-full px-3 py-3 outline-none bg-transparent
+                                    className="w-full px-4 py-3 outline-none bg-transparent
                                     placeholder:text-[#9DB2E3] placeholder:font-normal"
                                     />
                                 </div>
