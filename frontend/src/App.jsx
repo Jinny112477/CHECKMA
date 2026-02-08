@@ -9,6 +9,8 @@ import HomeStudent from "./pages/Student-Home";
 import HomeProf from "./pages/Prof-Home";
 import JoinStudent from "./pages/Student-Join";
 import CreateProf from "./pages/Prof-Create";
+import ProfileStudent from "./pages/Student-Profile"
+import ProfileProf from "./pages/Prof-Profile"
 
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
@@ -54,7 +56,10 @@ function App() {
           </ProtectedRoute>
         }
       />
-    </Routes>
+
+        <Route path="/student/profile" element={<ProfileStudent />}/>
+        <Route path="/prof/profile" element={<ProfileProf />}/>
+      </Routes>
   );
 }
 
