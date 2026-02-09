@@ -8,22 +8,30 @@ export default function AuthProvider({ children }) {
   const didSync = useRef(false);
 
   const [profile, setProfile] = useState(null);
+  const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Initial session load
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setLoading(false);
+    });
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      // signed out
+      setSession(session);
+
+      // SIGNED OUT
       if (!session?.user) {
         didSync.current = false;
         setProfile(null);
         setLoading(false);
-        //navigate("/");
         return;
       }
 
-      // first sign in → sync user
+      // FIRST SIGN IN → sync backend user
       if (event === "SIGNED_IN" && !didSync.current) {
         didSync.current = true;
 
@@ -40,7 +48,7 @@ export default function AuthProvider({ children }) {
         }
       }
 
-      // fetch profile
+      // Fetch profile
       const { data, error } = await supabase
         .from("users")
         .select("*")
@@ -55,14 +63,17 @@ export default function AuthProvider({ children }) {
 
       setProfile(data);
       setLoading(false);
-      navigate("/student/home");
+
+      if (event === "SIGNED_IN") {
+        navigate("/student/home", { replace: true });
+      }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
 
   return (
-    <AuthContext.Provider value={{ profile, loading }}>
+    <AuthContext.Provider value={{ profile, loading, session }}>
       {children}
     </AuthContext.Provider>
   );

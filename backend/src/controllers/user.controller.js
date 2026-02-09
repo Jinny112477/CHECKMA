@@ -41,6 +41,13 @@ export const syncUserProfile = async (req, res) => {
 
     const provider = user.app_metadata?.provider || "email";
 
+    const { data: existingUser } = await supabase
+      .from("users")
+      .select("id, username")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    //Username Genreator for Google OAuth
     let username;
 
     // EMAIL signup → username already chosen
@@ -51,17 +58,20 @@ export const syncUserProfile = async (req, res) => {
       }
     }
 
-    // GOOGLE signup → auto-generate username
+    // GOOGLE signup
     if (provider === "google") {
-      const base = user.user_metadata?.full_name || user.email.split("@")[0];
-
-      username = await generateUsername(supabase, base);
+      if (existingUser) {
+        username = existingUser.username;
+      } else {
+        const base = user.user_metadata?.full_name || user.email.split("@")[0];
+        username = await generateUsername(supabase, base);
+      }
     }
 
     const avatar_url =
       user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
 
-    const { error: dbError } = await supabase.from("users").insert({
+    const { error: dbError } = await supabase.from("users").upsert({
       id: user.id,
       email: user.email,
       username,
@@ -80,3 +90,5 @@ export const syncUserProfile = async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 };
+
+//
