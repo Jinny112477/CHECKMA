@@ -6,16 +6,26 @@ import {
   Plus,
   CirclePlus,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import CourseCard from "../components/CourseCard.jsx";
 
 /* ===== reusable menu item ===== */
-function MenuItem({ icon: Icon, label, onClick, variant = "primary" }) {
+function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
   const variants = {
     primary: "bg-[#AFC1F3] text-[#4F6DB8]",
     danger: "bg-[#AFC1F3] text-white",
     join: "bg-[#AFC1F3] text-[#4F6DB8]",
   };
+
+  if(to) {
+    return (
+      <Link to={to} onClick={onClick} className={`w-full px-4 py-2 rounded-xl flex items-center gap-2 font-semibold transition ${variants[variant]}`}>
+        <Icon size={16} />
+        {label}
+      </Link>
+    );
+  }
 
   return (
     <button
@@ -106,9 +116,12 @@ export default function HomeStudent() {
 
             <img src="/CHECKMA-logo-white.svg" className="h-7" />
 
-            <button className="w-10 h-10 rounded-full bg-[#9DB2E3] flex items-center justify-center">
-              <img src="/NongCheck.svg" className="w-[30px] h-[30px]" />
-            </button>
+            {/* profile picture */}
+            <Link to="/student/profile">
+              <button className="w-10 h-10 rounded-full bg-[#9DB2E3] overflow-hidden">
+                <img src="/NongCheckprofile.png" className="w-full h-full object-cover" />
+              </button>
+            </Link>
           </header>
 
           {openMenu && (
@@ -116,6 +129,7 @@ export default function HomeStudent() {
               <MenuItem
                 icon={Settings}
                 label="Setting"
+                to="/student/profile"
                 onClick={() => setOpenMenu(false)}
               />
               <MenuItem
@@ -179,6 +193,7 @@ export default function HomeStudent() {
               icon={CirclePlus}
               label="Join Class"
               variant="join"
+              to="/student/join"
               onClick={() => setShowJoin(false)}
             />
           )}
