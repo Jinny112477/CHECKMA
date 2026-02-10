@@ -1,60 +1,94 @@
-import { supabase } from '../config/supabase.js'
-import bcrypt from 'bcrypt'
+import { supabase } from "../../supabaseClient.js";
+import bcrypt from "bcrypt";
 
-//POST/api/users
-export const registerUser = async (req, res) => {
-  try {
-    const {email, username, password} = req.body;
+//username generate
+export const generateUsername = async (supabase, base) => {
+  let username = base.toLowerCase().replace(/[^a-z0-9_]/g, "");
+  let suffix = 0;
 
-    if (!email || !username || !password) {
-      return res.status(400).json({ message: 'Email, username, and password are required.' });
+  while (true) {
+    const { data } = await supabase
+      .from("users")
+      .select("id")
+      .eq("username", suffix ? `${username}${suffix}` : username)
+      .maybeSingle();
+
+    if (!data) {
+      return suffix ? `${username}${suffix}` : username;
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    suffix++;
+  }
+};
 
-    const { data, error } = await supabase
-      .from('users')
-      .insert([{ email, username, password: hashedPassword }])
-      .select()
-      .single();
+// POST /api/users/sync
+export const syncUserProfile = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.replace("Bearer ", "");
+    if (!token) {
+      return res.status(401).json({ error: "Missing token" });
+    }
 
-      if(error) {
-        return res.status(400).json({ message: error.message });
+    // get user from token
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser(token);
+
+    if (error || !user) {
+      return res.status(401).json({ error: "Invalid token" });
+    }
+
+    const provider = user.app_metadata?.provider || "email";
+
+    const { data: existingUser } = await supabase
+      .from("users")
+      .select("id, username")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    //Username Genreator for Google OAuth
+    let username;
+
+    // EMAIL signup → username already chosen
+    if (provider === "email") {
+      username = user.user_metadata?.username;
+      if (!username) {
+        return res.status(400).json({ error: "Username required" });
       }
+    }
 
-      res.status(201).json(data);
+    // GOOGLE signup
+    if (provider === "google") {
+      if (existingUser) {
+        username = existingUser.username;
+      } else {
+        const base = user.user_metadata?.full_name || user.email.split("@")[0];
+        username = await generateUsername(supabase, base);
+      }
+    }
 
+    const avatar_url =
+      user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
+
+    const { error: dbError } = await supabase.from("users").upsert({
+      id: user.id,
+      email: user.email,
+      username,
+      provider,
+      avatar_url,
+    });
+
+    if (dbError) {
+      console.error(dbError);
+      return res.status(500).json({ error: "Database insert failed" });
+    }
+
+    return res.status(200).json({ message: "User synced" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    return res.status(500).json({ error: "Server error" });
   }
 };
 
-//GET/api/users
-export const getUsers = async (req, res) => {
-  const { data, error } = await supabase
-    .from('users')
-    .select('id, email, username, created_at');
-
-  if(error) {
-    return res.status(500).json({ message: error.message });
-  }
-
-  res.status(200).json(data);
-};
-
-//GET/api/users/:id
-export const getUserById = async (req, res) => {
-  const { id } = req.params;
-
-  const { data, error } = await supabase
-    .from('users')
-    .select('id, email, username, created_at')
-    .eq('id', id)
-    .single();
-
-  if(error) {
-    return res.status(404).json({ message: 'User not found' });
-  }
-
-  res.status(200).json(data);
-};
+//GET /api/users for Login existing account

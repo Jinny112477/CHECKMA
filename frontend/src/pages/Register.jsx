@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, User, AtSign } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "../../supabaseClient.js";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -9,32 +10,70 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSignup = async () => {
+  const handleSignUp = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { username },
         },
-        body: JSON.stringify({
-          email,
-          username,
-          password,
-        }),
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        alert(data.message);
+      if (error) {
+        console.error(error.message);
+        alert(error.message);
         return;
       }
 
-      alert("User registered!");
-      console.log(data);
+      if (!error && data.user) {
+        await fetch("http://localhost:5000/api/users/sync", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user: data.user,
+          }),
+        });
+      }
     } catch (err) {
       console.error(err);
-      alert("Server error");
+      alert("Something went wrong");
+    }
+  };
+
+  useEffect(() => {
+    const syncUser = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.user) return;
+
+      await fetch("http://localhost:5000/api/users/sync", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ user: session.user }),
+      });
+    };
+
+    syncUser();
+  }, []);
+
+  const SignUpWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+
+    if (error) {
+      console.log(error.message);
     }
   };
 
@@ -165,8 +204,8 @@ export default function Login() {
 
         {/* login button */}
         <button
-            onClick={handleSignup}
-            className="mt-6 sm:mt-8 w-full bg-[#4969B2] text-white py-3 sm:py-4
+          onClick={handleSignUp}
+          className="mt-6 sm:mt-8 w-full bg-[#4969B2] text-white py-3 sm:py-4
                     rounded-2xl font-semibold hover:bg-[#3E5FA3] transition"
         >
           Sign up
@@ -181,6 +220,7 @@ export default function Login() {
 
         {/* google button */}
         <button
+          onClick={SignUpWithGoogle}
           className="mt-3 w-full border-2 border-black bg-white py-3 sm:py-4
                     rounded-2xl flex items-center justify-center gap-3 hover:bg-gray-100 transition"
         >
