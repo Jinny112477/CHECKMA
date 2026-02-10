@@ -91,4 +91,42 @@ export const syncUserProfile = async (req, res) => {
   }
 };
 
-//GET /api/users for Login existing account
+//GET /api/users for Login (MODIFY PLEASE!!!)
+export const logingWithEmail = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email or password required" });
+    }
+
+    const { data,error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) { 
+      return res.status(401).json({ message: error.message });
+    }
+
+    const { user, session } = data;
+
+    const { data : profile, error: profileError } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", users.id)
+      .single()
+
+    if(profileError){
+      return res.status(500).json({ message: "Profile not found" });
+    }
+
+    res.status(200).json({
+      users,
+      session,
+      profile,
+    });
+  } catch (err) { 
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
