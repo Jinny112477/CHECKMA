@@ -1,12 +1,24 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
+import { supabase } from "/supabaseClient";
 
 export default function Home() {
-    return (
-    <div className="min-h-screen flex items-center justify-center bg-white font-quicksand">
+  const logInWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
 
-        <div
-            className="
+    if (error) {
+      console.log(error.message);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-white font-quicksand">
+      <div
+        className="
             relative
             w-full max-w-[390px]
             min-h-screen sm:min-h-[844px]
@@ -17,18 +29,17 @@ export default function Home() {
             flex flex-col justify-between
             bg-no-repeat
             "
-            style={{
-            backgroundImage: "url('/CHECKMA.svg')",
-            backgroundSize: "100% auto",
-            backgroundPosition: "center top",
+        style={{
+          backgroundImage: "url('/CHECKMA.svg')",
+          backgroundSize: "100% auto",
+          backgroundPosition: "center top",
         }}
-        >
-
+      >
         {/*Logo block */}
         <div>
-            <div className="mt-10 mb-16 flex justify-center">
-                <img src="/CHECKMA-logo.svg" className="h-16" />
-            </div>
+          <div className="mt-10 mb-16 flex justify-center">
+            <img src="/CHECKMA-logo.svg" className="h-16" />
+          </div>
         </div>
 
         {/* Buttons */}
@@ -49,7 +60,7 @@ export default function Home() {
               className="w-full bg-[#4969B2] text-white py-3 sm:py-4
               rounded-2xl font-semibold mb-6 hover:bg-[#3E5FA3] transition"
             >
-                <span className="text-[#FFEC89]"> Sign up</span>
+              <span className="text-[#FFEC89]"> Sign up</span>
             </button>
           </Link>
 
@@ -64,17 +75,12 @@ export default function Home() {
 
           {/* Google button */}
           <button
+          onClick={logInWithGoogle}
             className="w-full border-2 border-black bg-white py-3
             rounded-2xl flex items-center justify-center gap-3 hover:bg-gray-100 transition"
           >
-            <img
-              src="/googleicon.svg"
-              alt="Google"
-              className="w-5 h-5"
-            />
-            <span className="font-medium">
-              Google Account
-            </span>
+            <img src="/googleicon.svg" alt="Google" className="w-5 h-5" />
+            <span className="font-medium">Google Account</span>
           </button>
         </div>
       </div>
