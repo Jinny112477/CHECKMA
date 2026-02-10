@@ -30,7 +30,7 @@ function App() {
       <Route path="/prof/create" element={<ProtectedRoute><CreateProf /></ProtectedRoute>} />
       <Route path="/student/profile" element={<ProfileStudent />} />
       <Route path="/prof/profile" element={<ProfileProf />} />
-        <Route path="/role" element={<RoleSelect />} />
+      <Route path="/role" element={<RoleSelect />} />
     </Routes>
   );
 }
