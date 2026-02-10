@@ -11,6 +11,7 @@ import JoinStudent from "./pages/Student-Join";
 import CreateProf from "./pages/Prof-Create";
 import ProfileStudent from "./pages/Student-Profile"
 import ProfileProf from "./pages/Prof-Profile"
+import RoleSelect from "./pages/Role-Select"
 
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
@@ -29,6 +30,7 @@ function App() {
       <Route path="/prof/create" element={<ProtectedRoute><CreateProf /></ProtectedRoute>} />
       <Route path="/student/profile" element={<ProfileStudent />} />
       <Route path="/prof/profile" element={<ProfileProf />} />
+        <Route path="/role" element={<RoleSelect />} />
     </Routes>
   );
 }
