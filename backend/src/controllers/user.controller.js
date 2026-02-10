@@ -91,4 +91,4 @@ export const syncUserProfile = async (req, res) => {
   }
 };
 
-//
+//GET /api/users for Login existing account
