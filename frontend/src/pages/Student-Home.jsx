@@ -103,7 +103,7 @@ export default function HomeStudent() {
 
   const navigate = useNavigate();
 
-  async function userSignOut() {
+  async function userSignOut() { 
     const { error } = await supabase.auth.signOut();
     navigate("/");
 
