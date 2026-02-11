@@ -1,12 +1,18 @@
-import express from 'express'
-import cors from 'cors'
-import routes from './routes/index.js'
+import express from "express";
+import cors from "cors";
+import usersRoutes from "./routes/users.routes.js";
 
-const app = express()
+const app = express();
 
-app.use(cors())
-app.use(express.json())
+// Middleware
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
 
-app.use('/api', routes)
+app.use(express.json());
 
-export default app
+// Routes
+app.use("/api/users", usersRoutes);
+
+export default app;

@@ -1,41 +1,32 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "./AuthContext";
 
 export default function AuthProvider({ children }) {
   const navigate = useNavigate();
-  const didSync = useRef(false);
 
-  const [profile, setProfile] = useState(null);
   const [session, setSession] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Initial session load
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setLoading(false);
-    });
-
+    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session);
 
-      // SIGNED OUT
-      if (!session?.user) {
-        didSync.current = false;
+      // If signed out
+      if (!session) {
         setProfile(null);
         setLoading(false);
         return;
       }
 
-      // FIRST SIGN IN → sync backend user
-      if (event === "SIGNED_IN" && !didSync.current) {
-        didSync.current = true;
-
-        const res = await fetch("http://localhost:5000/api/users/sync", {
+      try {
+        // 🔹 Sync user with backend (create if not exists)
+        await fetch("http://localhost:5000/api/users/sync", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -43,29 +34,41 @@ export default function AuthProvider({ children }) {
           },
         });
 
-        if (!res.ok) {
-          console.error("Sync failed");
+        // 🔹 Fetch user profile
+        const { data, error } = await supabase
+          .from("users")
+          .select("*")
+          .eq("id", session.user.id)
+          .single();
+
+        if (error) {
+          console.error("Profile fetch failed:", error.message);
+          setLoading(false);
+          return;
         }
-      }
 
-      // Fetch profile
-      const { data, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", session.user.id)
-        .single();
-
-      if (error) {
-        console.error("Profile fetch failed:", error.message);
+        setProfile(data);
         setLoading(false);
-        return;
-      }
 
-      setProfile(data);
-      setLoading(false);
+        // 🔹 Clean OAuth hash (#access_token=...)
+        if (window.location.hash.includes("access_token")) {
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+          );
+        }
 
-      if (event === "SIGNED_IN") {
-        navigate("/student/home", { replace: true });
+        // 🔹 Redirect logic (simple version)
+        if (data?.role) {
+          navigate("/student/home", { replace: true });
+        } else {
+          navigate("/role", { replace: true });
+        }
+
+      } catch (err) {
+        console.error("Auth flow error:", err);
+        setLoading(false);
       }
     });
 
@@ -73,7 +76,7 @@ export default function AuthProvider({ children }) {
   }, [navigate]);
 
   return (
-    <AuthContext.Provider value={{ profile, loading, session }}>
+    <AuthContext.Provider value={{ session, profile, loading }}>
       {children}
     </AuthContext.Provider>
   );

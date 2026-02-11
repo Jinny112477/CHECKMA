@@ -1,20 +1,6 @@
 import { Link } from "react-router-dom";
-import { supabase } from "/supabaseClient";
 
 export default function Home() {
-  const logInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: window.location.origin,
-      },
-    });
-
-    if (error) {
-      console.log(error.message);
-    }
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-white font-quicksand">
       <div
@@ -75,7 +61,6 @@ export default function Home() {
 
           {/* Google button */}
           <button
-          onClick={logInWithGoogle}
             className="w-full border-2 border-black bg-white py-3
             rounded-2xl flex items-center justify-center gap-3 hover:bg-gray-100 transition"
           >

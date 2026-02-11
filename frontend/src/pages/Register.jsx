@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, User, AtSign } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "../../supabaseClient.js";
@@ -6,64 +6,9 @@ import { supabase } from "../../supabaseClient.js";
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
 
-  const handleSignUp = async () => {
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { username },
-        },
-      });
 
-      if (error) {
-        console.error(error.message);
-        alert(error.message);
-        return;
-      }
-
-      if (!error && data.user) {
-        await fetch("http://localhost:5000/api/users/sync", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            user: data.user,
-          }),
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Something went wrong");
-    }
-  };
-
-  useEffect(() => {
-    const syncUser = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session?.user) return;
-
-      await fetch("http://localhost:5000/api/users/sync", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({ user: session.user }),
-      });
-    };
-
-    syncUser();
-  }, []);
-
+  //Sign up with Google
   const SignUpWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -113,8 +58,6 @@ export default function Login() {
               <input
                 type="email"
                 placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-3 py-3 outline-none bg-transparent
                                 placeholder:text-[#9DB2E3] placeholder:font-normal"
               />
@@ -133,8 +76,6 @@ export default function Login() {
               <input
                 type="text"
                 placeholder="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
                 className="w-full px-2 py-3 outline-none bg-transparent
                                 placeholder:text-[#9DB2E3] placeholder:font-normal"
               />
@@ -152,8 +93,6 @@ export default function Login() {
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-3 py-3 outline-none bg-transparent
                                 placeholder:text-[#9DB2E3] placeholder:font-normal"
               />
@@ -204,7 +143,6 @@ export default function Login() {
 
         {/* login button */}
         <button
-          onClick={handleSignUp}
           className="mt-6 sm:mt-8 w-full bg-[#4969B2] text-white py-3 sm:py-4
                     rounded-2xl font-semibold hover:bg-[#3E5FA3] transition"
         >
