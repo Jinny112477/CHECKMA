@@ -35,6 +35,6 @@ io.on("connection", (socket) => {
 // Start server
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Backend running on port ${PORT}`);
+server.listen(PORT, () => {
+  console.log(`Backend + Socket.IO running on port ${PORT}`);
 });
