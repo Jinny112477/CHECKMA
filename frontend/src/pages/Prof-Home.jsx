@@ -9,6 +9,8 @@ import {
 import { Link } from "react-router-dom";
 
 import CourseCard from "../components/ProfCourseCard.jsx";
+import { supabase } from "../lib/supabaseClient";
+import { useNavigate } from "react-router-dom";
 
 /* ===== reusable menu item ===== */
 function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
@@ -98,6 +100,18 @@ export default function HomeProf() {
       document.removeEventListener("mousedown", handleClickOutside);
   }, [openMenu, showJoin]);
 
+  const navigate = useNavigate();
+
+  //Sign Out handler
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error signing out:", error);
+    } else {
+      navigate("/");
+    }
+  };
+
   return (
     <div className="min-h-screen w-full flex justify-center bg-white">
       <div className="relative w-full max-w-[390px] h-screen bg-[#4F6DB8] flex flex-col overflow-hidden">
@@ -136,7 +150,7 @@ export default function HomeProf() {
                 icon={LogOut}
                 label="Log out"
                 variant="danger"
-                onClick={() => setOpenMenu(false)}
+                onClick={() => handleSignOut(false)}
               />
             </div>
           )}

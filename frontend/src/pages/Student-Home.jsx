@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Menu, Settings, LogOut, Plus, CirclePlus } from "lucide-react";
 import { Link } from "react-router-dom";
-import { supabase } from "/supabaseClient";
-import { useNavigate } from "react-router-dom";
 
 import CourseCard from "../components/CourseCard.jsx";
+import { supabase } from "../lib/supabaseClient";
+import { useNavigate } from "react-router-dom";
 
 /* ===== reusable menu item ===== */
 function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
@@ -103,14 +103,15 @@ export default function HomeStudent() {
 
   const navigate = useNavigate();
 
-  async function userSignOut() { 
+  //Sign Out handler
+  const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
-    navigate("/");
-
     if (error) {
-      console.log("Error signing out:", error.message);
+      console.error("Error signing out:", error);
+    } else {
+      navigate("/");
     }
-  }
+  };
 
   return (
     <div className="min-h-screen w-full flex justify-center bg-white">
@@ -149,7 +150,7 @@ export default function HomeStudent() {
                 icon={LogOut}
                 label="Log out"
                 variant="danger"
-                onClick={() => userSignOut()}
+                onClick={() => handleSignOut()}
               />
             </div>
           )}
