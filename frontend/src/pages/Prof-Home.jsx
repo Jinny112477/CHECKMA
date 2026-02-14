@@ -47,6 +47,9 @@ export default function HomeProf() {
   const headerRef = useRef(null);
   const joinRef = useRef(null);
 
+  const [profile, setProfile] = useState(null);
+  const avatar = profile?.avatar_url || "/NongCheckprofile.png";
+
   /* ===== mock data (เพิ่มการ์ดจากตรงนี้) ===== */
   const DEV_EMPTY = false; // true = ไม่มีวิชา ทดสอบการแสดง empty state
 
@@ -100,6 +103,41 @@ export default function HomeProf() {
       document.removeEventListener("mousedown", handleClickOutside);
   }, [openMenu, showJoin]);
 
+  //fetch User profile from backend
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        console.log("SESSION:", session);
+
+        if (!session) {
+          console.log("No session found");
+          return;
+        }
+
+        const res = await fetch("http://localhost:5000/api/users/profile", {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        });
+
+        console.log("STATUS:", res.status);
+
+        const data = await res.json();
+        console.log("API RESPONSE:", data);
+
+        setProfile(data);
+      } catch (err) {
+        console.error("FETCH ERROR:", err);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
   const navigate = useNavigate();
 
   //Sign Out handler
@@ -133,7 +171,14 @@ export default function HomeProf() {
             {/* profile picture */}
             <Link to="/prof/profile">
               <button className="w-10 h-10 rounded-full bg-[#9DB2E3] overflow-hidden">
-                <img src="/NongCheckprofile.png" className="w-full h-full object-cover" />
+                <img
+                  src={avatar}
+                  onError={(e) => {
+                    e.target.src = "/NongCheckprofile.png";
+                  }}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
               </button>
             </Link>
           </header>
