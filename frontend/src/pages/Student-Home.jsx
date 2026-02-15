@@ -45,6 +45,8 @@ export default function HomeStudent() {
   const headerRef = useRef(null);
   const joinRef = useRef(null);
 
+  const navigate = useNavigate();
+
   const [profile, setProfile] = useState(null);
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
 
@@ -138,8 +140,6 @@ export default function HomeStudent() {
 
     fetchProfile();
   }, []);
-
-  const navigate = useNavigate();
 
   //Sign Out handler
   const handleSignOut = async () => {
