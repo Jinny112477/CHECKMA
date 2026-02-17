@@ -1,79 +1,60 @@
-import { useEffect, useRef, useState } from "react";
-import { supabase } from "/supabaseClient";
+import { createContext, useContext, useEffect, useState } from "react";
+import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
-import AuthContext from "./AuthContext";
+
+const AuthContext = createContext();
+
+export function useAuth() {
+  return useContext(AuthContext);
+}
 
 export default function AuthProvider({ children }) {
-  const navigate = useNavigate();
-  const didSync = useRef(false);
-
-  const [profile, setProfile] = useState(null);
-  const [session, setSession] = useState(null);
+  const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(undefined);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Initial session load
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setLoading(false);
+    // Get current session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user) fetchProfile(session.user.id);
+      else setLoading(false);
     });
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setSession(session);
-
-      // SIGNED OUT
-      if (!session?.user) {
-        didSync.current = false;
-        setProfile(null);
-        setLoading(false);
-        return;
-      }
-
-      // FIRST SIGN IN → sync backend user
-      if (event === "SIGNED_IN" && !didSync.current) {
-        didSync.current = true;
-
-        const res = await fetch("http://localhost:5000/api/users/sync", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        });
-
-        if (!res.ok) {
-          console.error("Sync failed");
+    // Listen auth change
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+        if (session?.user) fetchProfile(session.user.id);
+        else {
+          setProfile(null);
+          setLoading(false);
         }
-      }
+      },
+    );
 
-      // Fetch profile
-      const { data, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", session.user.id)
-        .single();
+    return () => listener.subscription.unsubscribe();
+  }, []);
 
-      if (error) {
-        console.error("Profile fetch failed:", error.message);
-        setLoading(false);
-        return;
-      }
+  const fetchProfile = async (id) => {
+    setLoading(true);
 
-      setProfile(data);
-      setLoading(false);
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
 
-      if (event === "SIGNED_IN") {
-        navigate("/student/home", { replace: true });
-      }
-    });
+    if (error) {
+      console.error(error);
+    }
 
-    return () => subscription.unsubscribe();
-  }, [navigate]);
+    setProfile(data ?? null); // null means "no row"
+    setLoading(false);
+  };
 
   return (
-    <AuthContext.Provider value={{ profile, loading, session }}>
+    <AuthContext.Provider value={{ user, profile, setProfile, loading }}>
       {children}
     </AuthContext.Provider>
   );

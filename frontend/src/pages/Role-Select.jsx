@@ -1,15 +1,47 @@
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import RoleCard from "../components/RoleCard";
+import { supabase } from "../lib/supabaseClient";
+import { useAuth } from "../components/AuthProvider";
 
 export default function RoleSelect() {
   const [role, setRole] = useState("student");
+  const navigate = useNavigate();
+  const { user, setProfile } = useAuth();
+
+  const handleSelectRole = async (selectedRole) => {
+    if (!user) return;
+
+    const { error } = await supabase
+      .from("users")
+      .update({ role: selectedRole })
+      .eq("id", user.id);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    // ✅ Update context immediately
+    setProfile((prev) => ({
+      ...prev,
+      role: selectedRole,
+    }));
+
+    // ✅ Navigate
+    if (selectedRole === "student") {
+      navigate("/student/home", { replace: true });
+    }
+
+    if (selectedRole === "professor") {
+      navigate("/prof/home", { replace: true });
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FFFBEA] px-4 font-quicksand">
       <div className="relative w-full max-w-[390px] min-h-screen sm:min-h-[844px] px-6 pt-10">
-
         {/* back */}
         <Link to="/register" className="absolute top-6 left-6 text-[#FFAC75]">
           <ArrowLeft size={28} />
@@ -17,7 +49,9 @@ export default function RoleSelect() {
 
         {/* title */}
         <h1 className="mt-[27px] text-5xl font-bold text-[#4969B2] leading-none">
-          Select<br />user type
+          Select
+          <br />
+          user type
         </h1>
         <p className="mt-3 text-[#95A9D7] text-sm">
           Let us know the best setup for you!
@@ -63,6 +97,7 @@ export default function RoleSelect() {
 
         {/* submit */}
         <button
+          onClick={() => handleSelectRole(role)}
           className="
             mt-6 w-full py-4 rounded-2xl
             bg-[#F4A261] text-white font-semibold

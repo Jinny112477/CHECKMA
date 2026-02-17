@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Menu, Settings, LogOut, Plus, CirclePlus } from "lucide-react";
 import { Link } from "react-router-dom";
-import { supabase } from "/supabaseClient";
-import { useNavigate } from "react-router-dom";
 
 import CourseCard from "../components/CourseCard.jsx";
+import { supabase } from "../lib/supabaseClient";
+import { useNavigate } from "react-router-dom";
 
 /* ===== reusable menu item ===== */
 function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
@@ -44,6 +44,11 @@ export default function HomeStudent() {
 
   const headerRef = useRef(null);
   const joinRef = useRef(null);
+
+  const navigate = useNavigate();
+
+  const [profile, setProfile] = useState(null);
+  const avatar = profile?.avatar_url || "/NongCheckprofile.png";
 
   /* ===== mock data (เพิ่มการ์ดจากตรงนี้) ===== */
   const DEV_EMPTY = true; // true = ไม่มีวิชา ทดสอบการแสดง empty state
@@ -101,16 +106,50 @@ export default function HomeStudent() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openMenu, showJoin]);
 
-  const navigate = useNavigate();
+  //fetch User profile from backend
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
-  async function userSignOut() {
+        console.log("SESSION:", session);
+
+        if (!session) {
+          console.log("No session found");
+          return;
+        }
+
+        const res = await fetch("http://localhost:5000/api/users/profile", {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        });
+
+        console.log("STATUS:", res.status);
+
+        const data = await res.json();
+        console.log("API RESPONSE:", data);
+
+        setProfile(data);
+      } catch (err) {
+        console.error("FETCH ERROR:", err);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  //Sign Out handler
+  const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
-    navigate("/");
-
     if (error) {
-      console.log("Error signing out:", error.message);
+      console.error("Error signing out:", error);
+    } else {
+      navigate("/");
     }
-  }
+  };
 
   return (
     <div className="min-h-screen w-full flex justify-center bg-white">
@@ -132,7 +171,14 @@ export default function HomeStudent() {
             {/* profile picture */}
             <Link to="/student/profile">
               <button className="w-10 h-10 rounded-full bg-[#9DB2E3] overflow-hidden">
-                <img src="/NongCheckprofile.png" className="w-full h-full object-cover" />
+                <img
+                  src={avatar}
+                  onError={(e) => {
+                    e.target.src = "/NongCheckprofile.png";
+                  }}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
               </button>
             </Link>
           </header>
@@ -149,7 +195,7 @@ export default function HomeStudent() {
                 icon={LogOut}
                 label="Log out"
                 variant="danger"
-                onClick={() => userSignOut()}
+                onClick={() => handleSignOut()}
               />
             </div>
           )}

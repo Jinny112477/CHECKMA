@@ -1,10 +1,14 @@
-import { Router } from 'express'
-import {
-  syncUserProfile
-} from '../controllers/user.controller.js'
+import { Router } from "express";
+import { 
+    getUserProfile,
+    updateUserProfile
+} from "../controllers/user.controller.js";
+import { verifyToken } from "../middleware/auth.middleware.js";
 
-const router = Router()
+const router = Router();
 
-router.post('/sync', syncUserProfile)     // POST /api/users/sync
+// PROTECTED ROUTE
+router.get("/profile", verifyToken, getUserProfile);
+router.put("/profile", verifyToken, updateUserProfile);
 
-export default router
+export default router;

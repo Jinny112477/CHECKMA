@@ -1,94 +1,149 @@
-import { supabase } from "../../supabaseClient.js";
-import bcrypt from "bcrypt";
+import { supabase } from "../lib/supabaseClient.js";
 
-//username generate
-export const generateUsername = async (supabase, base) => {
-  let username = base.toLowerCase().replace(/[^a-z0-9_]/g, "");
-  let suffix = 0;
-
-  while (true) {
-    const { data } = await supabase
-      .from("users")
-      .select("id")
-      .eq("username", suffix ? `${username}${suffix}` : username)
-      .maybeSingle();
-
-    if (!data) {
-      return suffix ? `${username}${suffix}` : username;
-    }
-
-    suffix++;
-  }
-};
-
-// POST /api/users/sync
-export const syncUserProfile = async (req, res) => {
+// GET USER PROFILE
+export const getUserProfile = async (req, res) => {
   try {
-    const token = req.headers.authorization?.replace("Bearer ", "");
-    if (!token) {
-      return res.status(401).json({ error: "Missing token" });
-    }
+    const userId = req.user.sub;
 
-    // get user from token
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser(token);
-
-    if (error || !user) {
-      return res.status(401).json({ error: "Invalid token" });
-    }
-
-    const provider = user.app_metadata?.provider || "email";
-
-    const { data: existingUser } = await supabase
+    const { data, error } = await supabase
       .from("users")
-      .select("id, username")
-      .eq("id", user.id)
-      .maybeSingle();
+      .select(
+        `
+                id,
+                username,
+                email,
+                role,
+                avatar_url,
+                student_info!student_info_id_fkey (
+                    firstname,
+                    surname,
+                    student_id,
+                    faculty,
+                    major
+                ),
+                prof_info!prof_info_id_fkey (
+                    firstname,
+                    surname
+                )
+                `,
+      )
 
-    //Username Genreator for Google OAuth
-    let username;
+      .eq("id", userId)
+      .single();
 
-    // EMAIL signup → username already chosen
-    if (provider === "email") {
-      username = user.user_metadata?.username;
-      if (!username) {
-        return res.status(400).json({ error: "Username required" });
-      }
+    if (error) {
+      console.log("GET PROFILE ERROR:", error);
+      return res.status(500).json({ error: error.message });
     }
 
-    // GOOGLE signup
-    if (provider === "google") {
-      if (existingUser) {
-        username = existingUser.username;
-      } else {
-        const base = user.user_metadata?.full_name || user.email.split("@")[0];
-        username = await generateUsername(supabase, base);
-      }
+    let profileData = {
+      id: data.id,
+      username: data.username,
+      email: data.email,
+      role: data.role,
+      avatar_url: data.avatar_url,
+    };
+
+    // Merge based on role
+    if (data.role === "student" && data.student_info) {
+      profileData = { ...profileData, ...data.student_info };
     }
 
-    const avatar_url =
-      user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
-
-    const { error: dbError } = await supabase.from("users").upsert({
-      id: user.id,
-      email: user.email,
-      username,
-      provider,
-      avatar_url,
-    });
-
-    if (dbError) {
-      console.error(dbError);
-      return res.status(500).json({ error: "Database insert failed" });
+    if (data.role === "professor" && data.prof_info) {
+      profileData = { ...profileData, ...data.prof_info };
     }
 
-    return res.status(200).json({ message: "User synced" });
+    res.json(profileData);
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-//GET /api/users for Login existing account
+// UPDATE USER PROFILE
+export const updateUserProfile = async (req, res) => {
+  try {
+    console.log("BODY:", req.body);
+    console.log("USER:", req.user);
+
+    const userId = req.user.sub;
+
+    const { avatar_url, firstname, surname, student_id, faculty, major } =
+      req.body;
+
+    // ===============================
+    // 1️⃣ Update users table
+    // ===============================
+    const { error: userError } = await supabase;
+    if (avatar_url !== undefined && avatar_url !== null) {
+      await supabase
+        .from("users")
+        .update({ avatar_url })
+        .eq("id", userId);
+    }
+
+    if (userError) {
+      return res.status(500).json({ error: "Failed to update user" });
+    }
+
+    // ===============================
+    // 2️⃣ Get user role
+    // ===============================
+    const { data: userData, error: roleError } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", userId)
+      .single();
+
+    if (roleError) {
+      return res.status(500).json({ error: "Failed to fetch role" });
+    }
+
+    // ===============================
+    // 3️⃣ Update correct table based on role
+    // ===============================
+
+    // If student, update student_info
+    if (userData.role === "student") {
+      const { error } = await supabase.from("student_info").upsert(
+        {
+          id: userId,
+          firstname,
+          surname,
+          student_id,
+          faculty,
+          major,
+        },
+        { onConflict: "id" },
+      );
+
+      if (error) {
+        console.log("STUDENT UPSERT ERROR:", error);
+        return res.status(500).json({ error: error.message });
+      }
+    }
+
+    // If professor, update prof_info
+    if (userData.role === "professor") {
+      const { error } = await supabase.from("prof_info").upsert({
+        id: userId,
+        firstname,
+        surname,
+      });
+
+      if (error) {
+        return res
+          .status(500)
+          .json({ error: "Failed to update professor info" });
+      }
+    }
+
+    res.json({ message: "Profile updated successfully" });
+  } catch (err) {
+    console.error("UPDATE ERROR:", err);
+    res.status(500).json({
+      error: err.message,
+      stack: err.stack,
+    });
+  }
+};
