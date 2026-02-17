@@ -2,39 +2,54 @@ import { useState } from "react";
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, User, AtSign } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { supabase } from "../lib/supabaseClient";
+import { useNavigate } from "react-router-dom";
+
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
 
-  const handleSignup = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          username,
-          password,
-        }),
-      });
+  const navigate = useNavigate();
 
-      const data = await res.json();
+  //handle signup with google
+  const handleGoogleSignUp = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+    });
+  };
 
-      if (!res.ok) {
-        alert(data.message);
-        return;
+  //handle signup with email and password
+  const handleEmailSignup = async () => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    const user = data.user;
+
+    if (user) {
+      const { error: updateError } = await supabase
+        .from("users")
+        .update({
+          username: username,
+          provider: "email",
+        })
+        .eq("id", user.id);
+
+      if (updateError) {
+        console.error(updateError);
       }
 
-      alert("User registered!");
-      console.log(data);
-    } catch (err) {
-      console.error(err);
-      alert("Server error");
+      navigate("/", { replace: true });
     }
   };
 
@@ -73,9 +88,9 @@ export default function Login() {
             <div className="flex items-center bg-white rounded-xl px-3 font-semibold">
               <input
                 type="email"
-                placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
                 className="w-full px-3 py-3 outline-none bg-transparent
                                 placeholder:text-[#9DB2E3] placeholder:font-normal"
               />
@@ -93,9 +108,9 @@ export default function Login() {
               <AtSign className="text-[#4969B2] text-semibold" size={16} />
               <input
                 type="text"
-                placeholder="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                placeholder="username"
                 className="w-full px-2 py-3 outline-none bg-transparent
                                 placeholder:text-[#9DB2E3] placeholder:font-normal"
               />
@@ -112,9 +127,9 @@ export default function Login() {
             <div className="flex items-center bg-white rounded-xl px-3 font-semibold">
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
                 className="w-full px-3 py-3 outline-none bg-transparent
                                 placeholder:text-[#9DB2E3] placeholder:font-normal"
               />
@@ -165,8 +180,8 @@ export default function Login() {
 
         {/* login button */}
         <button
-            onClick={handleSignup}
-            className="mt-6 sm:mt-8 w-full bg-[#4969B2] text-white py-3 sm:py-4
+          onClick={handleEmailSignup}
+          className="mt-6 sm:mt-8 w-full bg-[#4969B2] text-white py-3 sm:py-4
                     rounded-2xl font-semibold hover:bg-[#3E5FA3] transition"
         >
           Sign up
@@ -181,6 +196,7 @@ export default function Login() {
 
         {/* google button */}
         <button
+          onClick={handleGoogleSignUp}
           className="mt-3 w-full border-2 border-black bg-white py-3 sm:py-4
                     rounded-2xl flex items-center justify-center gap-3 hover:bg-gray-100 transition"
         >

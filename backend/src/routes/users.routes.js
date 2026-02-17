@@ -1,14 +1,14 @@
-import { Router } from 'express'
-import {
-  getUsers,
-  getUserById,
-  registerUser
-} from '../controllers/user.controller.js'
+import { Router } from "express";
+import { 
+    getUserProfile,
+    updateUserProfile
+} from "../controllers/user.controller.js";
+import { verifyToken } from "../middleware/auth.middleware.js";
 
-const router = Router()
+const router = Router();
 
-router.get('/', getUsers)          // GET /users
-router.get('/:id', getUserById)    // GET /users/:id
-router.post('/', registerUser)     // POST /users
+// PROTECTED ROUTE
+router.get("/profile", verifyToken, getUserProfile);
+router.put("/profile", verifyToken, updateUserProfile);
 
-export default router
+export default router;
