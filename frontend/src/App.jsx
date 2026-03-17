@@ -12,6 +12,7 @@ import CreateProf from "./pages/Prof-Create";
 import ProfileStudent from "./pages/Student-Profile";
 import ProfileProf from "./pages/Prof-Profile";
 import RoleSelect from "./pages/Role-Select";
+import AttendanceStudent from "./pages/Student-Attendance"
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthRedirect from "./components/AuthRedirect";
@@ -25,13 +26,14 @@ function App() {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/reset/new-password" element={<NewPassword />} />
       <Route path="/reset/check-email" element={<CheckEmail />} />
-      <Route path="/student/home" element={<ProtectedRoute allowedRole="student"><HomeStudent /></ProtectedRoute>} />
-      <Route path="/prof/home" element={<ProtectedRoute allowedRole="professor"><HomeProf /></ProtectedRoute>} />
+      <Route path="/student/home" element={<HomeStudent />} />
+      <Route path="/prof/home" element={<HomeProf />} />
       <Route path="/student/join" element={<JoinStudent />} />
       <Route path="/prof/create" element={<CreateProf />} />
       <Route path="/student/profile" element={<ProfileStudent />} />
       <Route path="/prof/profile" element={<ProfileProf />} />
       <Route path="/role" element={<RoleSelect />} />
+      <Route path="/student/attendance" element={<AttendanceStudent />} />
     </Routes>
   );
 }

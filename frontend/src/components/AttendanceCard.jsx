@@ -1,5 +1,5 @@
 export default function AttendanceCard({
-  className = "Class 1",
+  classNum = "Class 1",
   date = "19/01/2026",
   time = "13.30",
   status = "Present",
@@ -12,11 +12,11 @@ export default function AttendanceCard({
 
 
   return (
-    <div className="bg-[#FFEB83] rounded-[40px] px-8 py-6 flex items-center shadow">
+    <div className="bg-[#FFEB83] rounded-3xl px-5 py-3 flex items-center shadow">
 
       {/* LEFT: Class */}
-      <div className="text-[#4969B2] text-4xl font-bold">
-        {className}
+      <div className="text-[#4969B2] text-xl font-bold">
+        {classNum}
       </div>
 
       {/* RIGHT GROUP */}
@@ -24,13 +24,13 @@ export default function AttendanceCard({
 
         {/* Date & Time */}
         <div className="text-right text-[#4969B2] font-semibold leading-tight">
-          <div className="text-2xl">{date}</div>
-          <div className="text-xl">{time}</div>
+          <div className="text-sm">{date}</div>
+          <div className="text-sm">{time}</div>
         </div>
 
         {/* Status */}
-        <div className="bg-white px-10 py-3 rounded-2xl">
-          <span className={`text-2xl font-semibold ${statusColor[status]}`}>
+        <div className="bg-white px-5 py-3 rounded-2xl">
+          <span className={`text-sm font-semibold ${statusColor[status]}`}>
             {status}
           </span>
         </div>
