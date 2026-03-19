@@ -24,7 +24,7 @@ export default function CourseCard({
         onClick={onSetting}
         className="absolute top-3 right-3 p-1 rounded-full hover:bg-white/60 transition"
       >
-        <Settings2 size={24} className="text-[#4F6DB8]" />
+        <Settings2 size={24} className="text-[#4969B2]" />
       </button>
 
       {/* header */}
@@ -35,15 +35,15 @@ export default function CourseCard({
 
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h3 className="font-bold text-[#4F6DB8] text-[30px]">
+            <h3 className="font-bold text-[#4969B2] text-3xl">
               {code}
             </h3>
-            <span className="bg-white px-2 py-0.5 rounded-md text-sm font-bold text-[#4F6DB8]">
+            <span className="bg-white px-2 py-0.5 rounded-md text-sm font-bold text-[#4969B2]">
               {section}
             </span>
           </div>
 
-          <p className="text-[12px] text-[#4F6DB8] leading-snug">
+          <p className="text-xs text-[#4969B2] font-medium leading-snug">
             {name}
           </p>
         </div>
@@ -51,21 +51,21 @@ export default function CourseCard({
 
       {/* teacher */}
       <div className="bg-white rounded-xl px-3 py-2 flex items-center gap-2">
-        <User size={16} className="text-[#4F6DB8]" />
-        <span className="text-sm font-medium text-[#4F6DB8]">
+        <User size={16} className="text-[#4969B2]" />
+        <span className="text-sm font-semibold text-[#4969B2]">
           {teacher}
         </span>
       </div>
 
       {/* bottom info */}
-      <div className="grid grid-cols-3 gap-2 text-xs text-[#4F6DB8]">
-        <div className="flex items-center gap-1 bg-white rounded-lg px-2 py-1 justify-center">
+      <div className="grid grid-cols-3 gap-2 text-xs text-[#4969B2]">
+        <div className="flex items-center gap-1 bg-white rounded-lg px-2 py-1 justify-center font-medium">
           <MapPin size={14} /> {room}
         </div>
-        <div className="flex items-center gap-1 bg-white rounded-lg px-2 py-1 justify-center">
+        <div className="flex items-center gap-1 bg-white rounded-lg px-2 py-1 justify-center font-medium">
           <Clock size={14} /> {time}
         </div>
-        <div className="flex items-center gap-1 bg-white rounded-lg px-2 py-1 justify-center">
+        <div className="flex items-center gap-1 bg-white rounded-lg px-2 py-1 justify-center font-medium">
           <CalendarDays size={14} /> {day}
         </div>
       </div>

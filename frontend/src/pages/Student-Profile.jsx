@@ -192,10 +192,16 @@ export default function ProfileStudent() {
 
   return (
     <div className="min-h-screen w-full flex justify-center bg-white">
-      <div className="relative w-full max-w-[390px] h-screen bg-[#4F6DB8] flex flex-col overflow-hidden">
+      <div className="relative
+                    w-full max-w-[390px]
+                    h-screen
+                    bg-[#4969B2]
+                    shadow-none sm:shadow-xl
+                    flex flex-col
+                    overflow-hidden">
         {/* ================= HEADER ================= */}
         <div ref={headerRef} className="relative shrink-0">
-          <header className="h-[90px] flex items-center justify-between px-5">
+          <header className="h-20 flex items-center justify-between px-5">
             <button onClick={() => setOpenMenu(!openMenu)}>
               <Menu
                 size={28}
@@ -217,7 +223,7 @@ export default function ProfileStudent() {
           </header>
 
           {openMenu && (
-            <div className="absolute top-[70px] left-4 space-y-2 z-30">
+            <div className="absolute top-16 left-4 space-y-2 z-30">
               <MenuItem
                 icon={Settings}
                 label="Setting"
@@ -249,7 +255,7 @@ export default function ProfileStudent() {
                     "/NongCheckprofile.png"
                   }
                   alt="Profile"
-                  className="w-32 h-32 rounded-full"
+                  className="w-full h-full rounded-full"
                 />
               </div>
 
@@ -258,7 +264,7 @@ export default function ProfileStudent() {
                 className="
                 absolute -bottom-1 -right-1
                 w-10 h-10 rounded-full
-                bg-[#F7A76C]
+                bg-[#FFAC75]
                 flex items-center justify-center
                 hover:scale-105 transition
                 "
@@ -291,7 +297,7 @@ export default function ProfileStudent() {
 
             <div className="flex-1">
               {/* firstname + surname */}
-              <div className="m-2 grid grid-cols-2 gap-3 mt-6">
+              <div className="my-4 grid grid-cols-2 gap-3 mt-6">
                 {/* firstname */}
                 <div className="relative">
                   <input
@@ -328,7 +334,7 @@ export default function ProfileStudent() {
               </div>
 
               {/* email disabled  */}
-              <div className="m-2">
+              <div className="my-4">
                 <div className="flex items-center bg-white rounded-xl font-semibold">
                   <input
                     disabled
@@ -337,13 +343,13 @@ export default function ProfileStudent() {
                     value={email}
                     placeholder="email@gmail.com"
                     className="w-full px-4 py-3 outline-none bg-transparent
-                  placeholder:text-[#000000] placeholder:font-bold"
+                  placeholder:text-black placeholder:font-bold"
                   />
                 </div>
               </div>
 
               {/* student number  */}
-              <div className="m-2">
+              <div className="my-4">
                 <div className="flex items-center bg-white rounded-xl font-semibold relative">
                   <input
                     name="student_id"
@@ -362,7 +368,7 @@ export default function ProfileStudent() {
               </div>
 
               {/* faculty  */}
-              <div className="m-2">
+              <div className="my-4">
                 <div className="flex items-center bg-white rounded-xl font-semibold relative">
                   <input
                     name="faculty"
@@ -381,7 +387,7 @@ export default function ProfileStudent() {
               </div>
 
               {/* major  */}
-              <div className="m-2">
+              <div className="my-4">
                 <div className="flex items-center bg-white rounded-xl font-semibold relative">
                   <input
                     name="major"
@@ -403,8 +409,8 @@ export default function ProfileStudent() {
             {/* save button */}
             <button
               onClick={handleSave}
-              className="w-full bg-[#FFEC89] text-[#4969B2] py-3 sm:py-4 mt-auto mb-8
-              rounded-2xl font-semibold hover:bg-[#ffe97a] transition"
+              className="w-full bg-[#FFEB83] text-[#4969B2] py-3 sm:py-4 mt-auto mb-8
+              rounded-2xl font-bold hover:bg-[#FBE475] transition"
             >
               Save
             </button>

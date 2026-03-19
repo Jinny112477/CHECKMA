@@ -41,11 +41,12 @@ export default function Login() {
         className="
           relative
           w-full max-w-[390px]
-          min-h-screen sm:min-h-[844px]
+          h-screen
           bg-[#FFFBEA]
-          rounded-none sm:rounded-[20px]
           shadow-none sm:shadow-xl
-          px-6 pt-10
+          px-6 pt-8 pb-8
+          flex flex-col
+          overflow-hidden
         "
       >
         {/* back arrow */}
@@ -54,20 +55,20 @@ export default function Login() {
         </Link>
 
         {/* title */}
-        <div className="sm:mt-15">
-          <h1 className="mt-11 text-5xl sm:text-5xl font-bold text-[#4969B2]">
+        <div>
+          <h1 className="mt-12 text-5xl sm:text-5xl font-bold text-[#4969B2]">
             Login
           </h1>
-          <p className="mt-3">
-            <span className="text-[#697EAE] font-semibold">Welcome back </span>
-            <span className="text-[#95A9D7] font-light">my friend!</span>
+          <p className="mt-4">
+            <span className="text-[#4969B2] font-medium">Welcome back </span>
+            <span className="text-[#7C95CF] font-medium">my friend!</span>
           </p>
         </div>
 
         {/* form box */}
-        <div className="mt-7 sm:mt-9 bg-[#FFEB83] rounded-2xl p-4 sm:p-5">
+        <div className="mt-8 bg-[#FFEB83] rounded-2xl p-4 sm:p-5">
           {/* email */}
-          <div className="mb-5">
+          <div className="mb-4">
             <label className="flex items-center gap-2 text-sm font-semibold text-[#4969B2] mb-1">
               <Mail size={16} />
               Email / Username
@@ -124,7 +125,7 @@ export default function Login() {
           <div className="mt-2 text-left">
             <Link
               to="/reset-password"
-              className="underline text-sm text-[#718DCC] hover:text-[#4969B2] transition"
+              className="underline text-sm font-medium text-[#7C95CF] hover:text-[#4969B2] transition"
             >
               Forgot your password?
             </Link>
@@ -138,17 +139,17 @@ export default function Login() {
             mt-6 sm:mt-8 w-full
             bg-[#4969B2] text-white
             py-3 sm:py-4
-            rounded-2xl font-semibold
+            rounded-2xl font-bold
             hover:bg-[#3E5FA3] transition
           "
         >
-          <span className="text-[#FFFFFF]">Login</span>
+          Login
         </button>
 
         {/* divider */}
         <div className="flex items-center my-6">
           <div className="flex-1 h-px bg-[#4969B2]" />
-          <span className="px-3 text-sm text-[#4969B2]">or continue with</span>
+          <span className="px-3 text-sm font-medium text-[#4969B2]">or continue with</span>
           <div className="flex-1 h-px bg-[#4969B2]" />
         </div>
 
@@ -168,7 +169,7 @@ export default function Login() {
         </button>
 
         {/* register */}
-        <p className="mt-6 text-center text-sm text-[#718DCC]">
+        <p className="mt-6 text-center text-sm font-medium text-[#7C95CF]">
           Not have account yet?{" "}
           <Link
             to="/register"

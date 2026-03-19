@@ -19,12 +19,12 @@ export default function Login() {
                 className="
           relative
           w-full max-w-[390px]
-          min-h-screen sm:min-h-[844px]
+          h-screen
           bg-[#FFFBEA]
-          rounded-none sm:rounded-[20px]
           shadow-none sm:shadow-xl
-          px-6 pt-10 pb-8
+          px-6 pt-8 pb-8
           flex flex-col
+          overflow-hidden
         "
             >
 
@@ -34,11 +34,11 @@ export default function Login() {
                 </Link>
 
                 {/* title */}
-                <div className="mt-11">
+                <div className="mt-12">
                     <h1 className="text-5xl font-bold text-[#4969B2]">
                         New Password
                     </h1>
-                    <p className="mt-3 text-sm text-[#95A9D7] font-light">
+                    <p className="mt-4 text-sm text-[#7C95CF] font-medium">
                         Your new password must be different from previous used passwords.
                     </p>
                 </div>
@@ -80,7 +80,7 @@ export default function Login() {
                         </div>
 
                         {/* confirm password */}
-                        <div className="mb-0 mt-5">
+                        <div className="mb-0 mt-4">
                             <label className="flex items-center gap-2 text-sm font-semibold text-[#4969B2] mb-1">
                                 <Lock size={16} />
                                 Confirm Password
@@ -113,9 +113,9 @@ export default function Login() {
                 <button
                     className="
                             mt-8 w-full
-                            bg-[#4969B2] text-white
+                            bg-[#4969B2] text-white text-base
                             py-3 sm:py-4
-                            rounded-2xl font-semibold
+                            rounded-2xl font-bold
                             hover:bg-[#3E5FA3] transition
                             "
                 >

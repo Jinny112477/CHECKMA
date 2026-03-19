@@ -9,12 +9,12 @@ export default function CheckEmail() {
         className="
           relative
           w-full max-w-[390px]
-          min-h-screen sm:min-h-[844px]
+          h-screen
           bg-[#FFFBEA]
-          rounded-none sm:rounded-[20px]
           shadow-none sm:shadow-xl
-          px-6 pt-10 pb-8
+          px-6 pt-8 pb-8
           flex flex-col
+          overflow-hidden
         "
       >
         {/* illustration */}
@@ -33,7 +33,7 @@ export default function CheckEmail() {
             <img
               src="/NongCheck.svg"
               alt="NongCheck"
-              className="w-[140px] h-[140px] object-contain"
+              className="w-32 h-32 object-contain"
             />
 
             {/* speech bubble */}
@@ -58,7 +58,7 @@ export default function CheckEmail() {
           <h1 className="text-3xl font-bold text-[#4969B2]">
             Check your mail!
           </h1>
-          <p className="mt-3 text-sm text-[#95A9D7] leading-relaxed">
+          <p className="mt-3 text-sm text-[#7C95CF] font-medium leading-relaxed">
             We have sent a password recover
             <br />
             instructions to your email.
@@ -73,21 +73,24 @@ export default function CheckEmail() {
               bg-[#FFEB83]
               text-[#4969B2]
               py-3
+              text-base
               rounded-2xl
-              font-semibold
-              hover:opacity-90 transition
+              font-bold
+              hover:bg-[#fbe475] transition
             "
           >
             Open email app
           </button>
 
-          <p className="mt-4 text-center text-sm text-[#4969B2] underline cursor-pointer">
+        <Link href="">
+          <p className="mt-4 text-center text-sm font-medium text-[#7C95CF] underline cursor-pointer">
             Skip for now
           </p>
+        </Link>
         </div>
 
         {/* bottom helper text */}
-        <div className="mt-auto pt-10 text-center text-xs text-[#95A9D7] leading-relaxed">
+        <div className="mt-auto pt-10 text-center text-xs font-medium text-[#7C95CF] leading-relaxed">
           <p>
             Did not receive the email? Check your spam filter,
             <br />

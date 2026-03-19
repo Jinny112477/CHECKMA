@@ -51,7 +51,7 @@ export default function HomeStudent() {
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
 
   /* ===== mock data (เพิ่มการ์ดจากตรงนี้) ===== */
-  const DEV_EMPTY = true; // true = ไม่มีวิชา ทดสอบการแสดง empty state
+  const DEV_EMPTY = false; // true = ไม่มีวิชา ทดสอบการแสดง empty state
 
   const courses = DEV_EMPTY
     ? []
@@ -153,10 +153,16 @@ export default function HomeStudent() {
 
   return (
     <div className="min-h-screen w-full flex justify-center bg-white">
-      <div className="relative w-full max-w-[390px] h-screen bg-[#4F6DB8] flex flex-col overflow-hidden">
+      <div className="relative
+                    w-full max-w-[390px]
+                    h-screen
+                    bg-[#4969B2]
+                    shadow-none sm:shadow-xl
+                    flex flex-col
+                    overflow-hidden">
         {/* ================= HEADER ================= */}
         <div ref={headerRef} className="relative shrink-0">
-          <header className="h-[90px] flex items-center justify-between px-5">
+          <header className="h-20 flex items-center justify-between px-5">
             <button onClick={() => setOpenMenu(!openMenu)}>
               <Menu
                 size={28}
@@ -184,7 +190,7 @@ export default function HomeStudent() {
           </header>
 
           {openMenu && (
-            <div className="absolute top-[70px] left-4 space-y-2 z-30">
+            <div className="absolute top-16 left-4 space-y-2 z-30">
               <MenuItem
                 icon={Settings}
                 label="Setting"
@@ -210,14 +216,14 @@ export default function HomeStudent() {
                             animate-[fadeIn_0.6s_ease-out_forwards]"
             >
               <div
-                className="w-[180px] h-[180px] rounded-full bg-[#FFD6B0]
+                className="w-48 h-48 rounded-full bg-[#FFD6B0]
                            flex items-center justify-center
                            animate-[scaleIn_0.6s_ease-out_forwards]"
               >
                 <img
                   src="/NongCheck.svg"
                   alt="empty"
-                  className="w-[140px] h-[140px]"
+                  className="w-40 h-40"
                 />
               </div>
 

@@ -57,8 +57,14 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-[#FFFBEA] font-quicksand px-4">
       {/* phone / app container */}
       <div
-        className="relative w-full max-w-[390px] min-h-screen sm:min-h-[844px] bg-[#FFFBEA] rounded-none sm:rounded-[20px]
-                shadow-none sm:shadow-xl px-6 pt-10"
+        className="relative
+          w-full max-w-[390px]
+          h-screen
+          bg-[#FFFBEA]
+          shadow-none sm:shadow-xl
+          px-6 pt-8 pb-8
+          flex flex-col
+          overflow-hidden"
       >
         {/* back arrow */}
         <Link to="/" className="absolute top-6 left-6 text-[#FFAC75]">
@@ -67,19 +73,19 @@ export default function Login() {
 
         {/* title */}
         <div className=" sm:mt-15">
-          <h1 className="mt-[20px] text-5xl sm:text-5xl font-bold text-[#4969B2]">
+          <h1 className="mt-12 text-5xl sm:text-5xl font-bold text-[#4969B2]">
             Register
           </h1>
-          <p className="mt-[8px]">
-            <span className="text-[#95A9D7] font-light">Hello </span>
-            <span className="text-[#697EAE] font-semibold">new friend!</span>
+          <p className="mt-4">
+            <span className="text-[#7C95CF] font-medium">Hello </span>
+            <span className="text-[#4969B2] font-medium">new friend!</span>
           </p>
         </div>
 
         {/* form box */}
-        <div className="mt-[2px] sm:mt-5 bg-[#FFEB83] rounded-2xl p-4 sm:p-5">
+        <div className="mt-8 bg-[#FFEB83] rounded-2xl p-4 sm:p-5">
           {/* email */}
-          <div className="mb-5">
+          <div className="mb-4">
             <label className="flex items-center gap-2 text-sm font-semibold text-[#4969B2] mb-1">
               <Mail size={16} />
               Email
@@ -98,7 +104,7 @@ export default function Login() {
           </div>
 
           {/* username */}
-          <div className="mb-5">
+          <div className="mb-4">
             <label className="flex items-center gap-2 text-sm font-semibold text-[#4969B2] mb-1">
               <User size={16} />
               Username
@@ -149,7 +155,7 @@ export default function Login() {
           </div>
 
           {/* confirm password */}
-          <div className="mb-0 mt-5">
+          <div className="mb-0 mt-4">
             <label className="flex items-center gap-2 text-sm font-semibold text-[#4969B2] mb-1">
               <Lock size={16} />
               Confirm Password
@@ -178,11 +184,11 @@ export default function Login() {
           </div>
         </div>
 
-        {/* login button */}
+        {/* sign up button */}
         <button
           onClick={handleEmailSignup}
           className="mt-6 sm:mt-8 w-full bg-[#4969B2] text-white py-3 sm:py-4
-                    rounded-2xl font-semibold hover:bg-[#3E5FA3] transition"
+                    rounded-2xl font-bold hover:bg-[#3E5FA3] transition"
         >
           Sign up
         </button>
@@ -190,7 +196,7 @@ export default function Login() {
         {/* divider */}
         <div className="flex items-center mt-3 mb-2">
           <div className="flex-1 h-px bg-[#4969B2]" />
-          <span className="px-3 text-sm text-[#4969B2]">or continue with</span>
+          <span className="px-3 text-sm font-medium text-[#4969B2]">or continue with</span>
           <div className="flex-1 h-px bg-[#4969B2]" />
         </div>
 
@@ -205,7 +211,7 @@ export default function Login() {
         </button>
 
         {/* register */}
-        <p className="mt-3 text-center text-sm text-[#718DCC]">
+        <p className="mt-3 text-center text-sm text-[#7C95CF] font-medium">
           Already have an account?{" "}
           <Link
             to="/login"
