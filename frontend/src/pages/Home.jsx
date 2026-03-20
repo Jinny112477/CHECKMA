@@ -11,7 +11,7 @@ export default function Home() {
             rounded-none sm:rounded-[20px]
             overflow-hidden
             shadow-none sm:shadow-xl
-            px-6 pt-10 pb-8
+            px-6 pt-8 pb-8
             flex flex-col justify-between
             bg-no-repeat
             "
@@ -33,8 +33,8 @@ export default function Home() {
           {/* Login */}
           <Link to="/login">
             <button
-              className="w-full bg-[#FFEC89] text-[#4F6DB8] py-3 sm:py-4
-              rounded-2xl font-bold mb-4 hover:opacity-90 transition"
+              className="w-full bg-[#FFEC89] text-base text-[#4969B2] py-3 sm:py-4
+              rounded-2xl font-bold mb-4 hover:bg-[#FBE475] transition"
             >
               Login
             </button>
@@ -43,20 +43,20 @@ export default function Home() {
           {/* Sign up */}
           <Link to="/register">
             <button
-              className="w-full bg-[#4969B2] text-white py-3 sm:py-4
-              rounded-2xl font-semibold mb-6 hover:bg-[#3E5FA3] transition"
+              className="w-full bg-[#4969B2] text-base text-[#FFEC89] py-3 sm:py-4
+              rounded-2xl font-bold mb-4 hover:bg-[#3E5FA3] transition"
             >
-              <span className="text-[#FFEC89]"> Sign up</span>
+              Sign up
             </button>
           </Link>
 
           {/* Divider */}
           <div className="flex items-center mb-6">
-            <div className="flex-1 h-px bg-[#4F6DB8]" />
-            <span className="px-3 text-sm text-[#4F6DB8]">
+            <div className="flex-1 h-px bg-[#4969B2]" />
+            <span className="px-3 text-sm font-medium text-[#4969B2]">
               or continue with
             </span>
-            <div className="flex-1 h-px bg-[#4F6DB8]" />
+            <div className="flex-1 h-px bg-[#4969B2]" />
           </div>
 
           {/* Google button */}

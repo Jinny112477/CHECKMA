@@ -10,12 +10,12 @@ export default function ResetPassword() {
         className="
           relative
           w-full max-w-[390px]
-          min-h-screen sm:min-h-[844px]
+          h-screen
           bg-[#FFFBEA]
-          rounded-none sm:rounded-[20px]
           shadow-none sm:shadow-xl
-          px-6 pt-10 pb-8
+          px-6 pt-8 pb-8
           flex flex-col
+          overflow-hidden
         "
       >
 
@@ -25,11 +25,11 @@ export default function ResetPassword() {
         </Link>
 
         {/* title */}
-        <div className="mt-11">
+        <div className="mt-12">
           <h1 className="text-5xl font-bold text-[#4969B2]">
             Reset Password
           </h1>
-          <p className="mt-3 text-sm text-[#95A9D7] font-light">
+          <p className="mt-4 text-sm text-[#7C95CF] font-medium">
             Enter the email associated with your account and we’ll send an email
             with instructions to reset your password.
           </p>
@@ -51,7 +51,7 @@ export default function ResetPassword() {
                 placeholder="Your Email Address"
                 className="
                   w-full px-3 py-3 bg-transparent outline-none
-                  placeholder:text-[#9DB2E3]
+                  placeholder:text-[#9DB2E3] placeholder:font-normal
                 "
               />
             </div>
@@ -62,9 +62,9 @@ export default function ResetPassword() {
           <button
             className="
               mt-8 w-full
-              bg-[#4969B2] text-white
+              bg-[#4969B2] text-white text-base
               py-3 sm:py-4
-              rounded-2xl font-semibold
+              rounded-2xl font-bold 
               hover:bg-[#3E5FA3] transition
             "
           >

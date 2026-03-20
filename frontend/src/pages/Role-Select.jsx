@@ -41,24 +41,31 @@ export default function RoleSelect() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FFFBEA] px-4 font-quicksand">
-      <div className="relative w-full max-w-[390px] min-h-screen sm:min-h-[844px] px-6 pt-10">
+      <div className="relative
+          w-full max-w-[390px]
+          h-screen
+          bg-[#FFFBEA]
+          shadow-none sm:shadow-xl
+          px-6 pt-8 pb-8
+          flex flex-col
+          overflow-hidden">
         {/* back */}
         <Link to="/register" className="absolute top-6 left-6 text-[#FFAC75]">
-          <ArrowLeft size={28} />
+          <ArrowLeft size={32} />
         </Link>
 
         {/* title */}
-        <h1 className="mt-[27px] text-5xl font-bold text-[#4969B2] leading-none">
+        <h1 className="mt-12 text-5xl font-bold text-[#4969B2] leading-none">
           Select
           <br />
           user type
         </h1>
-        <p className="mt-3 text-[#95A9D7] text-sm">
+        <p className="mt-4 text-[#7C95CF] text-sm font-medium">
           Let us know the best setup for you!
         </p>
 
         {/* cards */}
-        <div className="mt-10 space-y-6">
+        <div className="mt-8 space-y-6">
           <RoleCard
             label="STUDENT"
             imagePath="/NongCheck.svg"
@@ -78,16 +85,16 @@ export default function RoleSelect() {
             onClick={() => setRole("professor")}
             bg="bg-[#D6E0FA]"
             hoverBg="bg-[#AFC2F0]"
-            activeBg="bg-[#4F6FB8]"
+            activeBg="bg-[#4969B2]"
             border="border-[#F7C873]"
             textColor="text-white"
           />
         </div>
 
         {/* warning */}
-        <p className="mt-[45px] text-center text-xs">
-          <span className="text-[#FF5252] text-[14px] font-bold">* </span>
-          <span className="text-[#718DCC] font-medium">
+        <p className="mt-8 text-center text-xs">
+          <span className="text-[#FF5252] text-sm font-bold">* </span>
+          <span className="text-[#7C95CF] font-medium">
             Please make sure of your choice before submitting, the role{" "}
           </span>
           <span className="text-[#F49A5E] font-semibold">
@@ -100,8 +107,8 @@ export default function RoleSelect() {
           onClick={() => handleSelectRole(role)}
           className="
             mt-6 w-full py-4 rounded-2xl
-            bg-[#F4A261] text-white font-semibold
-            transition hover:brightness-95
+            bg-[#F49A5E] text-base text-white font-bold
+            transition hover:bg-[#EB9358]
           "
         >
           Submit
