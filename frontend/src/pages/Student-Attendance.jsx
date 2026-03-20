@@ -65,11 +65,17 @@ export default function AttendanceStudent() {
 
   return (
     <div className="min-h-screen w-full flex justify-center bg-white">
-      <div className="relative w-full max-w-[390px] h-screen bg-[#4F6DB8] flex flex-col overflow-hidden">
+      <div className="relative
+                    w-full max-w-[390px]
+                    h-screen
+                    bg-[#4969B2]
+                    shadow-none sm:shadow-xl
+                    flex flex-col
+                    overflow-hidden">
 
         {/* ================= HEADER ================= */}
         <div ref={headerRef} className="relative shrink-0">
-          <header className="h-[90px] flex items-center justify-between px-5">
+          <header className="h-20 flex items-center justify-between px-5">
             {/* back arrow */}
             <Link to="/student/home" className="top-6 left-6 text-white">
                 <ArrowLeft size={32} />
@@ -91,15 +97,15 @@ export default function AttendanceStudent() {
               </button>
             </Link>
           </header>
-          <hr className="w-[80%] h-1 mx-auto mb-2 bg-white border-0 rounded-sm" />
+          <hr className="w-80 h-1 mx-auto mb-2 bg-white border-0 rounded-sm" />
         </div>
 
         {/* Class name */}
-        <div className="ml-10 my-5">
+        <div className="ml-8 my-5">
           <h1 className="text-5xl font-bold text-white">
             SF321
           </h1>
-          <p className="mt-3 text-sm text-white font-light">
+          <p className="mt-3 text-sm text-white font-medium">
               Data Communication and Computer Network 1<br />
               Section 760001
           </p>
@@ -109,7 +115,7 @@ export default function AttendanceStudent() {
         <div className="flex-1 bg-[#FFFBEA] rounded-t-[40px] overflow-y-auto p-4 flex flex-col">
 
           {/* ===== Progress Section ===== */}
-          <div className="rounded-[40px] p-6 space-y-4">
+          <div className="rounded-full p-6 space-y-4">
 
             <p className="text-xl font-bold text-[#9DB2E3]">
               From <span className="text-[#4969B2]">{total}</span> Classes
@@ -126,7 +132,7 @@ export default function AttendanceStudent() {
 
               {/* Late */}
               <div
-                className="h-full bg-[#E6CA3E]"
+                className="h-full bg-[#FBE475]"
                 style={{ width: `${latePercent}%` }}
               />
 
@@ -143,10 +149,10 @@ export default function AttendanceStudent() {
               <span className="text-[#6BBF84]">
                 Present {presentPercent.toFixed(0)}%
               </span>
-              <span className="text-yellow-500">
+              <span className="text-[#EAB308]">
                 Late {latePercent.toFixed(0)}%
               </span>
-              <span className="text-red-400">
+              <span className="text-[#D45F52]">
                 Absent {absentPercent.toFixed(0)}%
               </span>
             </div>
@@ -163,7 +169,7 @@ export default function AttendanceStudent() {
           <Link href="" className="mt-auto pt-6">
             <button
               className="w-full bg-[#F49A5E] text-[#FFFBEA] py-3 sm:py-4 mt-auto mb-8
-              rounded-2xl font-semibold hover:bg-[#eb9358] transition"
+              rounded-2xl font-bold hover:bg-[#EB9358] transition"
             >
               CHECK!
             </button>

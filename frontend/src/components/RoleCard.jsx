@@ -31,7 +31,7 @@ export default function RoleCard({
       `}
     >
       {/* image */}
-      <div className="relative w-[48px] h-[48px] flex-shrink-0">
+      <div className="relative w-12 h-12 flex-shrink-0">
         <img
           src={imagePath}
           alt={`${label} image`}
@@ -63,11 +63,11 @@ export default function RoleCard({
         {/* I'm a */}
         <p
           className={`
-            text-sm transition-colors duration-300
+            text-sm font-medium transition-colors duration-300
             ${
               active
                 ? isStudent
-                  ? "text-[#95A9D7]"
+                  ? "text-[#9DB2E3]"
                   : "text-[#FFF4BE]"
                 : "opacity-80"
             }
@@ -99,7 +99,7 @@ export default function RoleCard({
             <Check
               size={25}
               strokeWidth={4}
-              className="text-[#4CAF50]"
+              className="text-[#6BBF84]"
             />
           </div>
         </div>

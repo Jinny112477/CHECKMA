@@ -6,8 +6,8 @@ export default function AttendanceCard({
 }) {
     const statusColor = {
     Present: "text-[#6BBF84]",
-    Absent: "text-red-400",
-    Late: "text-yellow-500",
+    Absent: "text-[#D45F52]",
+    Late: "text-[#EAB308]",
   };
 
 
@@ -20,7 +20,7 @@ export default function AttendanceCard({
       </div>
 
       {/* RIGHT GROUP */}
-      <div className="ml-auto flex items-center gap-6">
+      <div className="ml-auto flex items-center gap-4">
 
         {/* Date & Time */}
         <div className="text-right text-[#4969B2] font-semibold leading-tight">
@@ -29,7 +29,7 @@ export default function AttendanceCard({
         </div>
 
         {/* Status */}
-        <div className="bg-white px-5 py-3 rounded-2xl">
+        <div className="bg-white w-20 py-3 text-center rounded-2xl">
           <span className={`text-sm font-semibold ${statusColor[status]}`}>
             {status}
           </span>
