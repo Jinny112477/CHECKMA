@@ -76,10 +76,7 @@ export const updateUserProfile = async (req, res) => {
     // ===============================
     const { error: userError } = await supabase;
     if (avatar_url !== undefined && avatar_url !== null) {
-      await supabase
-        .from("users")
-        .update({ avatar_url })
-        .eq("id", userId);
+      await supabase.from("users").update({ avatar_url }).eq("id", userId);
     }
 
     if (userError) {
@@ -145,5 +142,25 @@ export const updateUserProfile = async (req, res) => {
       error: err.message,
       stack: err.stack,
     });
+  }
+};
+
+//RESENT PASSWORD
+export const resetPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset/new-password`,
+    });
+
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    res.json({ message: "Password reset email sent" });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
