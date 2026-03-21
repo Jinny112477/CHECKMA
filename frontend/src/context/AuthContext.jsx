@@ -15,7 +15,7 @@ export function useAuth() {
 }
 
 export default function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); v
   const [profile, setProfile] = useState(undefined);
   const [loading, setLoading] = useState(true);
 
