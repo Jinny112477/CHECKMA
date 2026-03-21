@@ -1,38 +1,16 @@
 import { useState } from "react";
 import { ArrowLeft, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
-
-import { supabase } from "../lib/supabaseClient";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const navigate = useNavigate();
-
-  //handle login with google
-  const handleGoogleLogin = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-    });
-  };
-
-  //handle login with email and password
-  const handleEmailLogin = async () => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      alert(error.message);
-      return;
-    }
-
-    navigate("/", { replace: true });
-  };
+  // Auth function
+  const { handleGoogleAuthen, handleEmailLogin } = useAuth();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FFFBEA] font-quicksand px-4">
@@ -155,7 +133,7 @@ export default function Login() {
 
         {/* google button */}
         <button
-          onClick={handleGoogleLogin}
+          onClick={handleGoogleAuthen}
           className="
             w-full border-2 border-black
             bg-white py-3 sm:py-4

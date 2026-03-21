@@ -14,6 +14,7 @@ export const getUserProfile = async (req, res) => {
                 email,
                 role,
                 avatar_url,
+
                 student_info!student_info_id_fkey (
                     firstname,
                     surname,
@@ -21,6 +22,7 @@ export const getUserProfile = async (req, res) => {
                     faculty,
                     major
                 ),
+
                 prof_info!prof_info_id_fkey (
                     firstname,
                     surname
@@ -44,7 +46,7 @@ export const getUserProfile = async (req, res) => {
       avatar_url: data.avatar_url,
     };
 
-    // Merge based on role
+    // Merge based on role (student / professor)
     if (data.role === "student" && data.student_info) {
       profileData = { ...profileData, ...data.student_info };
     }
@@ -59,6 +61,7 @@ export const getUserProfile = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
 
 // UPDATE USER PROFILE
 export const updateUserProfile = async (req, res) => {
@@ -142,25 +145,5 @@ export const updateUserProfile = async (req, res) => {
       error: err.message,
       stack: err.stack,
     });
-  }
-};
-
-//RESENT PASSWORD
-export const resetPassword = async (req, res) => {
-  try {
-    const { email } = req.body;
-
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset/new-password`,
-    });
-
-    if (error) {
-      return res.status(400).json({ error: error.message });
-    }
-
-    res.json({ message: "Password reset email sent" });
-
-  } catch (err) {
-    res.status(500).json({ error: err.message });
   }
 };

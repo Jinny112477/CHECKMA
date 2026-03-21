@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../components/AuthProvider";
+import { useAuth } from "../context/AuthContext";
 
 export default function AuthRedirect() {
   const { user, profile, loading } = useAuth();
@@ -9,16 +9,15 @@ export default function AuthRedirect() {
   useEffect(() => {
     if (loading) return;
 
-    // 🚫 NOT LOGGED IN → do nothing
     if (!user) return;
 
-    // ✅ Logged in but no role
+    // Logged in : NO ROLE
     if (!profile?.role) {
       navigate("/role", { replace: true });
       return;
     }
 
-    // ✅ Logged in with role
+    // Logged in : ROLE (professor / student)
     if (profile.role === "student") {
       navigate("/student/home", { replace: true });
     }

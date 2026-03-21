@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Menu, Settings, LogOut, Plus, CirclePlus } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx"
 
 import CourseCard from "../components/CourseCard.jsx";
-import { supabase } from "../lib/supabaseClient";
-import { useNavigate } from "react-router-dom";
 
 /* ===== reusable menu item ===== */
 function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
@@ -45,9 +44,7 @@ export default function HomeStudent() {
   const headerRef = useRef(null);
   const joinRef = useRef(null);
 
-  const navigate = useNavigate();
-
-  const [profile, setProfile] = useState(null);
+  const { profile, handleSignOut } = useAuth();
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
 
   /* ===== mock data (เพิ่มการ์ดจากตรงนี้) ===== */
@@ -106,51 +103,6 @@ export default function HomeStudent() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openMenu, showJoin]);
 
-  //fetch User profile from backend
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-
-        console.log("SESSION:", session);
-
-        if (!session) {
-          console.log("No session found");
-          return;
-        }
-
-        const res = await fetch("http://localhost:5000/api/users/profile", {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        });
-
-        console.log("STATUS:", res.status);
-
-        const data = await res.json();
-        console.log("API RESPONSE:", data);
-
-        setProfile(data);
-      } catch (err) {
-        console.error("FETCH ERROR:", err);
-      }
-    };
-
-    fetchProfile();
-  }, []);
-
-  //Sign Out handler
-  const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error("Error signing out:", error);
-    } else {
-      navigate("/");
-    }
-  };
-
   return (
     <div className="min-h-screen w-full flex justify-center bg-white">
       <div className="relative
@@ -201,7 +153,7 @@ export default function HomeStudent() {
                 icon={LogOut}
                 label="Log out"
                 variant="danger"
-                onClick={() => handleSignOut()}
+                onClick={handleSignOut}
               />
             </div>
           )}

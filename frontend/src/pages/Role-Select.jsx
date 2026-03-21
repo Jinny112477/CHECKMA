@@ -2,34 +2,25 @@ import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import RoleCard from "../components/RoleCard";
-import { supabase } from "../lib/supabaseClient";
-import { useAuth } from "../components/AuthProvider";
+
+import { useAuth } from "../context/AuthContext";
 
 export default function RoleSelect() {
   const [role, setRole] = useState("student");
   const navigate = useNavigate();
-  const { user, setProfile } = useAuth();
 
+  // Auth function
+  const { updateRole } = useAuth();
+
+  // Role select: Navigation handler
   const handleSelectRole = async (selectedRole) => {
-    if (!user) return;
-
-    const { error } = await supabase
-      .from("users")
-      .update({ role: selectedRole })
-      .eq("id", user.id);
+    const { error } = await updateRole(selectedRole);
 
     if (error) {
       alert(error.message);
       return;
     }
 
-    // ✅ Update context immediately
-    setProfile((prev) => ({
-      ...prev,
-      role: selectedRole,
-    }));
-
-    // ✅ Navigate
     if (selectedRole === "student") {
       navigate("/student/home", { replace: true });
     }

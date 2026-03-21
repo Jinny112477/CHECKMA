@@ -1,16 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  Menu,
-  Settings,
-  LogOut,
-  Plus,
-  CirclePlus,
-} from "lucide-react";
+import { Menu, Settings, LogOut, Plus, CirclePlus } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 
 import CourseCard from "../components/ProfCourseCard.jsx";
-import { supabase } from "../lib/supabaseClient";
-import { useNavigate } from "react-router-dom";
 
 /* ===== reusable menu item ===== */
 function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
@@ -20,9 +13,13 @@ function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
     join: "bg-[#AFC1F3] text-[#4F6DB8]",
   };
 
-  if(to) {
+  if (to) {
     return (
-      <Link to={to} onClick={onClick} className={`w-full px-4 py-2 rounded-xl flex items-center gap-2 font-semibold transition ${variants[variant]}`}>
+      <Link
+        to={to}
+        onClick={onClick}
+        className={`w-full px-4 py-2 rounded-xl flex items-center gap-2 font-semibold transition ${variants[variant]}`}
+      >
         <Icon size={16} />
         {label}
       </Link>
@@ -46,8 +43,7 @@ export default function HomeProf() {
 
   const headerRef = useRef(null);
   const joinRef = useRef(null);
-
-  const [profile, setProfile] = useState(null);
+  const { profile, handleSignOut } = useAuth(); // Auth function
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
 
   /* ===== mock data (เพิ่มการ์ดจากตรงนี้) ===== */
@@ -57,41 +53,45 @@ export default function HomeProf() {
     ? []
     : [
         {
-            code: "SF321",
-            section: "760001",
-            name: "Data Communication and Computer Network 1",
-            teacher: "Aj.Piya Techateerawat",
-            room: "ENGR 310",
-            time: "13:30 - 16:30",
-            day: "MON",
+          code: "SF321",
+          section: "760001",
+          name: "Data Communication and Computer Network 1",
+          teacher: "Aj.Piya Techateerawat",
+          room: "ENGR 310",
+          time: "13:30 - 16:30",
+          day: "MON",
         },
 
         {
-            code: "SF321",
-            section: "760001",
-            name: "Data Communication and Computer Network 1",
-            teacher: "Aj.Piya Techateerawat",
-            room: "ENGR 310",
-            time: "13:30 - 16:30",
-            day: "MON",
+          code: "SF321",
+          section: "760001",
+          name: "Data Communication and Computer Network 1",
+          teacher: "Aj.Piya Techateerawat",
+          room: "ENGR 310",
+          time: "13:30 - 16:30",
+          day: "MON",
         },
 
         {
-            code: "SF321",
-            section: "760001",
-            name: "Data Communication and Computer Network 1",
-            teacher: "Aj.Piya Techateerawat",
-            room: "ENGR 310",
-            time: "13:30 - 16:30",
-            day: "MON",
+          code: "SF321",
+          section: "760001",
+          name: "Data Communication and Computer Network 1",
+          teacher: "Aj.Piya Techateerawat",
+          room: "ENGR 310",
+          time: "13:30 - 16:30",
+          day: "MON",
         },
-    ];
+      ];
 
   const hasSubject = courses.length > 0;
 
   useEffect(() => {
     function handleClickOutside(e) {
-      if (openMenu && headerRef.current && !headerRef.current.contains(e.target))
+      if (
+        openMenu &&
+        headerRef.current &&
+        !headerRef.current.contains(e.target)
+      )
         setOpenMenu(false);
 
       if (showJoin && joinRef.current && !joinRef.current.contains(e.target))
@@ -99,67 +99,20 @@ export default function HomeProf() {
     }
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openMenu, showJoin]);
-
-  //fetch User profile from backend
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-
-        console.log("SESSION:", session);
-
-        if (!session) {
-          console.log("No session found");
-          return;
-        }
-
-        const res = await fetch("http://localhost:5000/api/users/profile", {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        });
-
-        console.log("STATUS:", res.status);
-
-        const data = await res.json();
-        console.log("API RESPONSE:", data);
-
-        setProfile(data);
-      } catch (err) {
-        console.error("FETCH ERROR:", err);
-      }
-    };
-
-    fetchProfile();
-  }, []);
-
-  const navigate = useNavigate();
-
-  //Sign Out handler
-  const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error("Error signing out:", error);
-    } else {
-      navigate("/");
-    }
-  };
 
   return (
     <div className="min-h-screen w-full flex justify-center bg-white">
-      <div className="relative
+      <div
+        className="relative
                     w-full max-w-[390px]
                     h-screen
                     bg-[#4969B2]
                     shadow-none sm:shadow-xl
                     flex flex-col
-                    overflow-hidden">
-
+                    overflow-hidden"
+      >
         {/* ================= HEADER ================= */}
         <div ref={headerRef} className="relative shrink-0">
           <header className="h-20 flex items-center justify-between px-5">
@@ -201,7 +154,7 @@ export default function HomeProf() {
                 icon={LogOut}
                 label="Log out"
                 variant="danger"
-                onClick={() => handleSignOut(false)}
+                onClick={handleSignOut}
               />
             </div>
           )}
@@ -209,21 +162,18 @@ export default function HomeProf() {
 
         {/* ================= CONTENT ================= */}
         <div className="flex-1 bg-[#FFFBEA] rounded-t-[40px] overflow-y-auto p-4">
-
           {/* ===== EMPTY STATE ===== */}
           {!hasSubject && (
-            <div className="flex flex-col items-center justify-center h-full text-center gap-4
-                            animate-[fadeIn_0.6s_ease-out_forwards]">
+            <div
+              className="flex flex-col items-center justify-center h-full text-center gap-4
+                            animate-[fadeIn_0.6s_ease-out_forwards]"
+            >
               <div
                 className="w-48 h-48 rounded-full bg-[#FFD6B0]
                            flex items-center justify-center
                            animate-[scaleIn_0.6s_ease-out_forwards]"
               >
-                <img
-                  src="/NongCheck.svg"
-                  alt="empty"
-                  className="w-40 h-40"
-                />
+                <img src="/NongCheck.svg" alt="empty" className="w-40 h-40" />
               </div>
 
               <p className="text-[#FFB37A] font-semibold text-lg">
@@ -239,9 +189,7 @@ export default function HomeProf() {
                 <CourseCard
                   key={index}
                   {...course}
-                  onSetting={() =>
-                    console.log("Setting clicked:", course.code)
-                  }
+                  onSetting={() => console.log("Setting clicked:", course.code)}
                 />
               ))}
             </div>
@@ -258,7 +206,7 @@ export default function HomeProf() {
               icon={CirclePlus}
               label="Create Class"
               variant="join"
-              to="/prof/create" 
+              to="/prof/create"
               onClick={() => setShowJoin(false)}
             />
           )}
