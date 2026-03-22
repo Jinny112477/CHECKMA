@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Menu, Settings, LogOut, House, Pencil } from "lucide-react";
 import { Link } from "react-router-dom";
-
-import { supabase } from "../lib/supabaseClient";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 /* ===== reusable menu item ===== */
 function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
@@ -42,8 +40,9 @@ export default function ProfileProf() {
   const [showJoin, setShowJoin] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [profile, setProfile] = useState(null);
+  const { profile, handleSignOut, updateProfile } = useAuth(); // Auth function
 
+  //Form Data
   const [formData, setFormData] = useState({
     firstname: "",
     surname: "",
@@ -56,8 +55,6 @@ export default function ProfileProf() {
 
   const username = profile?.username || "checkma";
   const email = profile?.email || "example@gmail.com";
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -76,7 +73,7 @@ export default function ProfileProf() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openMenu, showJoin]);
 
-  //handle profile image change
+  // HANDLE CHANGE: IMAGE
   function handleImageChange(e) {
     const file = e.target.files[0];
     if (file) {
@@ -85,7 +82,7 @@ export default function ProfileProf() {
     }
   }
 
-  //handle change
+  // HANDLE CHANGE: PROFILE
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -93,115 +90,48 @@ export default function ProfileProf() {
     });
   };
 
-  //handle save profile
+  // HANDLE SAVE: function simplify
   const handleSave = async () => {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+    const { error } = await updateProfile(formData, selectedFile);
 
-      if (!session) return;
-
-      let avatarUrl = profile?.avatar_url;
-
-      // ✅ convert image to base64 (เดี้ยวแก้ไปใช้ supabase bucket แทน)
-      if (selectedFile) {
-        avatarUrl = await new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(selectedFile);
-          reader.onload = () => resolve(reader.result);
-        });
-      }
-
-      const res = await fetch("http://localhost:5000/api/users/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
-          avatar_url: avatarUrl,
-          ...formData,
-        }),
-      });
-
-      const data = await res.json();
-      console.log(data);
-
-      alert("Profile updated successfully!");
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  //fetch User profile from backend
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-
-        console.log("SESSION:", session);
-
-        if (!session) {
-          console.log("No session found");
-          return;
-        }
-
-        const res = await fetch("http://localhost:5000/api/users/profile", {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        });
-
-        console.log("STATUS:", res.status);
-
-        const data = await res.json();
-        console.log("API RESPONSE:", data);
-
-        setProfile(data);
-
-        setFormData({
-          firstname: data.firstname || "",
-          surname: data.surname || "",
-        });
-      } catch (err) {
-        console.error("FETCH ERROR:", err);
-      }
-    };
-
-    fetchProfile();
-  }, []);
-
-  //Sign Out handler
-  const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
     if (error) {
-      console.error("Error signing out:", error);
-    } else {
-      navigate("/");
+      alert("Update failed");
+      return;
     }
+
+    alert("Profile updated successfully!");
   };
+
+  // PROF PROFILE: form data differences (professor)
+  useEffect(() => {
+    if (!profile) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      firstname: profile.firstname || "",
+      surname: profile.surname || "",
+    }));
+  }, [profile]);
 
   return (
     <div className="min-h-screen w-full flex justify-center bg-white">
-      <div className="relative
+      <div
+        className="relative
                     w-full max-w-[390px]
                     h-screen
                     bg-[#4969B2]
                     shadow-none sm:shadow-xl
                     flex flex-col
-                    overflow-hidden">
+                    overflow-hidden"
+      >
         {/* ================= HEADER ================= */}
         <div ref={headerRef} className="relative shrink-0">
           <header className="h-20 flex items-center justify-between px-5">
             <button onClick={() => setOpenMenu(!openMenu)}>
               <Menu
                 size={28}
-                className={`text-white transition-transform duration-300 ${
-                  openMenu ? "rotate-180" : "rotate-0"
-                }`}
+                className={`text-white transition-transform duration-300 ${openMenu ? "rotate-180" : "rotate-0"
+                  }`}
               />
             </button>
 
@@ -228,7 +158,7 @@ export default function ProfileProf() {
                 icon={LogOut}
                 label="Log out"
                 variant="danger"
-                onClick={() => handleSignOut(false)}
+                onClick={handleSignOut}
               />
             </div>
           )}

@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, User, AtSign } from "lucide-react";
 import { Link } from "react-router-dom";
-
-import { supabase } from "../lib/supabaseClient";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -13,46 +11,9 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
 
-  const navigate = useNavigate();
-
-  //handle signup with google
-  const handleGoogleSignUp = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-    });
-  };
-
-  //handle signup with email and password
-  const handleEmailSignup = async () => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (error) {
-      alert(error.message);
-      return;
-    }
-
-    const user = data.user;
-
-    if (user) {
-      const { error: updateError } = await supabase
-        .from("users")
-        .update({
-          username: username,
-          provider: "email",
-        })
-        .eq("id", user.id);
-
-      if (updateError) {
-        console.error(updateError);
-      }
-
-      navigate("/", { replace: true });
-    }
-  };
-
+  // Auth function
+  const { handleGoogleAuthen, handleEmailSignup } = useAuth();
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FFFBEA] font-quicksand px-4">
       {/* phone / app container */}
@@ -202,7 +163,7 @@ export default function Login() {
 
         {/* google button */}
         <button
-          onClick={handleGoogleSignUp}
+          onClick={handleGoogleAuthen}
           className="mt-3 w-full border-2 border-black bg-white py-3 sm:py-4
                     rounded-2xl flex items-center justify-center gap-3 hover:bg-gray-100 transition"
         >

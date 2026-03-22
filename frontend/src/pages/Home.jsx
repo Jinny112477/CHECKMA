@@ -1,6 +1,11 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Home() {
+
+  //Auth function
+  const { handleGoogleAuthen } = useAuth();
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-white font-quicksand">
       <div
@@ -61,6 +66,7 @@ export default function Home() {
 
           {/* Google button */}
           <button
+            onClick = {handleGoogleAuthen}
             className="w-full border-2 border-black bg-white py-3
             rounded-2xl flex items-center justify-center gap-3 hover:bg-gray-100 transition"
           >
