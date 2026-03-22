@@ -5,7 +5,7 @@ import {
   useState,
   useCallback,
 } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { supabase } from "../lib/supabaseClient"; 
 import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
@@ -15,7 +15,7 @@ export function useAuth() {
 }
 
 export default function AuthProvider({ children }) {
-  const [user, setUser] = useState(null); v
+  const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(undefined);
   const [loading, setLoading] = useState(true);
 
@@ -176,7 +176,7 @@ export default function AuthProvider({ children }) {
   };
 
 
-  // Profile Update: save state handler
+  // Profile Update: save state
   const updateProfile = async (formData, selectedFile) => {
     try {
       const {
@@ -223,6 +223,25 @@ export default function AuthProvider({ children }) {
     }
   };
 
+  
+  // RESET PASSWORD: handler
+  const resetPassword = async (email) => {
+    const { data, error } = await supabase.auth.resetPasswordForEmail (email, {
+      redirectTo: `${window.location.origin}/new-password`
+    });
+    return { data, error };
+  };
+
+
+  // UPDATE PASSWORD: handler
+  const updatePassword = async newPassword => {
+    const { data, error } = await supabase.auth.updateUser ({
+      password: newPassword
+    });
+    return { data, error };
+  };
+
+
   return (
     <AuthContext.Provider
       value={{
@@ -235,7 +254,9 @@ export default function AuthProvider({ children }) {
         handleEmailSignup,
         updateRole,
         handleSignOut,
-        updateProfile
+        updateProfile,
+        resetPassword,
+        updatePassword
       }}
     >
       {children}
