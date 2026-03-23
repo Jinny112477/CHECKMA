@@ -35,7 +35,7 @@ export default function AttendanceStudent() {
           return;
         }
 
-        const res = await fetch("http://localhost:5000/api/users/profile", {
+        const res = await fetch("http://192.168.1.114:5000/api/users/profile", {
           headers: {
             Authorization: `Bearer ${session.access_token}`,
           },
