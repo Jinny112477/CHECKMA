@@ -1,5 +1,9 @@
 {
   "appId": "com.checkma.app",
   "appName": "CHECKMA",
-  "webDir": "dist"
+  "webDir": "dist",
+  "server": {
+    "url": "http://192.168.1.114:5173", 
+    "cleartext": true
+  }
 }

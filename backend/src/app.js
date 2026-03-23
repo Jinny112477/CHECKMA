@@ -6,7 +6,10 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: [
+    "http://localhost:5173",
+    "http://192.168.1.114:5173" //IPv4 ของเครื่องตัวเอง (ดูใน cmd ด้วยคำสั่ง ipconfig)
+  ],
   credentials: true
 }));
 

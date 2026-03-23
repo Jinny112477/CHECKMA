@@ -19,7 +19,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: "http://192.168.1.114:5173", //IPv4 ของเครื่องตัวเอง (ดูใน cmd ด้วยคำสั่ง ipconfig)
     methods: ["GET", "POST"],
   },
 });
@@ -35,6 +35,6 @@ io.on("connection", (socket) => {
 // Start server
 const PORT = process.env.PORT || 5000;
 
-server.listen(PORT, () => {
+server.listen(PORT, "0.0.0.0", () => {
   console.log(`Backend + Socket.IO running on port ${PORT}`);
 });

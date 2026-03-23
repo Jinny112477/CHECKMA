@@ -5,7 +5,7 @@ import {
   useState,
   useCallback,
 } from "react";
-import { supabase } from "../lib/supabaseClient"; 
+import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
@@ -30,6 +30,7 @@ export default function AuthProvider({ children }) {
   // SUPABASE AUTHENTICATION
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log(session);
       initialSessionChecked = true;
 
       setUser(session?.user ?? null);
@@ -49,6 +50,9 @@ export default function AuthProvider({ children }) {
           setProfile(null);
           setLoading(false);
         }
+
+        console.log("EVENT:", event);
+        console.log("SESSION:", session);
       },
     );
 
@@ -60,7 +64,10 @@ export default function AuthProvider({ children }) {
     setLoading(true);
 
     try {
-      const { data: { session }, } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      console.log(session);
 
       if (!session) {
         setProfile(null);
@@ -69,6 +76,7 @@ export default function AuthProvider({ children }) {
       }
 
       const res = await fetch("http://192.168.1.114:5000/api/users/profile", {
+        //IPv4 ของเครื่องตัวเอง (ดูใน cmd ด้วยคำสั่ง ipconfig)
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
@@ -85,14 +93,15 @@ export default function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-
   //Google Sinup/Login : handler
   const handleGoogleAuthen = async () => {
     await supabase.auth.signInWithOAuth({
       provider: "google",
+      options: {
+        redirectTo: `${import.meta.env.VITE_SITE_URL}/auth/callback`,
+      },
     });
   };
-
 
   // LOGIN : handler
   const handleEmailLogin = async () => {
@@ -109,7 +118,6 @@ export default function AuthProvider({ children }) {
     navigate("/", { replace: true });
   };
 
-
   // SIGNUP : handler
   const handleEmailSignup = async () => {
     const { data, error } = await supabase.auth.signUp({
@@ -123,7 +131,6 @@ export default function AuthProvider({ children }) {
     }
 
     const user = data.user;
-
 
     // Update data to "users" table in supabase
     if (user) {
@@ -142,7 +149,6 @@ export default function AuthProvider({ children }) {
       navigate("/", { replace: true });
     }
   };
-
 
   // Role Select: handler
   const updateRole = async (selectedRole) => {
@@ -164,7 +170,6 @@ export default function AuthProvider({ children }) {
     return { error: null };
   };
 
-
   // Sign Out: handler
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
@@ -175,13 +180,13 @@ export default function AuthProvider({ children }) {
     }
   };
 
-
   // Profile Update: save state
   const updateProfile = async (formData, selectedFile) => {
     try {
       const {
         data: { session },
       } = await supabase.auth.getSession();
+      console.log(session);
 
       if (!session) return { error: "No session" };
 
@@ -196,6 +201,7 @@ export default function AuthProvider({ children }) {
       }
 
       const res = await fetch("http://192.168.1.114:5000/api/users/profile", {
+        //IPv4 ของเครื่องตัวเอง (ดูใน cmd ด้วยคำสั่ง ipconfig)
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -223,24 +229,21 @@ export default function AuthProvider({ children }) {
     }
   };
 
-  
   // RESET PASSWORD: handler
   const resetPassword = async (email) => {
-    const { data, error } = await supabase.auth.resetPasswordForEmail (email, {
-      redirectTo: `${window.location.origin}/new-password`
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/new-password`,
     });
     return { data, error };
   };
-
 
   // UPDATE PASSWORD: handler
-  const updatePassword = async newPassword => {
-    const { data, error } = await supabase.auth.updateUser ({
-      password: newPassword
+  const updatePassword = async (newPassword) => {
+    const { data, error } = await supabase.auth.updateUser({
+      password: newPassword,
     });
     return { data, error };
   };
-
 
   return (
     <AuthContext.Provider
@@ -256,7 +259,7 @@ export default function AuthProvider({ children }) {
         handleSignOut,
         updateProfile,
         resetPassword,
-        updatePassword
+        updatePassword,
       }}
     >
       {children}
