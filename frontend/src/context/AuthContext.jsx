@@ -97,7 +97,7 @@ export default function AuthProvider({ children }) {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "http://localhost:5000",
+        redirectTo: "http://localhost:5173",
       },
     });
   };
