@@ -98,7 +98,7 @@ export default function AuthProvider({ children }) {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${import.meta.env.VITE_SITE_URL}/auth/callback`,
+        redirectTo: "http://192.168.1.114:5000",
       },
     });
   };

@@ -35,7 +35,7 @@ export default function AttendanceStudent() {
           return;
         }
 
-        const res = await fetch("http://192.168.1.114:5000/api/users/profile", { //IPv4 ของเครื่องตัวเอง (ดูใน cmd ด้วยคำสั่ง ipconfig)
+        const res = await fetch("http://192.168.1.114:5000/api/users/profile", { 
           headers: {
             Authorization: `Bearer ${session.access_token}`,
           },
