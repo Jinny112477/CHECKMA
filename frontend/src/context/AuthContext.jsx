@@ -75,8 +75,7 @@ export default function AuthProvider({ children }) {
         return;
       }
 
-      const res = await fetch("http://192.168.1.114:5000/api/users/profile", {
-        //IPv4 ของเครื่องตัวเอง (ดูใน cmd ด้วยคำสั่ง ipconfig)
+      const res = await fetch("http://localhost:5000/api/users/profile", {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
@@ -98,7 +97,7 @@ export default function AuthProvider({ children }) {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "http://192.168.1.114:5000",
+        redirectTo: "http://localhost:5000",
       },
     });
   };
@@ -200,8 +199,7 @@ export default function AuthProvider({ children }) {
         });
       }
 
-      const res = await fetch("http://192.168.1.114:5000/api/users/profile", {
-        //IPv4 ของเครื่องตัวเอง (ดูใน cmd ด้วยคำสั่ง ipconfig)
+      const res = await fetch("http://localhost:5000/api/users/profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
