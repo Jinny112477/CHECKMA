@@ -13,6 +13,8 @@ import ProfileStudent from "./pages/Student-Profile";
 import ProfileProf from "./pages/Prof-Profile";
 import RoleSelect from "./pages/Role-Select";
 import AttendanceStudent from "./pages/Student-Attendance"
+import SignalStudent from "./pages/Student-Signal";
+import AttendanceProf from "./pages/Prof-attendance";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthRedirect from "./components/AuthRedirect";
@@ -34,6 +36,8 @@ function App() {
       <Route path="/prof/profile" element={<ProfileProf />} />
       <Route path="/role" element={<RoleSelect />} />
       <Route path="/student/attendance" element={<AttendanceStudent />} />
+      <Route path="/student/signal" element={<SignalStudent />} />
+      <Route path="/prof/attendance" element={<AttendanceProf />} />
     </Routes>
   );
 }
