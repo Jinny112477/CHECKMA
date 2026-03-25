@@ -1,8 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import {ArrowLeft} from "lucide-react";
+
+import SignalCard from "../components/SignalCard";
 import { Link } from "react-router-dom";
 
-export default function SignalStudent() {
+export default function SignalProf() {
+
+  const data = [
+    {firstname: "Vidsava", surname: "Thammasat", student_id: "6710740000" },
+    {firstname: "Vidsava", surname: "Thammasat", student_id: "6710740001" },
+    {firstname: "Vidsava", surname: "Thammasat", student_id: "6710740002" }
+  ];
+
   const [profile, setProfile] = useState(null);
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
 
@@ -57,14 +66,14 @@ export default function SignalStudent() {
         <div ref={headerRef} className="relative shrink-0">
           <header className="h-20 flex items-center justify-between px-5">
             {/* back arrow */}
-            <Link to="/student/attendance" className="top-6 left-6 text-white">
+            <Link to="/prof/attendance" className="top-6 left-6 text-white">
                 <ArrowLeft size={32} />
             </Link>
 
             <img src="/CHECKMA-logo-white.svg" className="h-7" />
 
             {/* profile picture */}
-            <Link to="/student/profile">
+            <Link to="/prof/profile">
               <button className="w-10 h-10 rounded-full bg-[#9DB2E3] overflow-hidden">
                 <img
                   src={avatar}
@@ -81,11 +90,17 @@ export default function SignalStudent() {
         </div>
 
         {/* gif */}
-        <div className="flex place-items-center justify-center h-screen">
+        <div className="flex justify-center">
           <img src="/NongCheckgif.GIF"
           alt="NongCheckgif"
-          className="w-56 h-56 mb-20"></img>
+          className="w-56 h-56"></img>
         </div> 
+
+        <div className="p-8 space-y-4">
+          {data.map((item, index) => (
+            <SignalCard key={index} {...item} />
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import {CircleUser} from "lucide-react";
 
-export default function StudentList({
+export default function InfoCard({
   firstname = "Vidsava",
   surname = "Thammasat",
   student_id = "6710740000"

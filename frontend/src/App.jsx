@@ -15,6 +15,9 @@ import RoleSelect from "./pages/Role-Select";
 import AttendanceStudent from "./pages/Student-Attendance"
 import SignalStudent from "./pages/Student-Signal";
 import AttendanceProf from "./pages/Prof-attendance";
+import SignalProf from "./pages/Prof-Signal";
+import Dashboard from "./pages/Dashboard";
+import DashboardInfo from "./pages/Dashboard-Info";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthRedirect from "./components/AuthRedirect";
@@ -38,6 +41,9 @@ function App() {
       <Route path="/student/attendance" element={<AttendanceStudent />} />
       <Route path="/student/signal" element={<SignalStudent />} />
       <Route path="/prof/attendance" element={<AttendanceProf />} />
+      <Route path="/prof/signal" element={<SignalProf />} />
+      <Route path="/prof/dashboard" element={<Dashboard />} />
+      <Route path="/prof/dashboard-info" element={<DashboardInfo />} />
     </Routes>
   );
 }
