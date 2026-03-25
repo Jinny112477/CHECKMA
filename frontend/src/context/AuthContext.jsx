@@ -76,7 +76,7 @@ export default function AuthProvider({ children }) {
         return;
       }
 
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile`, { //"http://localhost:5000/api/users/profile"
+      const res = await fetch("http://localhost:5000/api/users/profile", { //`${import.meta.env.VITE_API_URL}/api/users/profile`
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
@@ -98,7 +98,7 @@ export default function AuthProvider({ children }) {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: import.meta.env.VITE_WEB_URL, //"http://localhost:5000"
+        redirectTo: "http://localhost:5000", //import.meta.env.VITE_WEB_URL
       },
     });
   };
@@ -200,7 +200,7 @@ export default function AuthProvider({ children }) {
         });
       }
 
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile`, { //"http://localhost:5000/api/users/profile"
+      const res = await fetch("http://localhost:5000/api/users/profile", { //`${import.meta.env.VITE_API_URL}/api/users/profile`
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
