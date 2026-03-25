@@ -32,7 +32,7 @@ export default function AuthProvider({ children }) {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       console.log(session);
-      initialSessionChecked.current = true;
+      initialSessionChecked = true;
 
       setUser(session?.user ?? null);
       if (session?.user) fetchProfile(session.user.id);
@@ -42,7 +42,7 @@ export default function AuthProvider({ children }) {
     const { data: listener } = supabase.auth.onAuthStateChange(
       (event, session) => {
         // prevent duplicate call on first load
-        if (!initialSessionChecked.current) return;
+        if (!initialSessionChecked) return;
 
         setUser(session?.user ?? null);
 
@@ -76,7 +76,7 @@ export default function AuthProvider({ children }) {
         return;
       }
 
-      const res = await fetch("http://localhost:5000/api/users/profile", { //`${import.meta.env.VITE_API_URL}/api/users/profile`
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile`, {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
@@ -97,9 +97,6 @@ export default function AuthProvider({ children }) {
   const handleGoogleAuthen = async () => {
     await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: {
-        redirectTo: "http://localhost:5000", //import.meta.env.VITE_WEB_URL
-      },
     });
   };
 
@@ -200,7 +197,7 @@ export default function AuthProvider({ children }) {
         });
       }
 
-      const res = await fetch("http://localhost:5000/api/users/profile", { //`${import.meta.env.VITE_API_URL}/api/users/profile`
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

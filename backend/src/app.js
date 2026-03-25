@@ -10,13 +10,12 @@ const __dirname = path.dirname(__filename);
 const frontendPath = path.join(__dirname, "../../frontend/dist");
 
 // Middleware
-app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    process.env.FRONTEND_URL
-  ],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+    credentials: true,
+  }),
+);
 
 // Body parser
 app.use(express.json({ limit: "50mb" }));
