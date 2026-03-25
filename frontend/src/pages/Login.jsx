@@ -112,7 +112,7 @@ export default function Login() {
 
         {/* login button */}
         <button
-          onClick={handleEmailLogin}
+          onClick={() => handleEmailLogin(email, password)}
           className="
             mt-6 sm:mt-8 w-full
             bg-[#4969B2] text-white

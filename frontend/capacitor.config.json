@@ -1,5 +1,9 @@
 {
   "appId": "com.checkma.app",
   "appName": "CHECKMA",
-  "webDir": "dist"
+  "webDir": "dist",
+  "server": {
+    "url": "https://nell-interapophysal-noncommemoratively.ngrok-free.dev",
+    "cleartext": false
+  }
 }

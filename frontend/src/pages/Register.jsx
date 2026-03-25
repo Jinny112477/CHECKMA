@@ -147,7 +147,7 @@ export default function Login() {
 
         {/* sign up button */}
         <button
-          onClick={handleEmailSignup}
+          onClick={() => handleEmailSignup(email, password)}
           className="mt-6 sm:mt-8 w-full bg-[#4969B2] text-white py-3 sm:py-4
                     rounded-2xl font-bold hover:bg-[#3E5FA3] transition"
         >
