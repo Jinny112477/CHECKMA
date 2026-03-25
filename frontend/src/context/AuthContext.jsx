@@ -7,6 +7,7 @@ import {
 } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
+import { useRef } from "react";
 
 const AuthContext = createContext();
 
@@ -25,13 +26,13 @@ export default function AuthProvider({ children }) {
 
   const navigate = useNavigate();
 
-  let initialSessionChecked = false;
+  let initialSessionChecked = useRef(false);
 
   // SUPABASE AUTHENTICATION
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       console.log(session);
-      initialSessionChecked = true;
+      initialSessionChecked.current = true;
 
       setUser(session?.user ?? null);
       if (session?.user) fetchProfile(session.user.id);
@@ -39,9 +40,9 @@ export default function AuthProvider({ children }) {
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
         // prevent duplicate call on first load
-        if (!initialSessionChecked) return;
+        if (!initialSessionChecked.current) return;
 
         setUser(session?.user ?? null);
 
@@ -75,7 +76,7 @@ export default function AuthProvider({ children }) {
         return;
       }
 
-      const res = await fetch("http://localhost:5000/api/users/profile", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile`, { //"http://localhost:5000/api/users/profile"
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
@@ -97,13 +98,13 @@ export default function AuthProvider({ children }) {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "http://localhost:5173",
+        redirectTo: import.meta.env.VITE_WEB_URL,
       },
     });
   };
 
   // LOGIN : handler
-  const handleEmailLogin = async () => {
+  const handleEmailLogin = async (email, password) => {
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -118,7 +119,7 @@ export default function AuthProvider({ children }) {
   };
 
   // SIGNUP : handler
-  const handleEmailSignup = async () => {
+  const handleEmailSignup = async (email, password) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -199,7 +200,7 @@ export default function AuthProvider({ children }) {
         });
       }
 
-      const res = await fetch("http://localhost:5000/api/users/profile", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile`, { //"http://localhost:5000/api/users/profile"
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
