@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-export default function CourseCard({
+export default function ProfCourseCard({
   code,
   section,
   name,
@@ -18,7 +18,7 @@ export default function CourseCard({
   onSetting,
 }) {
   return (
-    <Link to="" className="block">
+    <Link to="/prof/attendance" className="block">
       <div className="relative bg-[#FFEB83] rounded-2xl p-4 shadow">
 
         {/* setting button */}

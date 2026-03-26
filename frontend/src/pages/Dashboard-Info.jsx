@@ -3,21 +3,25 @@ import {
   ArrowLeft,
   House
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import InfoCard from "../components/InfoCard";
 
 export default function DashboardInfo() {
 
+  {/* ดึงค่าจาก dashboard */}
+  const location = useLocation();
+  const { classNum, date } = location.state || {};
+
   const data = [
-    {classNum: "Class 1", date: "19/01/2026"},
-    {classNum: "Class 2", date: "20/01/2026"},
-    {classNum: "Class 3", date: "25/01/2026"}
+    {firstname: "Vidsava", surname: "Thammasat", student_id: "6710740000", time: "13.30", status: "Present" },
+    {firstname: "Vidsava", surname: "Thammasat", student_id: "6710740001", time: "09.00", status: "Absent" },
+    {firstname: "Vidsava", surname: "Thammasat", student_id: "6710740002", time: "09.00", status: "Late" }
   ];
 
   const headerRef = useRef(null);
 
   return (
-    <div className="min-h-screen w-full flex justify-center bg-[#FFFBEA]">
+    <div className="min-h-screen w-full flex justify-center bg-[#4969B2]">
       <div className="relative
                     w-full max-w-[390px]
                     h-screen
@@ -30,7 +34,7 @@ export default function DashboardInfo() {
         <div ref={headerRef} className="relative shrink-0">
           <header className="h-20 flex items-center justify-between px-5">
             {/* back arrow */}
-            <Link to="/prof/attendance" className="top-6 left-6 text-white">
+            <Link to="/prof/dashboard" className="top-6 left-6 text-white">
                 <ArrowLeft size={32} />
             </Link>
 
@@ -47,7 +51,19 @@ export default function DashboardInfo() {
           <hr className="w-80 h-1 mx-auto mb-2 bg-white border-0 rounded-sm" />
         </div>
 
-        <InfoCard />
+        {/* classNum & date */}
+        <div className="flex px-8 my-4 items-center">
+          <div className="text-white text-3xl font-bold">{classNum}</div>
+          <div className="bg-white text-base font-semibold ml-auto px-4 py-1 rounded-lg">
+            <div className="text-[#4969B2]">{date}</div>
+          </div>
+        </div>
+
+        <div className="px-8 space-y-4">
+          {data.map((item, index) => (
+            <InfoCard key={index} {...item} />
+          ))}
+        </div>
       </div>
     </div>
   );

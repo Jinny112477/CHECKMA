@@ -16,6 +16,8 @@ export default function AttendanceProf() {
     {firstname: "Vidsava", surname: "Thammasat", student_id: "6710740002" }
   ];
 
+  const classCode = "7DXC31G";
+
   const number = data.length;
   const [profile, setProfile] = useState(null);
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
@@ -126,7 +128,7 @@ export default function AttendanceProf() {
             Class Code
             <div className="bg-white rounded-lg flex-1 text-base text-[#4969B2] font-bold
               flex items-center justify-center py-1">
-              7DXC31G
+              {classCode}
             </div>
           </div>
 

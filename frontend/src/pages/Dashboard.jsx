@@ -16,10 +16,8 @@ export default function Dashboard() {
 
   const headerRef = useRef(null);
 
-
-
   return (
-    <div className="min-h-screen w-full flex justify-center bg-[#FFFBEA]">
+    <div className="min-h-screen w-full flex justify-center bg-[#4969B2]">
       <div className="relative
                     w-full max-w-[390px]
                     h-screen
@@ -51,11 +49,16 @@ export default function Dashboard() {
 
 
         <div className="p-8">
-          <Link to="" className="space-y-4">
-            {data.map((item, index) => (
-              <ClassCard key={index} {...item} />
-            ))}
-          </Link>
+          {data.map((item, index) => (
+            <Link
+              key={index}
+              to="/prof/dashboard-info"
+              state={item}
+              className="block mb-4"
+            >
+              <ClassCard {...item} />
+            </Link>
+          ))}
         </div>
       </div>
     </div>
