@@ -114,7 +114,7 @@ export default function ProfileProf() {
   }, [profile]);
 
   return (
-    <div className="min-h-screen w-full flex justify-center bg-white">
+    <div className="min-h-screen w-full flex justify-center bg-[#FFFBEA]">
       <div
         className="relative
                     w-full max-w-[390px]

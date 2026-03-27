@@ -64,7 +64,7 @@ export default function AttendanceStudent() {
   const absentPercent = (absentCount / total) * 100;
 
   return (
-    <div className="min-h-screen w-full flex justify-center bg-white">
+    <div className="min-h-screen w-full flex justify-center bg-[#FFFBEA]">
       <div className="relative
                     w-full max-w-[390px]
                     h-screen
@@ -112,10 +112,10 @@ export default function AttendanceStudent() {
         </div>
 
         {/* ================= CONTENT ================= */}
-        <div className="flex-1 bg-[#FFFBEA] rounded-t-[40px] overflow-y-auto p-4 flex flex-col">
+        <div className="flex-1 bg-[#FFFBEA] rounded-t-[40px] overflow-y-auto p-8 flex flex-col">
 
           {/* ===== Progress Section ===== */}
-          <div className="rounded-full p-6 space-y-4">
+          <div className="rounded-full p-2 space-y-2 mb-6">
 
             <p className="text-xl font-bold text-[#9DB2E3]">
               From <span className="text-[#4969B2]">{total}</span> Classes
@@ -165,8 +165,8 @@ export default function AttendanceStudent() {
             ))}
           </div>
 
-          {/* save button */}
-          <Link href="" className="mt-auto pt-6">
+          {/* check button */}
+          <Link to="/student/signal" className="mt-auto pt-6">
             <button
               className="w-full bg-[#F49A5E] text-[#FFFBEA] py-3 sm:py-4 mt-auto mb-8
               rounded-2xl font-bold hover:bg-[#EB9358] transition"

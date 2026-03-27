@@ -3,7 +3,7 @@ import { Menu, Settings, LogOut, Plus, CirclePlus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
-import CourseCard from "../components/ProfCourseCard.jsx";
+import ProfCourseCard from "../components/ProfCourseCard.jsx";
 
 /* ===== reusable menu item ===== */
 function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
@@ -103,7 +103,7 @@ export default function HomeProf() {
   }, [openMenu, showJoin]);
 
   return (
-    <div className="min-h-screen w-full flex justify-center bg-white">
+    <div className="min-h-screen w-full flex justify-center bg-[#FFFBEA]">
       <div
         className="relative
                     w-full max-w-[390px]
@@ -186,11 +186,10 @@ export default function HomeProf() {
           {hasSubject && (
             <div className="space-y-4">
               {courses.map((course, index) => (
-                <CourseCard
-                  key={index}
-                  {...course}
-                  onSetting={() => console.log("Setting clicked:", course.code)}
-                />
+                  <ProfCourseCard
+                    {...course}
+                    onSetting={() => console.log("Setting clicked:", course.code)} 
+                  />
               ))}
             </div>
           )}
