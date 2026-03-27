@@ -3,6 +3,7 @@ import {ArrowLeft} from "lucide-react";
 
 import SignalCard from "../components/SignalCard";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function SignalProf() {
 
@@ -12,45 +13,9 @@ export default function SignalProf() {
     {firstname: "Vidsava", surname: "Thammasat", student_id: "6710740002" }
   ];
 
-  const [profile, setProfile] = useState(null);
+  const { profile } = useAuth();
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
-
   const headerRef = useRef(null);
-
-  //fetch User profile from backend
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-
-        console.log("SESSION:", session);
-
-        if (!session) {
-          console.log("No session found");
-          return;
-        }
-
-        const res = await fetch("http://localhost:5000/api/users/profile", {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        });
-
-        console.log("STATUS:", res.status);
-
-        const data = await res.json();
-        console.log("API RESPONSE:", data);
-
-        setProfile(data);
-      } catch (err) {
-        console.error("FETCH ERROR:", err);
-      }
-    };
-
-    fetchProfile();
-  }, []);
 
   return (
     <div className="min-h-screen w-full flex justify-center bg-[#4969B2]">
