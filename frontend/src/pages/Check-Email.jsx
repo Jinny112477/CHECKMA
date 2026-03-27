@@ -67,6 +67,7 @@ export default function CheckEmail() {
 
         {/* action */}
         <div className="mt-10 px-2">
+          <Link to="/login">
           <button
             className="
               w-full
@@ -79,14 +80,9 @@ export default function CheckEmail() {
               hover:bg-[#fbe475] transition
             "
           >
-            Open email app
+            Back to Login
           </button>
-
-        <Link href="">
-          <p className="mt-4 text-center text-sm font-medium text-[#7C95CF] underline cursor-pointer">
-            Skip for now
-          </p>
-        </Link>
+          </Link>
         </div>
 
         {/* bottom helper text */}
