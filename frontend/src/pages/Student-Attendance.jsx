@@ -3,7 +3,7 @@ import {ArrowLeft} from "lucide-react";
 import { Link } from "react-router-dom";
 
 import AttendanceCard from "../components/AttendanceCard";
-import { supabase } from "../lib/supabaseClient";
+import { useAuth } from "../context/AuthContext";
 
 export default function AttendanceStudent() {
 
@@ -14,46 +14,9 @@ export default function AttendanceStudent() {
   ];
 
   const total = data.length;
-
-  const [profile, setProfile] = useState(null);
+  const { profile } = useAuth();
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
-
   const headerRef = useRef(null);
-
-  //fetch User profile from backend
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-
-        console.log("SESSION:", session);
-
-        if (!session) {
-          console.log("No session found");
-          return;
-        }
-
-        const res = await fetch("http://localhost:5000/api/users/profile", { //`${import.meta.env.VITE_API_URL}/api/users/profile`
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        });
-
-        console.log("STATUS:", res.status);
-
-        const data = await res.json();
-        console.log("API RESPONSE:", data);
-
-        setProfile(data);
-      } catch (err) {
-        console.error("FETCH ERROR:", err);
-      }
-    };
-
-    fetchProfile();
-  }, []);
 
   const presentCount = data.filter(d => d.status === "Present").length;
   const lateCount = data.filter(d => d.status === "Late").length;

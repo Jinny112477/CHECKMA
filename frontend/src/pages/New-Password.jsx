@@ -17,6 +17,7 @@ export default function NewPassword() {
   const { updatePassword, setSessionFromUrl } = useAuth();
   const navigate = useNavigate();
 
+  // Access/Refresh Token
   useEffect(() => {
     const run = async () => {
       const accessToken = searchParams.get("access_token");
