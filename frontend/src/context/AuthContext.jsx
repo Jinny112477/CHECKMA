@@ -228,7 +228,7 @@ export default function AuthProvider({ children }) {
   // RESET PASSWORD: handler
   const resetPassword = async (email) => {
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/new-password`,
+      redirectTo: `${window.location.origin}/reset/new-password`,
     });
     return { data, error };
   };
@@ -239,6 +239,14 @@ export default function AuthProvider({ children }) {
       password: newPassword,
     });
     return { data, error };
+  };
+
+  // SET SESSION
+  const setSessionFromURL = async (accessToken, refrechToken) => {
+    return await supabase.auth.setSession({
+      access_token: accessToken,
+      refrechToken: refrechToken
+    });
   };
 
   return (
@@ -256,6 +264,7 @@ export default function AuthProvider({ children }) {
         updateProfile,
         resetPassword,
         updatePassword,
+        setSessionFromURL
       }}
     >
       {children}
