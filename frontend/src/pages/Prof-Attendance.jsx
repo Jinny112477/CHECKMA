@@ -15,7 +15,7 @@ export default function AttendanceProf() {
     {firstname: "Vidsava", surname: "Thammasat", student_id: "6710740002" }
   ];
 
-  const classCode = "7DXC31G"; //Temp
+  const classCode = "7DXC31G"; //SESSION ID
 
   const number = data.length;
   const { profile } = useAuth();
