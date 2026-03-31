@@ -147,7 +147,7 @@ export default function AuthProvider({ children }) {
     }
   };
 
-  // Role Select: handler
+  // ROLE SELECT: handler
   const updateRole = async (selectedRole) => {
     if (!user) return { error: "No user" };
 
@@ -167,7 +167,7 @@ export default function AuthProvider({ children }) {
     return { error: null };
   };
 
-  // Sign Out: handler
+  // SIGN OUT: handler
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -177,7 +177,7 @@ export default function AuthProvider({ children }) {
     }
   };
 
-  // Profile Update: save state
+  // PROFILE UPDATE: save state
   const updateProfile = async (formData, selectedFile) => {
     try {
       const {
@@ -241,7 +241,7 @@ export default function AuthProvider({ children }) {
     return { data, error };
   };
 
-  // SET SESSION
+  // SET TOKEN SESSION
   const setSessionFromURL = async (accessToken, refrechToken) => {
     return await supabase.auth.setSession({
       access_token: accessToken,
