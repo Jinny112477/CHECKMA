@@ -19,12 +19,12 @@ export default function CreateProf() {
                 className="
                     relative
                     w-full max-w-[390px]
-                    h-screen
+                    min-h-screen
                     bg-[#FFEB83]
                     shadow-none sm:shadow-xl
                     px-6 pt-8 pb-8
                     flex flex-col
-                    overflow-hidden
+                    overflow-y-auto
                     "
             >
                 {/* back arrow */}
