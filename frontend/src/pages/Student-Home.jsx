@@ -82,6 +82,26 @@ export default function HomeStudent() {
           time: "13:30 - 16:30",
           day: "MON",
         },
+
+        {
+          code: "SF321",
+          section: "760001",
+          name: "Data Communication and Computer Network 1",
+          teacher: "Aj.Piya Techateerawat",
+          room: "ENGR 310",
+          time: "13:30 - 16:30",
+          day: "MON",
+        },
+
+        {
+          code: "SF321",
+          section: "760001",
+          name: "Data Communication and Computer Network 1",
+          teacher: "Aj.Piya Techateerawat",
+          room: "ENGR 310",
+          time: "13:30 - 16:30",
+          day: "MON",
+        },
       ];
 
   const hasSubject = courses.length > 0;
@@ -103,64 +123,72 @@ export default function HomeStudent() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openMenu, showJoin]);
 
+  const R = 28; // radius ขนาด px — ต้องตรงกับ rounded-t-[28px] ของโค้งกลาง
+
   return (
     <div className="min-h-screen w-full flex justify-center bg-[#FFFBEA]">
       <div className="relative
                     w-full max-w-[390px]
-                    h-screen
+                    min-h-screen
                     bg-[#4969B2]
                     shadow-none sm:shadow-xl
                     flex flex-col
-                    overflow-hidden">
+                    overflow-y-auto">
         {/* ================= HEADER ================= */}
-        <div ref={headerRef} className="relative shrink-0">
-          <header className="h-20 flex items-center justify-between px-5">
-            <button onClick={() => setOpenMenu(!openMenu)}>
-              <Menu
-                size={28}
-                className={`text-white transition-transform duration-300 ${
-                  openMenu ? "rotate-180" : "rotate-0"
-                }`}
-              />
-            </button>
-
-            <img src="/CHECKMA-logo-white.svg" className="h-7" />
-
-            {/* profile picture */}
-            <Link to="/student/profile">
-              <button className="w-10 h-10 rounded-full bg-[#9DB2E3] overflow-hidden">
-                <img
-                  src={avatar}
-                  onError={(e) => {
-                    e.target.src = "/NongCheckprofile.png";
-                  }}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
+        <div ref={headerRef} className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-50">
+          <div className="relative bg-[#4969B2]">
+            <header className="h-20 flex items-center justify-between px-5">
+              <button onClick={() => setOpenMenu(!openMenu)}>
+                <Menu
+                  size={28}
+                  className={`text-white transition-transform duration-300 ${
+                    openMenu ? "rotate-180" : "rotate-0"
+                  }`}
                 />
               </button>
-            </Link>
-          </header>
 
-          {openMenu && (
-            <div className="absolute top-16 left-4 space-y-2 z-30">
-              <MenuItem
-                icon={Settings}
-                label="Setting"
-                to="/student/profile"
-                onClick={() => setOpenMenu(false)}
-              />
-              <MenuItem
-                icon={LogOut}
-                label="Log out"
-                variant="danger"
-                onClick={handleSignOut}
-              />
+              <img src="/CHECKMA-logo-white.svg" className="h-7" />
+
+              {/* profile picture */}
+              <Link to="/student/profile">
+                <button className="w-10 h-10 rounded-full bg-[#9DB2E3] overflow-hidden">
+                  <img
+                    src={avatar}
+                    onError={(e) => {
+                      e.target.src = "/NongCheckprofile.png";
+                    }}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              </Link>
+            </header>
+
+            {openMenu && (
+              <div className="absolute top-16 left-4 space-y-2 z-30">
+                <MenuItem
+                  icon={Settings}
+                  label="Setting"
+                  to="/student/profile"
+                  onClick={() => setOpenMenu(false)}
+                />
+                <MenuItem
+                  icon={LogOut}
+                  label="Log out"
+                  variant="danger"
+                  onClick={handleSignOut}
+                />
+              </div>
+            )}
+
+            <div className="flex items-end">
+              <div className="h-10 w-full rounded-t-[40px] bg-[#FFFBEA]" />
             </div>
-          )}
+          </div>
         </div>
 
         {/* ================= CONTENT ================= */}
-        <div className="flex-1 bg-[#FFFBEA] rounded-t-[40px] overflow-y-auto p-4">
+        <div className="flex-1 bg-[#FFFBEA] overflow-y-auto p-4 pb-24 pt-[120px]">
           {/* ===== EMPTY STATE ===== */}
           {!hasSubject && (
             <div
@@ -187,7 +215,7 @@ export default function HomeStudent() {
 
           {/* ===== COURSE CARDS ===== */}
           {hasSubject && (
-            <div className="space-y-4">
+            <div className="space-y-8">
               {courses.map((course, index) => (
                 <CourseCard
                   key={index}
@@ -202,7 +230,7 @@ export default function HomeStudent() {
         {/* ================= JOIN BUTTON ================= */}
         <div
           ref={joinRef}
-          className="absolute bottom-6 right-6 z-50 flex flex-col items-end gap-2"
+          className="fixed bottom-6 right-4 z-50 flex flex-col items-end gap-3"
         >
           {showJoin && (
             <MenuItem
@@ -210,13 +238,14 @@ export default function HomeStudent() {
               label="Join Class"
               variant="join"
               to="/student/join"
+              className="w-auto"
               onClick={() => setShowJoin(false)}
             />
           )}
 
           <button
             onClick={() => setShowJoin(!showJoin)}
-            className={`w-14 h-14 rounded-full bg-[#4969B2] flex items-center justify-center text-white transition-transform duration-300 ${
+            className={`flex-shrink-0 w-14 h-14 rounded-full bg-[#4969B2] flex items-center justify-center text-white transition-transform duration-300 ${
               showJoin ? "rotate-45" : ""
             }`}
           >
