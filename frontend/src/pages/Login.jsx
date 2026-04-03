@@ -38,7 +38,7 @@ export default function Login() {
     try {
       await handleEmailLogin(email, password);
     } catch (err) {
-      // ปรับ error message ตาม Supabase/Firebase error code
+      // ปรับ error message ตาม Supabase error code
       const code = err?.message || "";
       if (
         code.includes("invalid_credentials") ||

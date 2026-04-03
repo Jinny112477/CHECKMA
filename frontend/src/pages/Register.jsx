@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, User, AtSign } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-//import { supabase } from "../supabaseClient"; // ← import supabase ตรงๆ เพื่อเช็ค username
+//📌📌📌📌📌📌📌📌import { supabase } from "../lib/supabaseClient"; // ← import supabase ตรงๆ เพื่อเช็ค username
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
@@ -37,7 +37,7 @@ export default function Register() {
     } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
       newErrors.username = "Username can only contain a-z, 0-9, and _";
     } 
-    {/*else {
+    {/* 📌📌📌📌📌📌📌📌📌📌📌📌📌📌📌📌📌📌📌else {
       // เช็คซ้ำใน Supabase — เปลี่ยน 'profiles' และ 'username' ให้ตรงกับ table ของคุณ
       const { data } = await supabase
         .from("profiles")

@@ -33,7 +33,7 @@ export default function InfoCard({
       <div className="text-xs ml-auto text-right">
         <div className="text-[#4969B2] font-medium mb-1">{time}</div>
         
-        {/* dropdown เก็บค่าสถานะใน currentStatus เอาไปแก้ใน database ต่อได้เลย */}
+        {/* 📌📌📌📌📌📌📌📌📌📌📌dropdown เก็บค่าสถานะใน currentStatus เอาไปแก้ใน database ต่อได้เลย */}
         <select
           value={currentStatus}
           onChange={(e) => setCurrentStatus(e.target.value)}
