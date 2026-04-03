@@ -9,11 +9,37 @@ import StudentList from "../components/StudentList";
 import { useAuth } from "../context/AuthContext";
 
 export default function AttendanceProf() {
-  const data = [
-    {firstname: "Vidsava", surname: "Thammasat", student_id: "6710740000" },
-    {firstname: "Vidsava", surname: "Thammasat", student_id: "6710740001" },
-    {firstname: "Vidsava", surname: "Thammasat", student_id: "6710740002" }
-  ];
+  // เปลี่ยน const data เป็น useState
+  const [data, setData] = useState([
+    { firstname: "Vidsava", surname: "Thammasat", student_id: "6710740000" },
+    { firstname: "Vidsava", surname: "Thammasat", student_id: "6710740001" },
+    { firstname: "Vidsava", surname: "Thammasat", student_id: "6710740002" },
+  ]);
+
+  // ใน JSX เพิ่ม onDelete prop
+  {data.map((item, index) => (
+    <StudentList
+      key={item.student_id}
+      {...item}
+      onDelete={() => setData(data.filter((_, i) => i !== index))}
+    />
+  ))}
+
+  {/*
+  const handleDelete = async (studentId) => {
+    // 1. เอาออก UI ก่อนทันที
+    setData(data.filter((s) => s.student_id !== studentId));
+    // 2. แล้วค่อยลบใน database
+    await fetch(`/api/students/${studentId}`, { method: "DELETE" });
+  };
+
+  // ใน map:
+  <StudentList
+    key={item.student_id}
+    {...item}
+    onDelete={() => handleDelete(item.student_id)}
+  /> 
+  */}
 
   const classCode = "7DXC31G"; //SESSION ID
 

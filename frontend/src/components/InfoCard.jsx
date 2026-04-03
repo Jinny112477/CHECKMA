@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {CircleUser} from "lucide-react";
 
 export default function InfoCard({
@@ -7,6 +8,8 @@ export default function InfoCard({
   time = "13.30",
   status = "Present"
 }) {
+
+  const [currentStatus, setCurrentStatus] = useState(status);
 
   const statusColor = {
     Present: "text-[#6BBF84]",
@@ -24,12 +27,22 @@ export default function InfoCard({
 
       <div className="text-sm ml-4">
         <div className="text-[#4969B2] font-bold">{student_id}</div>
-        <div className="text-[#7C95CF] font-semibold">{firstname} {surname}</div>
+        <div className="text-[#7C95CF] font-semibold">{firstname} <br /> {surname}</div>
       </div>
 
       <div className="text-xs ml-auto text-right">
-        <div className="text-[#4969B2] font-medium">{time}</div>
-        <div className={`bg-white px-2 py-1 rounded-full text-xs font-semibold ${statusColor[status]}`}>{status}</div>
+        <div className="text-[#4969B2] font-medium mb-1">{time}</div>
+        
+        {/* 📌📌📌📌📌📌📌📌📌📌📌dropdown เก็บค่าสถานะใน currentStatus เอาไปแก้ใน database ต่อได้เลย */}
+        <select
+          value={currentStatus}
+          onChange={(e) => setCurrentStatus(e.target.value)}
+          className={`bg-white px-2 py-1 rounded-full text-xs font-semibold ${statusColor[currentStatus]}`}
+        >
+          <option value="Present">Present</option>
+          <option value="Absent">Absent</option>
+          <option value="Late">Late</option>
+        </select>
       </div>
     </div>
   );
