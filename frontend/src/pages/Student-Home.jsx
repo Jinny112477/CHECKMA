@@ -215,7 +215,7 @@ export default function HomeStudent() {
 
           {/* ===== COURSE CARDS ===== */}
           {hasSubject && (
-            <div className="space-y-8">
+            <div className="space-y-6">
               {courses.map((course, index) => (
                 <CourseCard
                   key={index}
@@ -230,9 +230,9 @@ export default function HomeStudent() {
         {/* ================= JOIN BUTTON ================= */}
         <div
           ref={joinRef}
-          className="fixed bottom-6 right-4 z-50 flex flex-col items-end gap-3"
-        >
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-50 flex flex-col items-end gap-3 pr-4">
           {showJoin && (
+          <div className="w-fit">
             <MenuItem
               icon={CirclePlus}
               label="Join Class"
@@ -241,6 +241,7 @@ export default function HomeStudent() {
               className="w-auto"
               onClick={() => setShowJoin(false)}
             />
+          </div>
           )}
 
           <button

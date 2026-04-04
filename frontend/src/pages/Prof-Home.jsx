@@ -203,16 +203,17 @@ export default function HomeProf() {
               </div>
 
               <p className="text-[#FFB37A] font-semibold text-lg">
-                Let’s get started!
+                Let's get started!
               </p>
             </div>
           )}
 
           {/* ===== COURSE CARDS ===== */}
           {hasSubject && (
-            <div className="space-y-8">
+            <div className="space-y-6">
               {courses.map((course, index) => (
                   <ProfCourseCard
+                    key={index}
                     {...course}
                     onSetting={() => console.log("Setting clicked:", course.code)} 
                   />
@@ -224,17 +225,18 @@ export default function HomeProf() {
         {/* ================= CREATE BUTTON ================= */}
         <div
           ref={joinRef}
-          className="fixed bottom-6 right-4 z-50 flex flex-col items-end gap-3"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-50 flex flex-col items-end gap-3 pr-4"
         >
           {showJoin && (
-            <MenuItem
-              icon={CirclePlus}
-              label="Create Class"
-              variant="join"
-              to="/prof/create"
-              className="w-auto"
-              onClick={() => setShowJoin(false)}
-            />
+            <div className="w-fit">
+              <MenuItem
+                icon={CirclePlus}
+                label="Create Class"
+                variant="join"
+                to="/prof/create"
+                onClick={() => setShowJoin(false)}
+              />
+            </div>
           )}
 
           <button

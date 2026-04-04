@@ -10,7 +10,7 @@ export default function ClassCard({
         {classNum}
       </div>
 
-      <div className="text-sm text-[#4969B2] font-semibold ml-auto">
+      <div className="text-sm text-[#4969B2] font-semibold ml-auto bg-white px-3 py-1 rounded-lg">
         {date}
       </div>
     </div>
