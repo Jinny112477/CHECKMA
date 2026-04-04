@@ -4,6 +4,7 @@ import {
   MapPin,
   Clock,
   CalendarDays,
+  CodeXml,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -15,7 +16,7 @@ export default function ProfCourseCard({
   room,
   time,
   day,
-  onSetting,
+  onSetting, 
 }) {
   return (
     <Link to="/prof/attendance" className="block">
@@ -32,8 +33,10 @@ export default function ProfCourseCard({
         <div className="space-y-4">
           {/* header */}
           <div className="flex items-center gap-3">
+
+            {/* icon profile */}
             <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shrink-0">
-              <img src="/NongCheck.svg" className="w-8 h-8" />
+              <CodeXml size={28} className="text-[#F49A5E]" />
             </div>
 
             <div className="flex-1">
