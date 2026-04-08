@@ -12,7 +12,16 @@ export default function CreateProf() {
 
   //Form Data
   const [formData, setFormData] = useState({
-    
+    course_name: "",
+    course_id: "",
+    section: "",
+    day: "",
+    time: "",
+    room: "",
+    location_lat: "",
+    location_lng: "",
+    radius: "",
+    status: "",
   });
 
   return (
