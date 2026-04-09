@@ -93,7 +93,7 @@ export default function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-  //Google Sinup/Login : handler
+  //GOOGLE SIGNUP/LOGIN : handler
   const handleGoogleAuthen = async () => {
     await supabase.auth.signInWithOAuth({
       provider: "google",

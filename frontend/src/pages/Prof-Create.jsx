@@ -24,6 +24,8 @@ export default function CreateProf() {
     status: "",
   });
 
+  
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FFEB83] font-quicksand px-4">
       <div
