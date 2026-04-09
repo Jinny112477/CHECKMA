@@ -231,7 +231,7 @@ export default function HomeProf() {
             <div className="w-fit">
               <MenuItem
                 icon={CirclePlus}
-                label="Create Class"
+                label="Create Course"
                 variant="join"
                 to="/prof/create"
                 onClick={() => setShowJoin(false)}

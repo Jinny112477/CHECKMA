@@ -3,7 +3,7 @@ import { ArrowLeft, Pencil } from "lucide-react";
 import { Link } from "react-router-dom";
 import IconProfile from "../components/IconProfile";
 
-export default function CreateProf() {
+export default function EditProf() {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime]     = useState("");
   const [day, setDay]             = useState("");
@@ -31,9 +31,9 @@ export default function CreateProf() {
 
         {/* title */}
         <div className="mt-12">
-          <h1 className="text-5xl font-bold text-[#4969B2]">Create course</h1>
+          <h1 className="text-5xl font-bold text-[#4969B2]">Edit course</h1>
           <p className="mt-4 text-sm text-[#7C95CF] font-medium">
-            Create your course, enter your course information!
+            Edit your course information. Don’t forget to save.
           </p>
         </div>
 
@@ -120,7 +120,7 @@ export default function CreateProf() {
         </div>
 
         <button className="mt-8 w-full bg-[#4969B2] text-white text-base py-3 sm:py-4 rounded-2xl font-bold hover:bg-[#3E5FA3] transition">
-          Create
+          Save
         </button>
       </div>
     </div>

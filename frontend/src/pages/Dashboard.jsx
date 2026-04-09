@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
-  House
+  House,
+  CirclePlus
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import ClassCard from "../components/ClassCard";
@@ -60,7 +61,16 @@ export default function Dashboard() {
         </div>
 
 
-        <div className="px-8 pt-[100px]">
+        {/* save button */}
+        <div className="mt-[100px] px-8 pb-4 flex justify-center">
+          <button className="bg-[#FFAC75] text-[#FFFBEA] py-2 px-4 rounded-full font-bold 
+            transition hover:bg-[#F49A5E] flex items-center">
+              <CirclePlus size={20} className="mr-1"/>
+            Create new class
+          </button>
+        </div>
+
+        <div className="px-8 ">
           {data.map((item, index) => (
             <Link
               key={index}
