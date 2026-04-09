@@ -40,70 +40,13 @@ function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
 export default function HomeProf() {
   const [openMenu, setOpenMenu] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
+  const [courses, setCourses] = useState([]);
 
   const headerRef = useRef(null);
   const joinRef = useRef(null);
   const { profile, handleSignOut } = useAuth(); // Auth function
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
-
-  /* ===== mock data (เพิ่มการ์ดจากตรงนี้) ===== */
-  const DEV_EMPTY = false; // true = ไม่มีวิชา ทดสอบการแสดง empty state
-
-  const courses = DEV_EMPTY
-    ? []
-    : [
-        {
-          code: "SF321",
-          section: "760001",
-          name: "Data Communication and Computer Network 1",
-          teacher: "Aj.Piya Techateerawat",
-          room: "ENGR 310",
-          time: "13:30 - 16:30",
-          day: "MON",
-        },
-
-        {
-          code: "SF321",
-          section: "760001",
-          name: "Data Communication and Computer Network 1",
-          teacher: "Aj.Piya Techateerawat",
-          room: "ENGR 310",
-          time: "13:30 - 16:30",
-          day: "MON",
-        },
-
-        {
-          code: "SF321",
-          section: "760001",
-          name: "Data Communication and Computer Network 1",
-          teacher: "Aj.Piya Techateerawat",
-          room: "ENGR 310",
-          time: "13:30 - 16:30",
-          day: "MON",
-        },
-
-        {
-          code: "SF321",
-          section: "760001",
-          name: "Data Communication and Computer Network 1",
-          teacher: "Aj.Piya Techateerawat",
-          room: "ENGR 310",
-          time: "13:30 - 16:30",
-          day: "MON",
-        },
-
-        {
-          code: "SF321",
-          section: "760001",
-          name: "Data Communication and Computer Network 1",
-          teacher: "Aj.Piya Techateerawat",
-          room: "ENGR 310",
-          time: "13:30 - 16:30",
-          day: "MON",
-        },
-      ];
-
-  const hasSubject = courses.length > 0;
+  const { user } = useAuth();
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -122,6 +65,27 @@ export default function HomeProf() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openMenu, showJoin]);
 
+  //Get class from backend
+  useEffect(() => {
+    const fetchClasses = async () => {
+      if (!user?.id) return;
+
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/classrooms?host_id=${user.id}`,
+        );
+
+        const data = await res.json();
+
+        setCourses(data);
+      } catch (err) {
+        console.error("Fetch classes error:", err);
+      }
+    };
+
+    fetchClasses();
+  }, [user]);
+
   return (
     <div className="min-h-screen w-full flex justify-center bg-[#FFFBEA]">
       <div
@@ -134,7 +98,10 @@ export default function HomeProf() {
                     overflow-y-auto"
       >
         {/* ================= HEADER ================= */}
-        <div ref={headerRef} className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-50">
+        <div
+          ref={headerRef}
+          className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-50"
+        >
           <div className="relative bg-[#4969B2]">
             <header className="h-20 flex items-center justify-between px-5">
               <button onClick={() => setOpenMenu(!openMenu)}>
@@ -189,7 +156,7 @@ export default function HomeProf() {
         {/* ================= CONTENT ================= */}
         <div className="flex-1 bg-[#FFFBEA] overflow-y-auto p-4 pb-24 pt-[120px]">
           {/* ===== EMPTY STATE ===== */}
-          {!hasSubject && (
+          {!courses && (
             <div
               className="flex flex-col items-center justify-center h-full text-center gap-4
                             animate-[fadeIn_0.6s_ease-out_forwards]"
@@ -209,14 +176,19 @@ export default function HomeProf() {
           )}
 
           {/* ===== COURSE CARDS ===== */}
-          {hasSubject && (
+          {courses && (
             <div className="space-y-6">
-              {courses.map((course, index) => (
-                  <ProfCourseCard
-                    key={index}
-                    {...course}
-                    onSetting={() => console.log("Setting clicked:", course.code)} 
-                  />
+              {courses.map((course) => (
+                <ProfCourseCard
+                  key={course.session_id}
+                  code={course.course_id}
+                  section={course.section}
+                  name={course.course_name}
+                  room={course.room}
+                  time={course.time}
+                  day={course.day}
+                  onSetting={() => console.log("Setting:", course.session_id)}
+                />
               ))}
             </div>
           )}

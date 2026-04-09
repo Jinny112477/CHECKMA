@@ -7,8 +7,7 @@ import { verifyToken } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
-// PROTECTED ROUTE
-router.get("/profile", verifyToken, getUserProfile);
-router.put("/profile", verifyToken, updateUserProfile);
+router.get("/profile", verifyToken, getUserProfile); // GET user profile
+router.put("/profile", verifyToken, updateUserProfile); // UPDATE user profile
 
 export default router;

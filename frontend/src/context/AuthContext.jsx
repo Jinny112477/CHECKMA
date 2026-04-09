@@ -26,34 +26,39 @@ export default function AuthProvider({ children }) {
 
   const navigate = useNavigate();
 
-  let initialSessionChecked = useRef(false);
+  const initialSessionChecked = useRef(false);
 
   // SUPABASE AUTHENTICATION
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log(session);
-      initialSessionChecked = true;
+    // 1. Get current session
+    const getInitialSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
       setUser(session?.user ?? null);
-      if (session?.user) fetchProfile(session.user.id);
-      else setLoading(false);
-    });
 
+      if (session?.user) {
+        fetchProfile(session.user.id);
+      } else {
+        setProfile(null);
+      }
+
+      setLoading(false);
+    };
+
+    getInitialSession();
+
+    // 2. Listen to auth changes
     const { data: listener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        // prevent duplicate call on first load
-        if (!initialSessionChecked) return;
-
+      (_event, session) => {
         setUser(session?.user ?? null);
 
-        if (session?.user) fetchProfile(session.user.id);
-        else {
+        if (session?.user) {
+          fetchProfile(session.user.id);
+        } else {
           setProfile(null);
-          setLoading(false);
         }
-
-        console.log("EVENT:", event);
-        console.log("SESSION:", session);
       },
     );
 
@@ -61,7 +66,7 @@ export default function AuthProvider({ children }) {
   }, []);
 
   // FETCH USER PROFILE: handler
-  const fetchProfile = useCallback(async () => {
+  const fetchProfile = useCallback(async (userId) => {
     setLoading(true);
 
     try {
@@ -76,11 +81,14 @@ export default function AuthProvider({ children }) {
         return;
       }
 
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile`, {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/users/profile`,
+        {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
         },
-      });
+      );
 
       const data = await res.json();
 
@@ -197,17 +205,20 @@ export default function AuthProvider({ children }) {
         });
       }
 
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/users/profile`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            avatar_url: avatarUrl,
+            ...formData,
+          }),
         },
-        body: JSON.stringify({
-          avatar_url: avatarUrl,
-          ...formData,
-        }),
-      });
+      );
 
       const data = await res.json();
 
@@ -245,7 +256,7 @@ export default function AuthProvider({ children }) {
   const setSessionFromURL = async (accessToken, refrechToken) => {
     return await supabase.auth.setSession({
       access_token: accessToken,
-      refrechToken: refrechToken
+      refrechToken: refrechToken,
     });
   };
 
@@ -264,7 +275,7 @@ export default function AuthProvider({ children }) {
         updateProfile,
         resetPassword,
         updatePassword,
-        setSessionFromURL
+        setSessionFromURL,
       }}
     >
       {children}

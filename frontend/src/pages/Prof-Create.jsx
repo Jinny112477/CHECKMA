@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft, Pencil } from "lucide-react";
 import { Link } from "react-router-dom";
 import IconProfile from "../components/IconProfile";
+import { useAuth } from "../context/AuthContext";
 
 export default function CreateProf() {
   const [startTime, setStartTime] = useState("");
@@ -10,21 +11,84 @@ export default function CreateProf() {
   const [selectedIcon, setSelectedIcon] = useState("CodeXml");
   const [showPicker, setShowPicker] = useState(false);
 
+  const { user } = useAuth();
+
   //Form Data
   const [formData, setFormData] = useState({
     course_name: "",
     course_id: "",
     section: "",
     day: "",
-    time: "",
+    start_time: "",
+    end_time: "",
     room: "",
-    location_lat: "",
-    location_lng: "",
-    radius: "",
-    status: "",
+    location_lat: null,
+    location_lng: null,
+    radius: 50,
+    status: "open",
   });
 
-  
+  // HANDLE CHANGE: handler
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // TIME
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      start_time: startTime || null,
+      end_time: endTime || null,
+    }));
+  }, [startTime, endTime]);
+
+  // SUBMIT: handler
+  const handleSubmit = async () => {
+    if (!user) {
+      alert("User not logged in");
+      return;
+    }
+
+    if (!formData.course_name || !formData.course_id) {
+      alert("Please fill all required fields");
+      return;
+    }
+
+    if (!startTime || !endTime) {
+      alert("Please select start and end time");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:5000/api/classrooms", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          host_id: user.id,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error);
+
+      console.log("SUCCESS:", data);
+      alert("Class created!");
+    } catch (err) {
+      console.error(err);
+      alert("Error creating class");
+    }
+
+    console.log("USER:", user);
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FFEB83] font-quicksand px-4">
@@ -86,8 +150,11 @@ export default function CreateProf() {
               </label>
               <div className="flex items-center bg-white rounded-xl font-semibold">
                 <input
+                  name="course_name"
+                  value={formData.course_name}
+                  onChange={handleChange}
                   type="text"
-                  placeholder="Name"
+                  placeholder="Class name"
                   className="w-full px-4 py-3 outline-none bg-transparent placeholder:text-[#9DB2E3] placeholder:font-normal"
                 />
               </div>
@@ -98,6 +165,9 @@ export default function CreateProf() {
                   Course code
                 </label>
                 <input
+                  name="course_id"
+                  value={formData.course_id}
+                  onChange={handleChange}
                   type="text"
                   placeholder="Code"
                   className="w-full px-4 py-3 rounded-xl bg-white outline-none placeholder:text-[#9DB2E3] placeholder:font-normal font-semibold"
@@ -108,6 +178,9 @@ export default function CreateProf() {
                   Section
                 </label>
                 <input
+                  name="section"
+                  value={formData.section}
+                  onChange={handleChange}
                   type="text"
                   placeholder="Section"
                   className="w-full px-4 py-3 rounded-xl bg-white outline-none placeholder:text-[#9DB2E3] placeholder:font-normal font-semibold"
@@ -147,8 +220,9 @@ export default function CreateProf() {
                 Day
               </label>
               <select
-                value={day}
-                onChange={(e) => setDay(e.target.value)}
+                name="day"
+                value={formData.day}
+                onChange={handleChange}
                 className={`w-full px-3 py-3 rounded-xl bg-white outline-none ${day ? "text-black font-semibold" : "text-[#9DB2E3] font-normal"}`}
               >
                 <option value="" disabled>
@@ -169,6 +243,9 @@ export default function CreateProf() {
               </label>
               <div className="flex items-center bg-white rounded-xl font-semibold">
                 <input
+                  name="room"
+                  value={formData.room}
+                  onChange={handleChange}
                   type="text"
                   placeholder="Room"
                   className="w-full px-4 py-3 outline-none bg-transparent placeholder:text-[#9DB2E3] placeholder:font-normal"
@@ -178,7 +255,11 @@ export default function CreateProf() {
           </div>
         </div>
 
-        <button className="mt-8 w-full bg-[#4969B2] text-white text-base py-3 sm:py-4 rounded-2xl font-bold hover:bg-[#3E5FA3] transition">
+        <button
+          onClick={handleSubmit}
+          disabled={!user}
+          className="mt-8 w-full bg-[#4969B2] text-white text-base py-3 sm:py-4 rounded-2xl font-bold hover:bg-[#3E5FA3] transition"
+        >
           Create
         </button>
       </div>
