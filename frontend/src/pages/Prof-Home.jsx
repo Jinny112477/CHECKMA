@@ -42,11 +42,36 @@ export default function HomeProf() {
   const [showJoin, setShowJoin] = useState(false);
   const [courses, setCourses] = useState([]);
 
+  const [profProfile, setProfProfile] = useState({ //formData: Prof. profile
+    firstname: "",
+    surname: "",
+  });
+
   const headerRef = useRef(null);
   const joinRef = useRef(null);
   const { profile, handleSignOut } = useAuth(); // Auth function
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
   const { user } = useAuth();
+
+  const dayMap = {
+    Monday: "MON",
+    Tuesday: "TUE",
+    Wednesday: "WED",
+    Thursday: "THU",
+    Friday: "FRI",
+    Saturday: "SAT",
+    Sunday: "SUN",
+  };
+
+  //Day Mapping
+  const formatDay = (day) => {
+    return dayMap[day] || day;
+  };
+
+  //Time Mapping
+  const formatTime = (time) => { 
+    return time.slice(0, 5);
+  };
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -86,6 +111,16 @@ export default function HomeProf() {
     fetchClasses();
   }, [user]);
 
+  //Fetch Profile: professor name
+  useEffect(() => {
+    if (!profile) return;
+
+    setProfProfile({
+      firstname: profile.firstname || "",
+      surname: profile.surname || "",
+    });
+  }, [profile]);
+
   return (
     <div className="min-h-screen w-full flex justify-center bg-[#FFFBEA]">
       <div
@@ -107,9 +142,8 @@ export default function HomeProf() {
               <button onClick={() => setOpenMenu(!openMenu)}>
                 <Menu
                   size={28}
-                  className={`text-white transition-transform duration-300 ${
-                    openMenu ? "rotate-180" : "rotate-0"
-                  }`}
+                  className={`text-white transition-transform duration-300 ${openMenu ? "rotate-180" : "rotate-0"
+                    }`}
                 />
               </button>
 
@@ -184,9 +218,10 @@ export default function HomeProf() {
                   code={course.course_id}
                   section={course.section}
                   name={course.course_name}
+                  teacher={`Prof. ${profProfile.firstname || ""} ${profProfile.surname || ""}`}
                   room={course.room}
-                  time={course.time}
-                  day={course.day}
+                  time={`${formatTime(course.start_time)} - ${formatTime(course.end_time)}`}
+                  day={formatDay(course.day)}
                   onSetting={() => console.log("Setting:", course.session_id)}
                 />
               ))}
@@ -213,9 +248,8 @@ export default function HomeProf() {
 
           <button
             onClick={() => setShowJoin(!showJoin)}
-            className={`flex-shrink-0 w-14 h-14 rounded-full bg-[#4969B2] flex items-center justify-center text-white transition-transform duration-300 ${
-              showJoin ? "rotate-45" : ""
-            }`}
+            className={`flex-shrink-0 w-14 h-14 rounded-full bg-[#4969B2] flex items-center justify-center text-white transition-transform duration-300 ${showJoin ? "rotate-45" : ""
+              }`}
           >
             <Plus size={28} />
           </button>

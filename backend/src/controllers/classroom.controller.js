@@ -21,7 +21,6 @@ export const classroomCreate = async (req, res) => {
       host_id,
     } = req.body;
 
-    // 🔥 DEBUG (add this)
     console.log("REQ BODY:", req.body);
 
     if (!host_id) {

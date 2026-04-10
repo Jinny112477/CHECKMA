@@ -30,38 +30,42 @@ export default function AuthProvider({ children }) {
 
   // SUPABASE AUTHENTICATION
   useEffect(() => {
-    // 1. Get current session
-    const getInitialSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+    // 1. Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log(session);
+
+      initialSessionChecked.current = true;
 
       setUser(session?.user ?? null);
 
       if (session?.user) {
         fetchProfile(session.user.id);
       } else {
-        setProfile(null);
+        setLoading(false);
       }
+    });
 
-      setLoading(false);
-    };
-
-    getInitialSession();
-
-    // 2. Listen to auth changes
+    // 2. Listen for auth state changes
     const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
+        // prevent duplicate call on first load
+        if (!initialSessionChecked.current) return;
+
         setUser(session?.user ?? null);
 
         if (session?.user) {
           fetchProfile(session.user.id);
         } else {
           setProfile(null);
+          setLoading(false);
         }
+
+        console.log("EVENT:", event);
+        console.log("SESSION:", session);
       },
     );
 
+    // 3. Cleanup listener
     return () => listener.subscription.unsubscribe();
   }, []);
 

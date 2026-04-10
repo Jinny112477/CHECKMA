@@ -22,9 +22,9 @@ export default function CreateProf() {
     start_time: "",
     end_time: "",
     room: "",
-    location_lat: null,
-    location_lng: null,
-    radius: 50,
+    location_lat: null, //แก้ใช้ Turf
+    location_lng: null, //แก้ใช้ Turf
+    radius: 50, //แก้ใช้ Turf
     status: "open",
   });
 
