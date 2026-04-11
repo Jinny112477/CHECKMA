@@ -94,7 +94,7 @@ export default function ProfileProf() {
   const handleSave = async () => {
     const { error } = await updateProfile(formData, selectedFile);
 
-    if (error) {
+    if (error) { 
       alert("Update failed");
       return;
     }
