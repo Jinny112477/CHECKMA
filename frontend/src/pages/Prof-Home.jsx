@@ -90,7 +90,7 @@ export default function HomeProf() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openMenu, showJoin]);
 
-  //Get class from backend
+  //
   useEffect(() => {
     const fetchClasses = async () => {
       if (!user?.id) return;
@@ -121,7 +121,7 @@ export default function HomeProf() {
     });
   }, [profile]);
 
-  return (
+  return (         
     <div className="min-h-screen w-full flex justify-center bg-[#FFFBEA]">
       <div
         className="relative
