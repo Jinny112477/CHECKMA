@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
 import ProfCourseCard from "../components/ProfCourseCard.jsx";
+import { resolveIcon } from "../components/IconProfile.jsx";
 
 /* ===== reusable menu item ===== */
 function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
@@ -90,7 +91,7 @@ export default function HomeProf() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openMenu, showJoin]);
 
-  // GET 
+  // GET : fetch class from DB
   useEffect(() => {
     const fetchClasses = async () => {
       if (!user?.id) return;
@@ -215,6 +216,7 @@ export default function HomeProf() {
               {courses.map((course) => (
                 <ProfCourseCard
                   key={course.session_id}
+                  icon={course.icon}
                   code={course.course_id}
                   section={course.section}
                   name={course.course_name}
