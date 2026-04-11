@@ -7,6 +7,7 @@ export const classroomCreate = async (req, res) => {
     const session_code = generateSessionId();
 
     const {
+      icon,
       course_name,
       course_id,
       section,
@@ -34,6 +35,7 @@ export const classroomCreate = async (req, res) => {
       .insert([
         {
           session_code,
+          icon,
           course_name,
           course_id,
           section,

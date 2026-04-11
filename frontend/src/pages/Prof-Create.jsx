@@ -73,6 +73,7 @@ export default function CreateProf() {
         body: JSON.stringify({
           ...formData,
           host_id: user.id,
+          icon: selectedIcon,
         }),
       });
 
