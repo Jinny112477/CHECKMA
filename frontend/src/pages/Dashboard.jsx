@@ -12,16 +12,6 @@ export default function Dashboard() {
     {classNum: "Class 1", date: "19/01/2026"},
     {classNum: "Class 2", date: "20/01/2026"},
     {classNum: "Class 3", date: "25/01/2026"},
-    {classNum: "Class 2", date: "20/01/2026"},
-    {classNum: "Class 2", date: "20/01/2026"},
-    {classNum: "Class 2", date: "20/01/2026"},
-    {classNum: "Class 2", date: "20/01/2026"},
-    {classNum: "Class 2", date: "20/01/2026"},
-    {classNum: "Class 2", date: "20/01/2026"},
-    {classNum: "Class 2", date: "20/01/2026"},
-    {classNum: "Class 2", date: "20/01/2026"},
-    {classNum: "Class 2", date: "20/01/2026"},
-    {classNum: "Class 2", date: "20/01/2026"},
   ];
 
   const headerRef = useRef(null);
