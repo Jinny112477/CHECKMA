@@ -17,13 +17,11 @@ export default function Login() {
     const newErrors = {};
     if (!email.trim()) {
       newErrors.email = "Please enter the email";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = "Invalid email address";
-    }
+    } 
     if (!password) {
       newErrors.password = "Please enter the password";
-    } else if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters long";
+    } else if (password.length < 10) {
+      newErrors.password = "Password must be at least 10 characters long";
     }
     return newErrors;
   };

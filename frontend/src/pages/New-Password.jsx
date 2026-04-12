@@ -46,8 +46,8 @@ export default function NewPassword() {
       return;
     }
 
-    if (password.length < 6) {
-      setError("password must be at least 6 characters");
+    if (password.length < 10) {
+      setError("password must be at least 10 characters");
       return;
     }
 

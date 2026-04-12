@@ -111,7 +111,7 @@ export default function AttendanceProf() {
         
         <div className="flex-1 bg-[#FFFBEA] rounded-t-[40px] overflow-y-auto p-8 flex flex-col">
 
-          <div className="bg-[#7C95CF] rounded-xl px-5 py-3 flex items-center shadow 
+          <div className="bg-[#4969B2] rounded-xl px-5 py-3 flex items-center shadow 
              gap-2 text-sm font-semibold text-white">
             <ShieldPlus size={16}/>
             Class Code
@@ -121,20 +121,29 @@ export default function AttendanceProf() {
             </div>
           </div>
 
-          {/* Student list header (and number of student) */}
-          <div className="flex items-center my-8">
-            <div>
-              <div className="text-[#4969B2] text-2xl font-bold">Student Lists</div>
-              <div className="text-[#9DB2E3] text-sm font-medium">Total <span className="text-[#4969B2] font-bold">{number}</span> Students</div>
-            </div>
-            <Link to="/prof/signal" className="ml-auto">
+          {/* Buttons */}
+          <div className="flex my-4">
+            <Link to="/prof/signal" className="flex-1">
               <button
-                className="w-full bg-[#F49A5E] text-[#FFFBEA] px-8 py-2
+                className="w-full bg-[#F49A5E] text-[#FFFBEA] py-2 
                 rounded-xl font-bold hover:bg-[#EB9358] transition"
               >
                 CHECK!
               </button>
-          </Link>
+            </Link>
+
+            {/* new class button */}
+            <div className="flex justify-center">
+              <button className="bg-[#9DB2E3] text-[#FFFBEA] py-2 px-4 rounded-xl font-bold 
+                transition hover:bg-[#7C95CF] flex items-center ml-2">
+                New Class
+              </button>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <div className="text-[#4969B2] text-2xl font-bold">Student Lists</div>
+            <div className="text-[#9DB2E3] text-sm font-medium">Total <span className="text-[#4969B2] font-bold">{number}</span> Students</div>
           </div>
 
           <div className="space-y-4">

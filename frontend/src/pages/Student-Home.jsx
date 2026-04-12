@@ -18,7 +18,7 @@ function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
       <Link
         to={to}
         onClick={onClick}
-        className={`w-full px-4 py-2 rounded-xl flex items-center gap-2 font-semibold transition ${variants[variant]}`}
+        className={`w-full px-4 py-2 rounded-xl flex items-center gap-2 font-semibold shadow transition ${variants[variant]}`}
       >
         <Icon size={16} />
         {label}
@@ -29,7 +29,7 @@ function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
   return (
     <button
       onClick={onClick}
-      className={`w-full px-4 py-2 rounded-xl flex items-center gap-2 font-semibold transition ${variants[variant]}`}
+      className={`w-full px-4 py-2 rounded-xl flex items-center gap-2 font-semibold shadow transition ${variants[variant]}`}
     >
       <Icon size={16} />
       {label}

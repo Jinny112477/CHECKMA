@@ -51,8 +51,8 @@ export default function Register() {
     // Password
     if (!password) {
       newErrors.password = "Please enter a password";
-    } else if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters long";
+    } else if (password.length < 10) {
+      newErrors.password = "Password must be at least 10 characters long";
     }
 
     // Confirm Password
