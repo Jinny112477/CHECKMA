@@ -20,8 +20,8 @@ export default function Login() {
     } 
     if (!password) {
       newErrors.password = "Please enter the password";
-    } else if (password.length < 10) {
-      newErrors.password = "Password must be at least 10 characters long";
+    } else if (password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters long";
     }
     return newErrors;
   };

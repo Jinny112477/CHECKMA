@@ -32,8 +32,8 @@ export default function Register() {
     // Username
     if (!username.trim()) {
       newErrors.username = "Please enter a username";
-    } else if (username.length < 6) {
-      newErrors.username = "Username must be at least 6 characters long";
+    } else if (username.length <10) {
+      newErrors.username = "Username must be at least10 characters long";
     } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
       newErrors.username = "Username can only contain a-z, 0-9, and _";
     } 

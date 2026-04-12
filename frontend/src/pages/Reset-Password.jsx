@@ -3,12 +3,34 @@ import { ArrowLeft, Mail } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+{/* Sending popup */}
+function SendingPopup ({ loading }){
+  if (!loading) return null;
+  const isComplete = loading === "complete";
+
+  return(
+    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+      <div className="flex flex-col items-center bg-[#FFAC75] rounded-3xl p-4">
+        {/* GIF character */}
+        <img
+          src="/NongCheckgif.GIF"
+          alt="status character"
+          className="w-28 h-28 object-contain"
+        />
+
+        <p className="mt-4 text-base font-semibold text-[#FFFBEA]">
+          {isComplete ? "Complete!" : "Sending..."}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+
 export default function ResetPassword() {
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(null);
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
-  const [emailSent, setEmailSent] = useState(false);
   const { resetPassword } = useAuth();
 
   const navigate = useNavigate();
@@ -17,18 +39,21 @@ export default function ResetPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setMessage("");
-    setLoading(true);
+    setLoading("loading");
 
     try {
       const { error } = await resetPassword(email);
 
       if (error) {
+        setLoading(null);
         setError(error.message);
       } else {
-        navigate("/reset/check-email");
-        setMessage("Password reset email sent. Check your inbox");
-        setEmailSent(true);
+        setLoading("complete");    
+
+        setTimeout(() => {
+          setLoading(null);
+          navigate("/reset/check-email");
+        }, 1500);
       }
     } catch {
       setError("An unexpected error occurred");
@@ -38,6 +63,9 @@ export default function ResetPassword() {
   };
 
   return (
+    <>
+    <SendingPopup loading={loading} /> 
+
     <div className="min-h-screen flex items-center justify-center bg-[#FFFBEA] font-quicksand px-4">
       {/* phone / app container */}
       <div
@@ -90,23 +118,18 @@ export default function ResetPassword() {
               </div>
             </div>
 
-            {/* reset password button (อยู่นอกกล่อง) */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="
-                mt-8 w-full
-                bg-[#4969B2] text-white text-base
-                py-3 sm:py-4
-                rounded-2xl font-bold 
-                hover:bg-[#3E5FA3] transition
-              "
-            >
-              {loading ? "Sending..." : "Send Instructions"}
-            </button>
+            {/* reset password button */}
+             <button
+                type="submit"
+                disabled={!!loading}
+                className="mt-8 w-full bg-[#4969B2] text-white text-base py-3 sm:py-4 rounded-2xl font-bold hover:bg-[#3E5FA3] transition disabled:opacity-60"
+              >
+                Send Instructions
+              </button>
           </form>
         </div>
       </div>
     </div>
+    </>
   );
 }
