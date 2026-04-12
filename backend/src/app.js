@@ -1,15 +1,18 @@
 import express from "express";
 import cors from "cors";
-import usersRoutes from "./routes/users.routes.js";
 import path from "path";
 import { fileURLToPath } from "url";
+
+// Routes import
+import usersRoutes from "./routes/users.routes.js";
+import classroomRoutes from "./routes/classroom.routes.js";
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const frontendPath = path.join(__dirname, "../../frontend/dist");
 
-// Middleware
+// Middleware: CORS
 app.use(
   cors({
     origin: ["http://localhost:5173"],
@@ -17,22 +20,22 @@ app.use(
   }),
 );
 
-// Body parser
+// Body parser : File limitation
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-// ✅ API มาก่อน
+// API
 app.use("/api/users", usersRoutes);
+app.use("/api", classroomRoutes);
 
-// ✅ FIX: manifest ต้องมาก่อน static
 app.get("/manifest.webmanifest", (req, res) => {
   res.sendFile(path.join(frontendPath, "manifest.webmanifest"));
 });
 
-// ✅ Static frontend
+// Static frontend
 app.use(express.static(frontendPath));
 
-// ✅ Catch-all (ต้องอยู่ล่างสุด)
+// Catch-all
 app.use((req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
 });

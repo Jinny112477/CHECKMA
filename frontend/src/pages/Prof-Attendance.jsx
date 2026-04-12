@@ -41,7 +41,7 @@ export default function AttendanceProf() {
   /> 
   */}
 
-  const classCode = "7DXC31G"; //Temp
+  const classCode = "7DXC31G"; //SESSION ID
 
   const number = data.length;
   const { profile } = useAuth();

@@ -11,7 +11,8 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
-export default function ProfCourseCard({
+export default function ProfCourseCard ({
+  icon,
   code,
   section,
   name,
@@ -92,7 +93,7 @@ export default function ProfCourseCard({
           <div className="flex items-center gap-3">
             {/* icon profile */}
             <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shrink-0">
-              <CodeXml size={28} className="text-[#F49A5E]" />
+              <Icon size={28} className="text-[#F49A5E]" />
             </div>
 
             <div className="flex-1">

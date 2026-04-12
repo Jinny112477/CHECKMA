@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
 import ProfCourseCard from "../components/ProfCourseCard.jsx";
+import { resolveIcon } from "../components/IconProfile.jsx";
 
 /* ===== reusable menu item ===== */
 function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
@@ -40,70 +41,38 @@ function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
 export default function HomeProf() {
   const [openMenu, setOpenMenu] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
+  const [courses, setCourses] = useState([]);
+
+  const [profProfile, setProfProfile] = useState({ //formData: Prof. profile
+    firstname: "",
+    surname: "",
+  });
 
   const headerRef = useRef(null);
   const joinRef = useRef(null);
   const { profile, handleSignOut } = useAuth(); // Auth function
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
+  const { user } = useAuth();
 
-  /* ===== mock data (เพิ่มการ์ดจากตรงนี้) ===== */
-  const DEV_EMPTY = false; // true = ไม่มีวิชา ทดสอบการแสดง empty state
+  const dayMap = {
+    Monday: "MON",
+    Tuesday: "TUE",
+    Wednesday: "WED",
+    Thursday: "THU",
+    Friday: "FRI",
+    Saturday: "SAT",
+    Sunday: "SUN",
+  };
 
-  const courses = DEV_EMPTY
-    ? []
-    : [
-        {
-          code: "SF321",
-          section: "760001",
-          name: "Data Communication and Computer Network 1",
-          teacher: "Aj.Piya Techateerawat",
-          room: "ENGR 310",
-          time: "13:30 - 16:30",
-          day: "MON",
-        },
+  //Day Mapping
+  const formatDay = (day) => {
+    return dayMap[day] || day;
+  };
 
-        {
-          code: "SF321",
-          section: "760001",
-          name: "Data Communication and Computer Network 1",
-          teacher: "Aj.Piya Techateerawat",
-          room: "ENGR 310",
-          time: "13:30 - 16:30",
-          day: "MON",
-        },
-
-        {
-          code: "SF321",
-          section: "760001",
-          name: "Data Communication and Computer Network 1",
-          teacher: "Aj.Piya Techateerawat",
-          room: "ENGR 310",
-          time: "13:30 - 16:30",
-          day: "MON",
-        },
-
-        {
-          code: "SF321",
-          section: "760001",
-          name: "Data Communication and Computer Network 1",
-          teacher: "Aj.Piya Techateerawat",
-          room: "ENGR 310",
-          time: "13:30 - 16:30",
-          day: "MON",
-        },
-
-        {
-          code: "SF321",
-          section: "760001",
-          name: "Data Communication and Computer Network 1",
-          teacher: "Aj.Piya Techateerawat",
-          room: "ENGR 310",
-          time: "13:30 - 16:30",
-          day: "MON",
-        },
-      ];
-
-  const hasSubject = courses.length > 0;
+  //Time Mapping
+  const formatTime = (time) => { 
+    return time.slice(0, 5);
+  };
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -122,7 +91,38 @@ export default function HomeProf() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openMenu, showJoin]);
 
-  return (
+  // GET : fetch class from DB
+  useEffect(() => {
+    const fetchClasses = async () => {
+      if (!user?.id) return;
+
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/classrooms?host_id=${user.id}`,
+        );
+
+        const data = await res.json();
+
+        setCourses(data);
+      } catch (err) {
+        console.error("Fetch classes error:", err);
+      }
+    };
+
+    fetchClasses();
+  }, [user]);
+
+  //Fetch Profile: professor name
+  useEffect(() => {
+    if (!profile) return;
+
+    setProfProfile({
+      firstname: profile.firstname || "",
+      surname: profile.surname || "",
+    });
+  }, [profile]);
+
+  return (         
     <div className="min-h-screen w-full flex justify-center bg-[#FFFBEA]">
       <div
         className="relative
@@ -134,15 +134,17 @@ export default function HomeProf() {
                     overflow-y-auto"
       >
         {/* ================= HEADER ================= */}
-        <div ref={headerRef} className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-50">
+        <div
+          ref={headerRef}
+          className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-50"
+        >
           <div className="relative bg-[#4969B2]">
             <header className="h-20 flex items-center justify-between px-5">
               <button onClick={() => setOpenMenu(!openMenu)}>
                 <Menu
                   size={28}
-                  className={`text-white transition-transform duration-300 ${
-                    openMenu ? "rotate-180" : "rotate-0"
-                  }`}
+                  className={`text-white transition-transform duration-300 ${openMenu ? "rotate-180" : "rotate-0"
+                    }`}
                 />
               </button>
 
@@ -189,7 +191,7 @@ export default function HomeProf() {
         {/* ================= CONTENT ================= */}
         <div className="flex-1 bg-[#FFFBEA] overflow-y-auto p-4 pb-24 pt-[120px]">
           {/* ===== EMPTY STATE ===== */}
-          {!hasSubject && (
+          {!courses && (
             <div
               className="flex flex-col items-center justify-center h-full text-center gap-4
                             animate-[fadeIn_0.6s_ease-out_forwards]"
@@ -209,14 +211,21 @@ export default function HomeProf() {
           )}
 
           {/* ===== COURSE CARDS ===== */}
-          {hasSubject && (
+          {courses && (
             <div className="space-y-6">
-              {courses.map((course, index) => (
-                  <ProfCourseCard
-                    key={index}
-                    {...course}
-                    onSetting={() => console.log("Setting clicked:", course.code)} 
-                  />
+              {courses.map((course) => (
+                <ProfCourseCard
+                  key={course.session_id}
+                  icon={course.icon}
+                  code={course.course_id}
+                  section={course.section}
+                  name={course.course_name}
+                  teacher={`Prof. ${profProfile.firstname || ""} ${profProfile.surname || ""}`}
+                  room={course.room}
+                  time={`${formatTime(course.start_time)} - ${formatTime(course.end_time)}`}
+                  day={formatDay(course.day)}
+                  onSetting={() => console.log("Setting:", course.session_id)}
+                />
               ))}
             </div>
           )}
@@ -241,9 +250,8 @@ export default function HomeProf() {
 
           <button
             onClick={() => setShowJoin(!showJoin)}
-            className={`flex-shrink-0 w-14 h-14 rounded-full bg-[#4969B2] flex items-center justify-center text-white transition-transform duration-300 ${
-              showJoin ? "rotate-45" : ""
-            }`}
+            className={`flex-shrink-0 w-14 h-14 rounded-full bg-[#4969B2] flex items-center justify-center text-white transition-transform duration-300 ${showJoin ? "rotate-45" : ""
+              }`}
           >
             <Plus size={28} />
           </button>

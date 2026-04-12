@@ -26,28 +26,36 @@ export default function AuthProvider({ children }) {
 
   const navigate = useNavigate();
 
-  let initialSessionChecked = useRef(false);
+  const initialSessionChecked = useRef(false);
 
   // SUPABASE AUTHENTICATION
   useEffect(() => {
+    // 1. Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       console.log(session);
-      initialSessionChecked = true;
+
+      initialSessionChecked.current = true;
 
       setUser(session?.user ?? null);
-      if (session?.user) fetchProfile(session.user.id);
-      else setLoading(false);
+
+      if (session?.user) {
+        fetchProfile(session.user.id);
+      } else {
+        setLoading(false);
+      }
     });
 
+    // 2. Listen for auth state changes
     const { data: listener } = supabase.auth.onAuthStateChange(
       (event, session) => {
         // prevent duplicate call on first load
-        if (!initialSessionChecked) return;
+        if (!initialSessionChecked.current) return;
 
         setUser(session?.user ?? null);
 
-        if (session?.user) fetchProfile(session.user.id);
-        else {
+        if (session?.user) {
+          fetchProfile(session.user.id);
+        } else {
           setProfile(null);
           setLoading(false);
         }
@@ -57,11 +65,12 @@ export default function AuthProvider({ children }) {
       },
     );
 
+    // 3. Cleanup listener
     return () => listener.subscription.unsubscribe();
   }, []);
 
   // FETCH USER PROFILE: handler
-  const fetchProfile = useCallback(async () => {
+  const fetchProfile = useCallback(async (userId) => {
     setLoading(true);
 
     try {
@@ -76,11 +85,14 @@ export default function AuthProvider({ children }) {
         return;
       }
 
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile`, {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/users/profile`,
+        {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
         },
-      });
+      );
 
       const data = await res.json();
 
@@ -93,7 +105,7 @@ export default function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-  //Google Sinup/Login : handler
+  //GOOGLE SIGNUP/LOGIN : handler
   const handleGoogleAuthen = async () => {
     await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -147,7 +159,7 @@ export default function AuthProvider({ children }) {
     }
   };
 
-  // Role Select: handler
+  // ROLE SELECT: handler
   const updateRole = async (selectedRole) => {
     if (!user) return { error: "No user" };
 
@@ -167,7 +179,7 @@ export default function AuthProvider({ children }) {
     return { error: null };
   };
 
-  // Sign Out: handler
+  // SIGN OUT: handler
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -177,7 +189,7 @@ export default function AuthProvider({ children }) {
     }
   };
 
-  // Profile Update: save state
+  // PROFILE UPDATE: save state
   const updateProfile = async (formData, selectedFile) => {
     try {
       const {
@@ -197,17 +209,20 @@ export default function AuthProvider({ children }) {
         });
       }
 
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/users/profile`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            avatar_url: avatarUrl,
+            ...formData,
+          }),
         },
-        body: JSON.stringify({
-          avatar_url: avatarUrl,
-          ...formData,
-        }),
-      });
+      );
 
       const data = await res.json();
 
@@ -241,11 +256,11 @@ export default function AuthProvider({ children }) {
     return { data, error };
   };
 
-  // SET SESSION
+  // SET TOKEN SESSION
   const setSessionFromURL = async (accessToken, refrechToken) => {
     return await supabase.auth.setSession({
       access_token: accessToken,
-      refrechToken: refrechToken
+      refrechToken: refrechToken,
     });
   };
 
@@ -264,7 +279,7 @@ export default function AuthProvider({ children }) {
         updateProfile,
         resetPassword,
         updatePassword,
-        setSessionFromURL
+        setSessionFromURL,
       }}
     >
       {children}
