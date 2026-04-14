@@ -21,8 +21,10 @@ export default function ProfCourseCard ({
   room,
   time,
   day,
+  onSetting,
   onDelete, // รับ Props สำหรับการลบ
 }) {
+  
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
   const navigate = useNavigate();
@@ -57,6 +59,10 @@ export default function ProfCourseCard ({
     if (onDelete) onDelete();
   };
 
+  onSetting,
+}) {
+
+  const Icon = resolveIcon(icon);
   return (
     <Link to="/prof/attendance" className="block relative z-0">
       <div className="relative bg-[#FFEB83] rounded-2xl p-4 shadow">
