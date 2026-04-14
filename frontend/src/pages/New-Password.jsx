@@ -49,6 +49,8 @@ export default function NewPassword() {
     if (password.length < 8) {
       setError("password must be at least 8 characters");
       return;
+    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{10,}$/.test(password)) {
+      setError("Password must contain uppercase, lowercase, and number")
     }
 
     setLoading(true);

@@ -122,6 +122,9 @@ export default function HomeProf() {
     });
   }, [profile]);
 
+  const hasSubject = courses.length > 0;
+
+
   return (         
     <div className="min-h-screen w-full flex justify-center bg-[#FFFBEA]">
       <div
@@ -191,7 +194,7 @@ export default function HomeProf() {
         {/* ================= CONTENT ================= */}
         <div className="flex-1 bg-[#FFFBEA] overflow-y-auto p-4 pb-24 pt-[120px]">
           {/* ===== EMPTY STATE ===== */}
-          {!courses && (
+          {!hasSubject && (
             <div
               className="flex flex-col items-center justify-center h-full text-center gap-4
                             animate-[fadeIn_0.6s_ease-out_forwards]"
