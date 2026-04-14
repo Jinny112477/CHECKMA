@@ -67,7 +67,7 @@ export default function CheckEmail() {
 
         {/* action */}
         <div className="mt-10 px-2">
-          <Link to="/login">
+          <Link to="https://mail.google.com">
           <button
             className="
               w-full
@@ -80,7 +80,7 @@ export default function CheckEmail() {
               hover:bg-[#fbe475] transition
             "
           >
-            Back to Login
+            Open Email
           </button>
           </Link>
         </div>
