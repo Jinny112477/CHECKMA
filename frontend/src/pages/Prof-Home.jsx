@@ -91,7 +91,7 @@ export default function HomeProf() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openMenu, showJoin]);
 
-  // GET : fetch class from DB
+  // GET Classes: fetch class from DB
   useEffect(() => {
     const fetchClasses = async () => {
       if (!user?.id) return;
@@ -112,7 +112,7 @@ export default function HomeProf() {
     fetchClasses();
   }, [user]);
 
-  //Fetch Profile: professor name
+  // GET Profile: fetch professor profile
   useEffect(() => {
     if (!profile) return;
 
