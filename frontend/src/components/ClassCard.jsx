@@ -4,7 +4,7 @@ export default function ClassCard({
 }) {
 
   return (
-    <div className="bg-[#FFEB83] rounded-3xl px-5 py-3 flex items-center shadow">
+    <div className="bg-[#FFEB83] rounded-2xl px-5 py-3 flex items-center shadow">
 
       <div className="text-[#4969B2] text-xl font-bold">
         {classNum}

@@ -49,8 +49,7 @@ export default function Dashboard() {
           <hr className="w-80 h-1 mx-auto mb-2 bg-white border-0 rounded-sm" />
         </div>
 
-
-        <div className="px-8 pt-[100px]">
+        <div className="px-8 mt-[100px]">
           {data.map((item, index) => (
             <Link
               key={index}

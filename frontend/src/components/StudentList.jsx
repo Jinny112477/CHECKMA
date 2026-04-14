@@ -1,4 +1,4 @@
-import { CircleUser } from "lucide-react";
+import { CircleUser, Trash2 } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 
 export default function StudentList({
@@ -146,7 +146,7 @@ export default function StudentList({
               onDelete?.();
             }}
           >
-            🗑 Delete
+            <Trash2 size={12} /> Delete
           </button>
         </div>
       )}

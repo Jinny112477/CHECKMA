@@ -109,9 +109,9 @@ export default function CreateProf() {
 
         {/* title */}
         <div className="mt-12">
-          <h1 className="text-5xl font-bold text-[#4969B2]">Create class</h1>
+          <h1 className="text-5xl font-bold text-[#4969B2]">Create course</h1>
           <p className="mt-4 text-sm text-[#7C95CF] font-medium">
-            Create your class, enter your class information!
+            Create your course, enter your course information!
           </p>
         </div>
 
