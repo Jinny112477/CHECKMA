@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ArrowLeft, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import AlertModal from "../components/AlertModal";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -10,6 +11,7 @@ export default function Login() {
   const [errors, setErrors] = useState({});
   const [authError, setAuthError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
 
   const { handleGoogleAuthen, handleEmailLogin } = useAuth();
 
@@ -17,7 +19,7 @@ export default function Login() {
     const newErrors = {};
     if (!email.trim()) {
       newErrors.email = "Please enter the email";
-    } 
+    }
     if (!password) {
       newErrors.password = "Please enter the password";
     } else if (password.length < 8) {
@@ -45,8 +47,12 @@ export default function Login() {
         code.includes("user-not-found")
       ) {
         setAuthError("Wrong password or username. Please try again.");
+        //เปิด popup
+        setAlertOpen(true);
       } else {
         setAuthError("Something went wrong. Please try again.");
+        //เปิด popup
+        setAlertOpen(true);
       }
     } finally {
       setLoading(false);
@@ -190,6 +196,15 @@ export default function Login() {
           </Link>
         </p>
       </div>
+      <AlertModal
+        open={alertOpen}
+        onClose={() => setAlertOpen(false)}
+        title="Login Failed!"
+        description="Wrong password or username. Please try again."
+        type="danger"
+        confirmText="Try Again"
+        onConfirm={() => setAlertOpen(false)}
+      />
     </div>
   );
 }
