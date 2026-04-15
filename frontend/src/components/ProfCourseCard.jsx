@@ -10,7 +10,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { resolveIcon } from "./IconProfile";
+import { resolveIcon } from "./IconProfile.jsx"; 
 
 export default function ProfCourseCard({
   icon,
@@ -27,6 +27,7 @@ export default function ProfCourseCard({
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
   const navigate = useNavigate();
+  const Icon = resolveIcon(icon);
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -117,7 +118,8 @@ export default function ProfCourseCard({
             <span className="text-sm font-bold text-[#4969B2]">{teacher}</span>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 text-xs text-[#4969B2]">
+          {/* bottom info */}
+          <div className="grid grid-cols-[1.2fr_1.4fr_1fr] h-8 gap-2 text-xs text-[#4969B2]">
             <div className="flex items-center gap-1 bg-white rounded-lg px-2 py-1 justify-center font-medium">
               <MapPin size={14} /> {room}
             </div>

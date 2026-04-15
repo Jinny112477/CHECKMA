@@ -103,7 +103,8 @@ export default function HomeProf() {
 
         const data = await res.json();
 
-        setCourses(data);
+        setCourses(Array.isArray(data) ? data : data.courses || data.data || []);
+
       } catch (err) {
         console.error("Fetch classes error:", err);
       }
@@ -122,6 +123,8 @@ export default function HomeProf() {
     });
   }, [profile]);
 
+  const hasSubject = courses.length > 0;
+  
   return (         
     <div className="min-h-screen w-full flex justify-center bg-[#FFFBEA]">
       <div
@@ -191,7 +194,7 @@ export default function HomeProf() {
         {/* ================= CONTENT ================= */}
         <div className="flex-1 bg-[#FFFBEA] overflow-y-auto p-4 pb-24 pt-[120px]">
           {/* ===== EMPTY STATE ===== */}
-          {!courses && (
+          {!hasSubject && (
             <div
               className="flex flex-col items-center justify-center h-full text-center gap-4
                             animate-[fadeIn_0.6s_ease-out_forwards]"
@@ -211,7 +214,7 @@ export default function HomeProf() {
           )}
 
           {/* ===== COURSE CARDS ===== */}
-          {courses && (
+          {courses.length > 0 && (
             <div className="space-y-6">
               {courses.map((course) => (
                 <ProfCourseCard

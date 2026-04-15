@@ -3,6 +3,7 @@ import { ArrowLeft, Pencil } from "lucide-react";
 import { Link } from "react-router-dom";
 import IconProfile from "../components/IconProfile";
 import { useAuth } from "../context/AuthContext";
+import AlertModal from "../components/AlertModal";
 
 export default function CreateProf() {
   const [startTime, setStartTime] = useState("");
@@ -10,6 +11,7 @@ export default function CreateProf() {
   const [day, setDay] = useState("");
   const [selectedIcon, setSelectedIcon] = useState("CodeXml");
   const [showPicker, setShowPicker] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const { user } = useAuth();
 
@@ -44,29 +46,40 @@ export default function CreateProf() {
     }));
   }, [startTime, endTime]);
 
+  // Modal config สำหรับ alert
+  const [modalConfig, setModalConfig] = useState({
+    type: "info",
+    title: "",
+    description: "",
+  });
+
+  // Helper function สำหรับ alert
+  const showAlert = (type, title, description) => {
+    setModalConfig({ type, title, description });
+    setOpen(true);
+  };
+
   // SUBMIT: handler
   const handleSubmit = async () => {
     if (!user) {
-      alert("User not logged in");
+      showAlert("danger", "Not Logged In", "Please log in before creating a course.");
       return;
     }
 
     if (!formData.course_name || !formData.course_id) {
-      alert("Please fill all required fields");
+      showAlert("danger", "Failed to create course", "Please fill all required fields");
       return;
     }
 
     if (!startTime || !endTime) {
-      alert("Please select start and end time");
+      showAlert("danger", "Failed to create course", "Please select start and end time");
       return;
     }
 
     try {
       const res = await fetch("http://localhost:5000/api/classrooms", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
           host_id: user.id,
@@ -75,17 +88,14 @@ export default function CreateProf() {
       });
 
       const data = await res.json();
-
       if (!res.ok) throw new Error(data.error);
 
       console.log("SUCCESS:", data);
-      alert("Class created!");
+      showAlert("success", "Course created successfully", "Class created!"); 
     } catch (err) {
       console.error(err);
-      alert("Error creating class");
+      showAlert("danger", "Failed to create course", "Error creating class");
     }
-
-    console.log("USER:", user);
   };
 
   return (
@@ -253,13 +263,27 @@ export default function CreateProf() {
           </div>
         </div>
 
-        <button
-          onClick={handleSubmit}
-          disabled={!user}
-          className="mt-8 w-full bg-[#4969B2] text-white text-base py-3 sm:py-4 rounded-2xl font-bold hover:bg-[#3E5FA3] transition"
-        >
-          Create
-        </button>
+        <div>
+          <button
+            onClick={handleSubmit}
+            disabled={!user}
+            className="mt-8 w-full bg-[#4969B2] text-white text-base py-3 sm:py-4 rounded-2xl font-bold hover:bg-[#3E5FA3] transition"
+          >
+            Create
+          </button>
+
+          {/* Alert */}
+          <AlertModal
+            open={open}
+            onClose={() => setOpen(false)}
+            title={modalConfig.title}
+            description={modalConfig.description}
+            type={modalConfig.type}
+            confirmText="OK"
+            onConfirm={() => setOpen(false)}
+          />
+
+        </div>
       </div>
     </div>
   );

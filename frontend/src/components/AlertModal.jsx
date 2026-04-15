@@ -135,7 +135,7 @@ export default function AlertModal({
  * -------------------------------
  *
  * 1. import component
- * import AlertModal from "@/components/AlertModal";
+ * import AlertModal from "../components/AlertModal";
  *
  * 2. สร้าง state ควบคุมการเปิด/ปิด
  * const [open, setOpen] = useState(false);

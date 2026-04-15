@@ -123,8 +123,7 @@ export default function HomeStudent() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openMenu, showJoin]);
 
-  const R = 28; // radius ขนาด px — ต้องตรงกับ rounded-t-[28px] ของโค้งกลาง
-
+  
   return (
     <div className="min-h-screen w-full flex justify-center bg-[#FFFBEA]">
       <div className="relative
