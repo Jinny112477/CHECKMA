@@ -12,7 +12,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { resolveIcon } from "./IconProfile.jsx"; 
 
-export default function ProfCourseCard ({
+export default function ProfCourseCard({
   icon,
   code,
   section,
@@ -22,15 +22,13 @@ export default function ProfCourseCard ({
   time,
   day,
   onSetting,
-  onDelete, // รับ Props สำหรับการลบ
+  onDelete,
 }) {
-  
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
   const navigate = useNavigate();
   const Icon = resolveIcon(icon);
 
-  // ปิดเมนูเมื่อคลิกพื้นที่อื่นบนหน้าจอ
   useEffect(() => {
     function handleClickOutside(e) {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -42,7 +40,7 @@ export default function ProfCourseCard ({
   }, []);
 
   const handleToggleMenu = (e) => {
-    e.preventDefault(); // ป้องกันการ trigger Link ที่ครอบอยู่
+    e.preventDefault();
     e.stopPropagation();
     setShowMenu(!showMenu);
   };
@@ -50,7 +48,10 @@ export default function ProfCourseCard ({
   const handleSettingClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    navigate("/prof/edit-course");
+
+    // ✅ ใช้ onSetting ถ้ามี
+    if (onSetting) onSetting();
+    else navigate("/prof/edit-course");
   };
 
   const handleDeleteClick = (e) => {
@@ -59,12 +60,11 @@ export default function ProfCourseCard ({
     if (onDelete) onDelete();
   };
 
-  
+  const Icon = resolveIcon(icon);
+
   return (
     <Link to="/prof/attendance" className="block relative z-0">
       <div className="relative bg-[#FFEB83] rounded-2xl p-4 shadow">
-        
-        {/* setting button */}
         <button
           onClick={handleToggleMenu}
           className="absolute top-3 right-3 p-1 rounded-full hover:bg-white/60 transition z-10"
@@ -72,7 +72,6 @@ export default function ProfCourseCard ({
           <Ellipsis size={24} className="text-[#4969B2]" />
         </button>
 
-        {/* Dropdown Menu */}
         {showMenu && (
           <div
             ref={menuRef}
@@ -84,6 +83,7 @@ export default function ProfCourseCard ({
             >
               <Settings size={16} /> Setting
             </button>
+
             <button
               onClick={handleDeleteClick}
               className="flex items-center gap-2 px-4 py-2 bg-[#FFB788] text-[#B9382A] font-semibold rounded-xl shadow transition text-base"
@@ -94,9 +94,7 @@ export default function ProfCourseCard ({
         )}
 
         <div className="space-y-4">
-          {/* header */}
           <div className="flex items-center gap-3">
-            {/* icon profile */}
             <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shrink-0">
               <Icon size={28} className="text-[#F49A5E]" />
             </div>
@@ -115,7 +113,6 @@ export default function ProfCourseCard ({
             </div>
           </div>
 
-          {/* teacher */}
           <div className="bg-white rounded-xl px-3 py-2 flex items-center gap-2">
             <User size={16} className="text-[#4969B2]" />
             <span className="text-sm font-bold text-[#4969B2]">{teacher}</span>
