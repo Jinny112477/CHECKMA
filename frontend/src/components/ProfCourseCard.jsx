@@ -59,10 +59,7 @@ export default function ProfCourseCard ({
     if (onDelete) onDelete();
   };
 
-  onSetting,
-}) {
-
-  const Icon = resolveIcon(icon);
+  
   return (
     <Link to="/prof/attendance" className="block relative z-0">
       <div className="relative bg-[#FFEB83] rounded-2xl p-4 shadow">
