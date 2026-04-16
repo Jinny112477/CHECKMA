@@ -120,11 +120,10 @@ export default function AuthProvider({ children }) {
     });
 
     if (error) {
-      alert(error.message);
-      return;
+      throw error;
     }
 
-    navigate("/", { replace: true });
+    return true;
   };
 
   // SIGNUP : handler
@@ -135,8 +134,7 @@ export default function AuthProvider({ children }) {
     });
 
     if (error) {
-      alert(error.message);
-      return;
+      throw error;
     }
 
     const user = data.user;

@@ -12,6 +12,7 @@ export default function Login() {
   const [authError, setAuthError] = useState("");
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
+  const [alertType, setAlertType] = useState("danger");
 
   const { handleGoogleAuthen, handleEmailLogin } = useAuth();
 
@@ -36,7 +37,18 @@ export default function Login() {
 
     setLoading(true);
     try {
-      await handleEmailLogin(email, password);
+      const success = await handleEmailLogin(email, password);
+
+      if (success) {
+        setAuthError("NongCheck glad to welcome you back!");
+        setAlertType("success");
+        setAlertOpen(true);
+
+        setTimeout(() => {
+          setAlertOpen(false);
+          window.location.href = "/";
+        }, 1500);
+      }
     } catch (err) {
       // ปรับ error message ตาม Supabase error code
       const code = err?.message || "";
@@ -47,10 +59,12 @@ export default function Login() {
         code.includes("user-not-found")
       ) {
         setAuthError("Wrong password or username. Please try again.");
+        setAlertType("danger");
         //เปิด popup
         setAlertOpen(true);
       } else {
         setAuthError("Something went wrong. Please try again.");
+        setAlertType("danger");
         //เปิด popup
         setAlertOpen(true);
       }
@@ -196,13 +210,15 @@ export default function Login() {
           </Link>
         </p>
       </div>
+      {/* Alert Modal*/}
       <AlertModal
         open={alertOpen}
         onClose={() => setAlertOpen(false)}
-        title="Login Failed!"
-        description="Wrong password or username. Please try again."
-        type="danger"
+        title={alertType === "success" ? "Login Successfully!" : "Login Failed!"}
+        description={authError}
+        type={alertType}
         confirmText="Try Again"
+        successOnly={true}
         onConfirm={() => setAlertOpen(false)}
       />
     </div>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, User, AtSign } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import AlertModal from "../components/AlertModal";
 //📌📌📌📌📌📌📌📌import { supabase } from "../lib/supabaseClient"; // ← import supabase ตรงๆ เพื่อเช็ค username
 
 export default function Register() {
@@ -16,6 +17,10 @@ export default function Register() {
   const [errors, setErrors] = useState({});
   const [authError, setAuthError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertType, setAlertType] = useState("danger");
+  
 
   const { handleGoogleAuthen, handleEmailSignup } = useAuth();
 
@@ -32,11 +37,11 @@ export default function Register() {
     // Username
     if (!username.trim()) {
       newErrors.username = "Please enter a username";
-    } else if (username.length <10) {
+    } else if (username.length < 10) {
       newErrors.username = "Username must be at least10 characters long";
     } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
       newErrors.username = "Username can only contain a-z, 0-9, and _";
-    } 
+    }
     {/* 📌📌📌📌📌📌📌📌📌📌📌📌📌📌📌📌📌📌📌else {
       // เช็คซ้ำใน Supabase — เปลี่ยน 'profiles' และ 'username' ให้ตรงกับ table ของคุณ
       const { data } = await supabase
@@ -68,23 +73,46 @@ export default function Register() {
   const handleSignup = async () => {
     setAuthError("");
     setLoading(true);
+
     const newErrors = await validate();
     setErrors(newErrors);
 
+    // ❌ validation error
     if (Object.keys(newErrors).length > 0) {
+      setAuthError("Please check your input again.");
+      setAlertType("danger");
+      setAlertOpen(true);
       setLoading(false);
       return;
     }
 
     try {
       await handleEmailSignup(email, password, username);
+
+      // ✅ success
+      setAuthError("Account created successfully!");
+      setAlertType("success");
+      setAlertOpen(true);
+
+      setTimeout(() => {
+        setAlertOpen(false);
+        // ปล่อย flow เดิม (AuthContext จะ navigate เอง)
+      }, 1500);
+
     } catch (err) {
       const msg = err?.message || "";
-      if (msg.includes("already registered") || msg.includes("already been registered")) {
+
+      if (
+        msg.includes("already registered") ||
+        msg.includes("already been registered")
+      ) {
         setAuthError("Email นี้ถูกใช้งานแล้ว");
       } else {
         setAuthError("Something went wrong. Please try again.");
       }
+
+      setAlertType("danger");
+      setAlertOpen(true);
     } finally {
       setLoading(false);
     }
@@ -98,8 +126,7 @@ export default function Register() {
   };
 
   const inputClass = (key) =>
-    `flex items-center bg-white rounded-xl px-3 font-semibold border-2 transition ${
-      errors[key] ? "border-red-400" : "border-transparent"
+    `flex items-center bg-white rounded-xl px-3 font-semibold border-2 transition ${errors[key] ? "border-red-400" : "border-transparent"
     }`;
 
   return (
@@ -236,6 +263,16 @@ export default function Register() {
           </Link>
         </p>
       </div>
+      <AlertModal
+        open={alertOpen}
+        onClose={() => setAlertOpen(false)}
+        title={alertType === "success" ? "Success!" : "Register Failed!"}
+        description={authError}
+        type={alertType}
+        confirmText="OK"
+        successOnly={true}
+        onConfirm={() => setAlertOpen(false)}
+      />
     </div>
   );
 }
