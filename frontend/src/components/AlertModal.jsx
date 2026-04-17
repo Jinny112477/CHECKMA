@@ -1,4 +1,5 @@
 import { X } from "lucide-react";
+import { Check } from "lucide-react";
 
 export default function AlertModal({
   open,
@@ -10,6 +11,7 @@ export default function AlertModal({
   cancelText,
   onConfirm,
   onCancel,
+  successOnly = false,
 }) {
   if (!open) return null;
 
@@ -35,7 +37,7 @@ export default function AlertModal({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
-      
+
       <div
         className="relative z-10 bg-white rounded-2xl p-6 w-[360px] text-center"
         style={{
@@ -58,7 +60,7 @@ export default function AlertModal({
 
         {/* ICON */}
         <div className="relative flex justify-center mb-4">
-          
+
           {/* 🌫️ ฟุ้งนอก */}
           <div
             className={`
@@ -96,28 +98,32 @@ export default function AlertModal({
         </div>
 
         {/* Title */}
-        <h2 className="text-lg font-semibold mb-1">{title}</h2>
+        <h2 className="text-lg font-semibold mb-2">{title}</h2>
 
         {/* Description */}
-        <p className="text-gray-500 mb-6">{description}</p>
+        <p className="text-gray-500 mb-4 text-sm">{description}</p>
 
         {/* Buttons */}
         <div className="flex justify-center gap-3">
-          {cancelText && (
-            <button
-              onClick={onCancel}
-              className="px-4 py-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-100"
-            >
-              {cancelText}
-            </button>
-          )}
+          {!(type === "success" && successOnly) && (
+            <div className="flex justify-center gap-3">
+              {cancelText && (
+                <button
+                  onClick={onCancel}
+                  className="px-4 py-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-100"
+                >
+                  {cancelText}
+                </button>
+              )}
 
-          <button
-            onClick={onConfirm}
-            className={`px-4 py-2 rounded-lg text-white ${current.button}`}
-          >
-            {confirmText}
-          </button>
+              <button
+                onClick={onConfirm}
+                className={`px-4 py-2 rounded-lg text-white ${current.button}`}
+              >
+                {confirmText}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

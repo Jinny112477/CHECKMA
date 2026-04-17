@@ -4,10 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import RoleCard from "../components/RoleCard";
 
 import { useAuth } from "../context/AuthContext";
+import AlertModal from "../components/AlertModal";
 
 export default function RoleSelect() {
   const [role, setRole] = useState("student");
   const navigate = useNavigate();
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   // Auth function
   const { updateRole } = useAuth();
@@ -28,6 +30,11 @@ export default function RoleSelect() {
     if (selectedRole === "professor") {
       navigate("/prof/home", { replace: true });
     }
+  };
+
+  const handleConfirm = async () => {
+    setConfirmOpen(false);
+    await handleSelectRole(role);
   };
 
   return (
@@ -95,7 +102,7 @@ export default function RoleSelect() {
 
         {/* submit */}
         <button
-          onClick={() => handleSelectRole(role)}
+          onClick={() => setConfirmOpen(true)}
           className="
             mt-6 w-full py-4 rounded-2xl
             bg-[#F49A5E] text-base text-white font-bold
@@ -105,6 +112,17 @@ export default function RoleSelect() {
           Submit
         </button>
       </div>
+      <AlertModal
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        title="Confirm your role"
+        description={`You selected "${role.toUpperCase()}". This cannot be changed later. Are you sure?`}
+        type="info"
+        confirmText="Yes, Confirm"
+        cancelText="Cancel"
+        onConfirm={handleConfirm}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </div>
   );
 }
