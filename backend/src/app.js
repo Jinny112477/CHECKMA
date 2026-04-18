@@ -24,7 +24,7 @@ app.use(
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-// API
+//  API ROUTES
 app.use("/api/users", usersRoutes);
 app.use("/api", classroomRoutes);
 

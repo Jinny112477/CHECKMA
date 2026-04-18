@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ArrowLeft, Pencil } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import IconProfile from "../components/IconProfile";
 import { useAuth } from "../context/AuthContext";
 import AlertModal from "../components/AlertModal";
@@ -14,6 +14,7 @@ export default function CreateProf() {
   const [open, setOpen] = useState(false);
 
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   //Form Data
   const [formData, setFormData] = useState({
@@ -280,7 +281,10 @@ export default function CreateProf() {
             description={modalConfig.description}
             type={modalConfig.type}
             confirmText="OK"
-            onConfirm={() => setOpen(false)}
+            onConfirm={() => {
+              setOpen(false);
+              navigate("/prof/home");
+            }}
           />
 
         </div>

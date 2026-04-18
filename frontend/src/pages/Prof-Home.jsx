@@ -91,7 +91,7 @@ export default function HomeProf() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openMenu, showJoin]);
 
-  // GET Classes: fetch class from DB
+  // GET Classes: fetch class
   useEffect(() => {
     const fetchClasses = async () => {
       if (!user?.id) return;

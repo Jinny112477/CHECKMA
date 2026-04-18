@@ -55,7 +55,7 @@ export const classroomCreate = async (req, res) => {
   }
 };
 
-// GET: fetch classrom
+// GET: fetch classrom (for home page)
 export const getMyClasses = async (req, res) => {
   try {
     const { host_id } = req.query;
@@ -78,3 +78,81 @@ export const getMyClasses = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// GET: fetch class by ID (for attendance page)
+export const getClassById = async (req, res) => {
+  try {
+    const { session_id } = req.params;
+
+    const { data, error } = await supabase
+      .from("sessions")
+      .select("*")
+      .eq("session_id", session_id)
+      .single();
+
+    if (error) {
+      return res.status(500).json(error);
+    }
+
+    res.json(data);
+
+  } catch (err) {
+    console.error("CATCH ERROR:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// PUT: edit class information
+export const editClassroom = async (req, res) => {
+  try {
+    const { session_id } = req.params;
+
+    const {
+      icon,
+      course_name,
+      course_id,
+      section,
+      day,
+      start_time,
+      end_time,
+      room,
+      status,
+    } = req.body;
+
+    if (!session_id) {
+      return res.status(400).json({ error: "id is required" });
+    }
+
+    const { data, error } = await supabase
+      .from(sessions)
+      .update({
+        icon,
+        course_name,
+        course_id,
+        section,
+        day,
+        start_time,
+        end_time,
+        room,
+        status,
+      })
+      .eq("session_id", session_id)
+      .select();
+
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        return res.status(404).json({ message: "Classroom not found" });
+      }
+
+      res.json({
+        message: "Classroom updated successfully",
+        data,
+      })
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// DELETE: delete classroom

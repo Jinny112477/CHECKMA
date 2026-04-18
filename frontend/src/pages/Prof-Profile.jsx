@@ -42,12 +42,6 @@ export default function ProfileProf() {
   const [selectedFile, setSelectedFile] = useState(null);
   const { profile, handleSignOut, updateProfile } = useAuth(); // Auth function
 
-  //Form Data
-  const [formData, setFormData] = useState({
-    firstname: "",
-    surname: "",
-  });
-
   const fileInputRef = useRef(null);
 
   const headerRef = useRef(null);
@@ -55,6 +49,12 @@ export default function ProfileProf() {
 
   const username = profile?.username || "checkma";
   const email = profile?.email || "example@gmail.com";
+
+  //Form Data
+  const [formData, setFormData] = useState({
+    firstname: "",
+    surname: "",
+  });
 
   useEffect(() => {
     function handleClickOutside(e) {

@@ -48,10 +48,8 @@ export default function ProfCourseCard({
   const handleSettingClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-
-    // ✅ ใช้ onSetting ถ้ามี
     if (onSetting) onSetting();
-    else navigate("/prof/edit-course");
+    navigate("/prof/edit-course");
   };
 
   const handleDeleteClick = (e) => {

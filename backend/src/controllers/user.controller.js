@@ -71,12 +71,8 @@ export const updateUserProfile = async (req, res) => {
 
     const userId = req.user.sub;
 
-    const { avatar_url, firstname, surname, student_id, faculty, major } =
-      req.body;
+    const { avatar_url, firstname, surname, student_id, faculty, major } = req.body;
 
-    // ===============================
-    // 1️⃣ Update users table
-    // ===============================
     const { error: userError } = await supabase;
     if (avatar_url !== undefined && avatar_url !== null) {
       await supabase.from("users").update({ avatar_url }).eq("id", userId);
@@ -86,9 +82,6 @@ export const updateUserProfile = async (req, res) => {
       return res.status(500).json({ error: "Failed to update user" });
     }
 
-    // ===============================
-    // 2️⃣ Get user role
-    // ===============================
     const { data: userData, error: roleError } = await supabase
       .from("users")
       .select("role")
@@ -99,14 +92,11 @@ export const updateUserProfile = async (req, res) => {
       return res.status(500).json({ error: "Failed to fetch role" });
     }
 
-    // ===============================
-    // 3️⃣ Update correct table based on role
-    // ===============================
-
     // If student, update student_info
     if (userData.role === "student") {
-      const { error } = await supabase.from("student_info").upsert(
-        {
+      const { error } = await supabase
+        .from("student_info")
+        .upsert({
           id: userId,
           firstname,
           surname,
@@ -125,10 +115,12 @@ export const updateUserProfile = async (req, res) => {
 
     // If professor, update prof_info
     if (userData.role === "professor") {
-      const { error } = await supabase.from("prof_info").upsert({
-        id: userId,
-        firstname,
-        surname,
+      const { error } = await supabase
+        .from("prof_info")
+        .upsert({
+          id: userId,
+          firstname,
+          surname,
       });
 
       if (error) {

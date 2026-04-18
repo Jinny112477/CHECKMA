@@ -5,10 +5,10 @@ import IconProfile from "../components/IconProfile";
 
 export default function EditProf() {
   const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime]     = useState("");
-  const [day, setDay]             = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [day, setDay] = useState("");
   const [selectedIcon, setSelectedIcon] = useState("CodeXml");
-  const [showPicker, setShowPicker]     = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FFEB83] font-quicksand px-4">
