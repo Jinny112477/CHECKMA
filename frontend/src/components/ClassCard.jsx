@@ -1,8 +1,8 @@
-export default function ClassCard({
-  classNum = "Class1",
-  date = "19/01/2026"
-}) {
-
+export default function ClassCard({ classNum, date }) {
+    const formattedDate = date
+    ? new Date(date).toLocaleDateString("en-GB")
+    : "-";
+  
   return (
     <div className="bg-[#FFEB83] rounded-2xl px-5 py-3 flex items-center shadow">
 
@@ -11,7 +11,7 @@ export default function ClassCard({
       </div>
 
       <div className="text-sm text-[#4969B2] font-semibold ml-auto bg-white px-3 py-1 rounded-lg">
-        {date}
+        {formattedDate}
       </div>
     </div>
   );

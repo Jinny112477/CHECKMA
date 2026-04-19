@@ -62,46 +62,6 @@ export default function HomeStudent() {
           time: "13:30 - 16:30",
           day: "MON",
         },
-
-        {
-          code: "SF321",
-          section: "760001",
-          name: "Data Communication and Computer Network 1",
-          teacher: "Aj.Piya Techateerawat",
-          room: "ENGR 310",
-          time: "13:30 - 16:30",
-          day: "MON",
-        },
-
-        {
-          code: "SF321",
-          section: "760001",
-          name: "Data Communication and Computer Network 1",
-          teacher: "Aj.Piya Techateerawat",
-          room: "ENGR 310",
-          time: "13:30 - 16:30",
-          day: "MON",
-        },
-
-        {
-          code: "SF321",
-          section: "760001",
-          name: "Data Communication and Computer Network 1",
-          teacher: "Aj.Piya Techateerawat",
-          room: "ENGR 310",
-          time: "13:30 - 16:30",
-          day: "MON",
-        },
-
-        {
-          code: "SF321",
-          section: "760001",
-          name: "Data Communication and Computer Network 1",
-          teacher: "Aj.Piya Techateerawat",
-          room: "ENGR 310",
-          time: "13:30 - 16:30",
-          day: "MON",
-        },
       ];
 
   const hasSubject = courses.length > 0;

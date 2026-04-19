@@ -15,6 +15,7 @@ export default function CreateProf() {
 
   const { user } = useAuth();
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   //Form Data
   const [formData, setFormData] = useState({
@@ -78,7 +79,7 @@ export default function CreateProf() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/classrooms", {
+      const res = await fetch(`${API_URL}/api/sessions/classrooms`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

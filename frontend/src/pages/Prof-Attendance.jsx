@@ -14,7 +14,14 @@ export default function AttendanceProf() {
 
   const [classData, setClassData] = useState(null);
 
-  // Data mapping (Temp)
+  const number = data.length;
+  const { profile } = useAuth();
+  const { session_id } = useParams();
+  const avatar = profile?.avatar_url || "/NongCheckprofile.png";
+  const headerRef = useRef(null);
+  const API_URL = import.meta.env.VITE_API_URL;
+
+  // Student Data mapping (Temp)
   {
     data.map((item, index) => (
       <StudentList
@@ -25,17 +32,13 @@ export default function AttendanceProf() {
     ));
   }
 
-  const number = data.length;
-  const { profile } = useAuth();
-  const { session_id } = useParams();
-  const avatar = profile?.avatar_url || "/NongCheckprofile.png";
-  const headerRef = useRef(null);
-
-  // GET: Class by ID
+  // GET: Class by SESSION ID
   useEffect(() => {
     const fetchClass = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/classrooms/${session_id}`);
+        const res = await fetch(
+          `${API_URL}/api/sessions/classrooms/${session_id}`,
+        );
 
         const data = await res.json();
         setClassData(data);
@@ -46,6 +49,44 @@ export default function AttendanceProf() {
 
     if (session_id) fetchClass();
   }, [session_id]);
+
+  // POST: Create new class in session
+  const handleCreateClass = () => {
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const res = await fetch(`${API_URL}/api/classes/class-session`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              session_id,
+              location_lat: pos.coords.latitude,
+              location_lng: pos.coords.longitude,
+              radius: 50,
+            }),
+          });
+
+          if (!res.ok) {
+            const text = await res.text();
+            console.error("Server error:", text);
+            alert("Failed to create class");
+            return;
+          }
+
+          const data = await res.json();
+          console.log("New class:", data);
+        } catch (err) {
+          console.error("Fetch error:", err);
+        }
+      },
+      (err) => {
+        console.error("Geolocation error:", err);
+        alert("Please allow location access");
+      },
+    );
+  };
 
   return (
     <div className="min-h-screen w-full flex justify-center bg-[#FFFBEA]">
@@ -88,7 +129,9 @@ export default function AttendanceProf() {
         {/* Class name */}
         <div className="mx-8 my-5">
           <div className="flex">
-            <h1 className="text-5xl font-bold text-white">{classData?.course_id || "-"}</h1>
+            <h1 className="text-5xl font-bold text-white">
+              {classData?.course_id || "-"}
+            </h1>
             <Link to={`/prof/dashboard/${session_id}`} className="ml-auto">
               <button
                 className="
@@ -103,7 +146,8 @@ export default function AttendanceProf() {
           </div>
 
           <p className="mt-3 text-sm text-white font-medium">
-            {classData?.course_name || "-"}<br />
+            {classData?.course_name || "-"}
+            <br />
             Section {classData?.section || "-"}
           </p>
         </div>
@@ -137,6 +181,7 @@ export default function AttendanceProf() {
             {/* new class button */}
             <div className="flex justify-center">
               <button
+                onClick={handleCreateClass}
                 className="bg-[#9DB2E3] text-[#FFFBEA] py-2 px-4 rounded-xl font-bold 
                 transition hover:bg-[#7C95CF] flex items-center ml-2"
               >

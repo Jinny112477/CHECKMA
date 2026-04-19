@@ -28,6 +28,8 @@ export default function AuthProvider({ children }) {
 
   const initialSessionChecked = useRef(false);
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   // SUPABASE AUTHENTICATION
   useEffect(() => {
     // 1. Get initial session
@@ -86,7 +88,7 @@ export default function AuthProvider({ children }) {
       }
 
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/users/profile`,
+        `${API_URL}/api/users/profile`,
         {
           headers: {
             Authorization: `Bearer ${session.access_token}`,
@@ -208,7 +210,7 @@ export default function AuthProvider({ children }) {
       }
 
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/users/profile`,
+        `${API_URL}/api/users/profile`,
         {
           method: "PUT",
           headers: {

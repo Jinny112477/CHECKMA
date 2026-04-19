@@ -19,8 +19,6 @@ export const classroomCreate = async (req, res) => {
       host_id,
     } = req.body;
 
-    console.log("REQ BODY:", req.body);
-
     if (!host_id) {
       return res.status(400).json({
         error: "host_id is required",
@@ -55,7 +53,7 @@ export const classroomCreate = async (req, res) => {
   }
 };
 
-// GET: fetch classrom (for home page)
+// GET: fetch classrom (for homepage)
 export const getMyClasses = async (req, res) => {
   try {
     const { host_id } = req.query;
@@ -79,7 +77,7 @@ export const getMyClasses = async (req, res) => {
   }
 };
 
-// GET: fetch class by ID (for attendance page)
+// GET: fetch class by SESSION ID (for attendance page)
 export const getClassById = async (req, res) => {
   try {
     const { session_id } = req.params;

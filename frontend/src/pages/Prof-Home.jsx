@@ -53,6 +53,7 @@ export default function HomeProf() {
   const { profile, handleSignOut } = useAuth(); // Auth function
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
   const { user } = useAuth();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const dayMap = {
     Monday: "MON",
@@ -98,7 +99,7 @@ export default function HomeProf() {
 
       try {
         const res = await fetch(
-          `http://localhost:5000/api/classrooms?host_id=${user.id}`,
+          `${API_URL}/api/sessions/classrooms?host_id=${user.id}`,
         );
 
         const data = await res.json();
