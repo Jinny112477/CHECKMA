@@ -13,6 +13,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { resolveIcon } from "./IconProfile.jsx"; 
 
 export default function ProfCourseCard({
+  session_id,
   icon,
   code,
   section,
@@ -49,7 +50,7 @@ export default function ProfCourseCard({
     e.preventDefault();
     e.stopPropagation();
     if (onSetting) onSetting();
-    navigate("/prof/edit-course");
+    navigate(`/prof/edit-course/${session_id}`);
   };
 
   const handleDeleteClick = (e) => {
@@ -59,7 +60,7 @@ export default function ProfCourseCard({
   };
 
   return (
-    <Link to="/prof/attendance" className="block relative z-0">
+    <Link to={`/prof/attendance/${session_id}`} className="block relative z-0">
       <div className="relative bg-[#FFEB83] rounded-2xl p-4 shadow">
         <button
           onClick={handleToggleMenu}

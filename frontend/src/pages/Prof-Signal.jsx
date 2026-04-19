@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import {ArrowLeft} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import SignalCard from "../components/SignalCard";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function SignalProf() {
@@ -16,6 +16,7 @@ export default function SignalProf() {
   const { profile } = useAuth();
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
   const headerRef = useRef(null);
+  const { session_id } = useParams();
 
   return (
     <div className="min-h-screen w-full flex justify-center bg-[#4969B2]">
@@ -31,7 +32,7 @@ export default function SignalProf() {
         <div ref={headerRef} className="relative shrink-0">
           <header className="h-20 flex items-center justify-between px-5">
             {/* back arrow */}
-            <Link to="/prof/attendance" className="top-6 left-6 text-white">
+            <Link to={`/prof/attendance/${session_id}`} className="top-6 left-6 text-white">
                 <ArrowLeft size={32} />
             </Link>
 

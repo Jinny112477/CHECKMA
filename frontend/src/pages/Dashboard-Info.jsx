@@ -3,7 +3,7 @@ import {
   ArrowLeft,
   House
 } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import InfoCard from "../components/InfoCard";
 
 export default function DashboardInfo() {
@@ -27,6 +27,7 @@ export default function DashboardInfo() {
   ];
 
   const headerRef = useRef(null);
+  const { session_id } = useParams();
 
   return (
     <div className="min-h-screen w-full flex justify-center bg-[#4969B2]">
@@ -43,7 +44,7 @@ export default function DashboardInfo() {
           <div className="relative bg-[#4969B2]">
             <header className="h-20 flex items-center justify-between px-5">
               {/* back arrow */}
-              <Link to="/prof/dashboard" className="top-6 left-6 text-white">
+              <Link to={`/prof/dashboard/${session_id}`} className="top-6 left-6 text-white">
                   <ArrowLeft size={32} />
               </Link>
 

@@ -88,8 +88,8 @@ export default function AttendanceProf() {
         {/* Class name */}
         <div className="mx-8 my-5">
           <div className="flex">
-            <h1 className="text-5xl font-bold text-white">{classData?.course_code || "-"}</h1>
-            <Link to="/prof/dashboard" className="ml-auto">
+            <h1 className="text-5xl font-bold text-white">{classData?.course_id || "-"}</h1>
+            <Link to={`/prof/dashboard/${session_id}`} className="ml-auto">
               <button
                 className="
                   w-12 h-12 rounded-full
@@ -125,7 +125,7 @@ export default function AttendanceProf() {
 
           {/* Buttons */}
           <div className="flex my-4">
-            <Link to="/prof/signal" className="flex-1">
+            <Link to={`/prof/signal/${session_id}`} className="flex-1">
               <button
                 className="w-full bg-[#F49A5E] text-[#FFFBEA] py-2 
                 rounded-xl font-bold hover:bg-[#EB9358] transition"

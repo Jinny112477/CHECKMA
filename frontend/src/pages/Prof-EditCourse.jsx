@@ -25,7 +25,7 @@ export default function EditProf() {
         "
       >
         {/* back arrow */}
-        <Link to="/prof/home" className="absolute top-6 left-6 text-[#9DB2E3]">
+        <Link to={"/prof/home"} className="absolute top-6 left-6 text-[#9DB2E3]">
           <ArrowLeft size={32} />
         </Link>
 

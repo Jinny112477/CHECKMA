@@ -219,6 +219,7 @@ export default function HomeProf() {
               {courses.map((course) => (
                 <ProfCourseCard
                   key={course.session_id}
+                  session_id={course.session_id}
                   icon={course.icon}
                   code={course.course_id}
                   section={course.section}
