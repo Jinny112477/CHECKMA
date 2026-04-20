@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
 import ProfCourseCard from "../components/ProfCourseCard.jsx";
-import { resolveIcon } from "../components/IconProfile.jsx";
 
 /* ===== reusable menu item ===== */
 function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
@@ -53,6 +52,7 @@ export default function HomeProf() {
   const { profile, handleSignOut } = useAuth(); // Auth function
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
   const { user } = useAuth();
+  
   const API_URL = import.meta.env.VITE_API_URL;
 
   const dayMap = {
@@ -215,7 +215,7 @@ export default function HomeProf() {
           )}
 
           {/* ===== COURSE CARDS ===== */}
-          {courses.length > 0 && (
+          {hasSubject && (
             <div className="space-y-6">
               {courses.map((course) => (
                 <ProfCourseCard
@@ -230,6 +230,7 @@ export default function HomeProf() {
                   time={`${formatTime(course.start_time)} - ${formatTime(course.end_time)}`}
                   day={formatDay(course.day)}
                   onSetting={() => console.log("Setting:", course.session_id)}
+                  //onDelete={...}
                 />
               ))}
             </div>

@@ -62,3 +62,27 @@ export const joinClass = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// GET: fetch joined session
+export const getJoinedSession = async (req, res) => {
+  try {
+    const { user_id } = req.query;
+
+    if (!user_id) {
+      return res.status(400).json({ error: "user_id is required" });
+    }
+
+    const { data, error } = await supabase
+      .from("student_sessions_view")
+      .select("*")
+      .eq("user_id", user_id)
+      .order("start_time", { ascending: true });
+
+    if (error) throw error;
+
+    res.json(data);
+  } catch (err) {
+    console.error("GET JOINED SESSION ERROR:", err);
+    res.status(500).json({ error: err.message });
+  }
+};

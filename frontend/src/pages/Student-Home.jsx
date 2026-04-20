@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Menu, Settings, LogOut, Plus, CirclePlus } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.jsx"
+import { useAuth } from "../context/AuthContext.jsx";
+import axios from "axios";
 
 import CourseCard from "../components/CourseCard.jsx";
 
@@ -40,6 +41,8 @@ function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
 export default function HomeStudent() {
   const [openMenu, setOpenMenu] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const headerRef = useRef(null);
   const joinRef = useRef(null);
@@ -47,22 +50,24 @@ export default function HomeStudent() {
   const { profile, handleSignOut } = useAuth();
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
 
-  /* ===== mock data (เพิ่มการ์ดจากตรงนี้) ===== */
-  const DEV_EMPTY = false; // true = ไม่มีวิชา ทดสอบการแสดง empty state
+  const API_URL = import.meta.env.API_URL;
 
-  const courses = DEV_EMPTY
-    ? []
-    : [
-        {
-          code: "SF321",
-          section: "760001",
-          name: "Data Communication and Computer Network 1",
-          teacher: "Aj.Piya Techateerawat",
-          room: "ENGR 310",
-          time: "13:30 - 16:30",
-          day: "MON",
-        },
-      ];
+  /* ===== mock data (เพิ่มการ์ดจากตรงนี้) ===== */
+  // const DEV_EMPTY = false; // true = ไม่มีวิชา ทดสอบการแสดง empty state
+
+  // const courses = DEV_EMPTY
+  //   ? []
+  //   : [
+  //       {
+  //         code: "SF321",
+  //         section: "760001",
+  //         name: "Data Communication and Computer Network 1",
+  //         teacher: "Aj.Piya Techateerawat",
+  //         room: "ENGR 310",
+  //         time: "13:30 - 16:30",
+  //         day: "MON",
+  //       },
+  //     ];
 
   const hasSubject = courses.length > 0;
 
@@ -83,18 +88,47 @@ export default function HomeStudent() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openMenu, showJoin]);
 
-  
+  // GET: fetch joined classes
+  useEffect(() => {
+  const fetchSessions = async () => {
+    try {
+      const res = await axios.get(
+        `${API_URL}/api/participants/join-session`,
+        {
+          params: {
+            user_id: profile?.id,
+          },
+        }
+      );
+
+      setCourses(res.data || []);
+    } catch (err) {
+      console.error("Failed to load sessions:", err);
+      setCourses([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (profile?.id) fetchSessions();
+}, [profile]);
+
   return (
     <div className="min-h-screen w-full flex justify-center bg-[#FFFBEA]">
-      <div className="relative
+      <div
+        className="relative
                     w-full max-w-[390px]
                     min-h-screen
                     bg-[#4969B2]
                     shadow-none sm:shadow-xl
                     flex flex-col
-                    overflow-y-auto">
+                    overflow-y-auto"
+      >
         {/* ================= HEADER ================= */}
-        <div ref={headerRef} className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-50">
+        <div
+          ref={headerRef}
+          className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-50"
+        >
           <div className="relative bg-[#4969B2]">
             <header className="h-20 flex items-center justify-between px-5">
               <button onClick={() => setOpenMenu(!openMenu)}>
@@ -159,11 +193,7 @@ export default function HomeStudent() {
                            flex items-center justify-center
                            animate-[scaleIn_0.6s_ease-out_forwards]"
               >
-                <img
-                  src="/NongCheck.svg"
-                  alt="empty"
-                  className="w-40 h-40"
-                />
+                <img src="/NongCheck.svg" alt="empty" className="w-40 h-40" />
               </div>
 
               <p className="text-[#FFB37A] font-semibold text-lg">
@@ -189,18 +219,19 @@ export default function HomeStudent() {
         {/* ================= JOIN BUTTON ================= */}
         <div
           ref={joinRef}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-50 flex flex-col items-end gap-3 pr-4">
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-50 flex flex-col items-end gap-3 pr-4"
+        >
           {showJoin && (
-          <div className="w-fit">
-            <MenuItem
-              icon={CirclePlus}
-              label="Join Class"
-              variant="join"
-              to="/student/join"
-              className="w-auto"
-              onClick={() => setShowJoin(false)}
-            />
-          </div>
+            <div className="w-fit">
+              <MenuItem
+                icon={CirclePlus}
+                label="Join Class"
+                variant="join"
+                to="/student/join"
+                className="w-auto"
+                onClick={() => setShowJoin(false)}
+              />
+            </div>
           )}
 
           <button

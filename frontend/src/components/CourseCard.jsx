@@ -5,8 +5,10 @@ import {
   CalendarDays
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { resolveIcon } from "./IconProfile.jsx"; 
 
 export default function CourseCard({
+  icon,
   code,
   section,
   name,
@@ -14,8 +16,10 @@ export default function CourseCard({
   room,
   time,
   day,
-  onSetting,
 }) {
+
+  const Icon = resolveIcon(icon);
+  
   return (
     <Link to="/student/attendance" className="block">
       <div className="relative bg-[#FFEB83] rounded-2xl p-4 shadow space-y-4">
