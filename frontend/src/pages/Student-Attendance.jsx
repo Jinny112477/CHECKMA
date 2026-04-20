@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {ArrowLeft} from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import AttendanceCard from "../components/AttendanceCard";
 import { useAuth } from "../context/AuthContext";
@@ -12,11 +12,15 @@ export default function AttendanceStudent() {
     { classNum: "Class 2", date: "20/01/2026", time: "09.00", status: "Absent" },
     { classNum: "Class 3", date: "25/01/2026", time: "09.00", status: "Late" }
   ];
+  
+  const[classData, setClassData] = useState(null);
 
   const total = data.length;
   const { profile } = useAuth();
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
   const headerRef = useRef(null);
+  const { session_id } = useParams();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const presentCount = data.filter(d => d.status === "Present").length;
   const lateCount = data.filter(d => d.status === "Late").length;
@@ -25,6 +29,24 @@ export default function AttendanceStudent() {
   const presentPercent = (presentCount / total) * 100;
   const latePercent = (lateCount / total) * 100;
   const absentPercent = (absentCount / total) * 100;
+
+  // GET: Class by SESSION ID
+  useEffect(() => {
+    const fetchClass = async () => {
+      try {
+        const res = await fetch(
+          `${API_URL}/api/sessions/classrooms/${session_id}`,
+        );
+
+        const data = await res.json();
+        setClassData(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    if (session_id) fetchClass();
+  }, [session_id]);
 
   return (
     <div className="min-h-screen w-full flex justify-center bg-[#FFFBEA]">
@@ -66,11 +88,11 @@ export default function AttendanceStudent() {
         {/* Class name */}
         <div className="ml-8 my-5">
           <h1 className="text-5xl font-bold text-white">
-            SF321
+            {classData?.course_id || "-"}
           </h1>
           <p className="mt-3 text-sm text-white font-medium">
-              Data Communication and Computer Network 1<br />
-              Section 760001
+              {classData?.course_name || "-"}<br />
+              Section {classData?.section || "-"}
           </p>
         </div>
 
@@ -129,7 +151,7 @@ export default function AttendanceStudent() {
           </div>
 
           {/* check button */}
-          <Link to="/student/signal" className="mt-auto pt-6">
+          <Link to={`/student/signal/${session_id}`} className="mt-auto pt-6">
             <button
               className="w-full bg-[#F49A5E] text-[#FFFBEA] py-3 sm:py-4 mt-auto mb-8
               rounded-2xl font-bold hover:bg-[#EB9358] transition"

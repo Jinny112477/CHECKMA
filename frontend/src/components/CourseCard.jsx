@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { resolveIcon } from "./IconProfile.jsx"; 
 
 export default function CourseCard({
+  session_id,
   icon,
   code,
   section,
@@ -21,7 +22,7 @@ export default function CourseCard({
   const Icon = resolveIcon(icon);
   
   return (
-    <Link to="/student/attendance" className="block">
+    <Link to={`/student/attendance/${session_id}`} className="block">
       <div className="relative bg-[#FFEB83] rounded-2xl p-4 shadow space-y-4">
 
         {/* header */}

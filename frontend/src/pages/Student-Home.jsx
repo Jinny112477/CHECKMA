@@ -198,8 +198,9 @@ export default function HomeStudent() {
               {courses.map((item, index) => (
                 <CourseCard
                   key={index}
+                  session_id={item.session_id}
                   icon={item.icon}
-                  code={item.session_code}
+                  code={item.course_id}
                   section={item.section}
                   name={item.course_name}
                   teacher={item.teacher}

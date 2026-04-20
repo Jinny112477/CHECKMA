@@ -40,8 +40,8 @@ function App() {
       <Route path="/prof/profile" element={<ProfileProf />} />
       <Route path="/role" element={<RoleSelect />} />
       
-      <Route path="/student/attendance" element={<AttendanceStudent />} />
-      <Route path="/student/signal" element={<SignalStudent />} />
+      <Route path="/student/attendance/:session_id" element={<AttendanceStudent />} />
+      <Route path="/student/signal/:session_id" element={<SignalStudent />} />
 
       <Route path="/prof/attendance/:session_id" element={<AttendanceProf />} />
       <Route path="/prof/signal/:session_id" element={<SignalProf />} />
