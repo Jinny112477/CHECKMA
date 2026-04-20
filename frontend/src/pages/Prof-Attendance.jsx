@@ -6,31 +6,16 @@ import { useAuth } from "../context/AuthContext";
 
 export default function AttendanceProf() {
   // เปลี่ยน const data เป็น useState (Temp)
-  const [data, setData] = useState([
-    { firstname: "Vidsava", surname: "Thammasat", student_id: "6710740000" },
-    { firstname: "Vidsava", surname: "Thammasat", student_id: "6710740001" },
-    { firstname: "Vidsava", surname: "Thammasat", student_id: "6710740002" },
-  ]);
 
   const [classData, setClassData] = useState(null);
+  const [studentData, setStudentData] = useState([]);
 
-  const number = data.length;
+  const number = studentData.length;
   const { profile } = useAuth();
   const { session_id } = useParams();
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
   const headerRef = useRef(null);
   const API_URL = import.meta.env.VITE_API_URL;
-
-  // Student Data mapping (Temp)
-  {
-    data.map((item, index) => (
-      <StudentList
-        key={item.student_id}
-        {...item}
-        onDelete={() => setData(data.filter((_, i) => i !== index))}
-      />
-    ));
-  }
 
   // GET: Class by SESSION ID
   useEffect(() => {
@@ -48,6 +33,26 @@ export default function AttendanceProf() {
     };
 
     if (session_id) fetchClass();
+  }, [session_id]);
+
+  // GET: fetch session participants
+  useEffect(() => {
+    if (!session_id) return;
+
+    const fetchParticipants = async () => {
+      try {
+        const res = await fetch(
+          `${API_URL}/api/participants/join-session/${session_id}`,
+        );
+
+        const result = await res.json();
+        setStudentData(result);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchParticipants();
   }, [session_id]);
 
   // POST: Create new class in session
@@ -201,8 +206,16 @@ export default function AttendanceProf() {
           </div>
 
           <div className="space-y-4">
-            {data.map((item, index) => (
-              <StudentList key={index} {...item} />
+            {studentData.map((item, index) => (
+              <StudentList
+                key={item.student_id}
+                student_id={item.users.student_info?.student_id}
+                firstname={item.users.student_info?.firstname}
+                surname={item.users.student_info?.surname}
+                onDelete={() =>
+                  setStudentData((prev) => prev.filter((_, i) => i !== index))
+                }
+              />
             ))}
           </div>
         </div>

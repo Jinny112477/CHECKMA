@@ -81,3 +81,33 @@ export const getJoinedSession = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// GET: sessions participants info by user_id
+export const getParticipantById = async (req, res) => {
+  try {
+    const { session_id } = req.params;
+
+    const { data, error } = await supabase
+      .from("session_participants")
+      .select(
+        `
+          user_id,
+          users (
+            student_info (
+              firstname,
+              surname,
+              student_id
+            )
+          )
+        `,
+      )
+      .eq("session_id", session_id);
+
+    if (error) throw error;
+
+    res.json(data || []);
+  } catch (err) {
+    console.error("STUDENT FETCH ERROR:", err);
+    res.status(500).json({ error: err.message });
+  }
+};

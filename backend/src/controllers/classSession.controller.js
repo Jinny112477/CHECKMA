@@ -12,38 +12,35 @@ export const createClassSession = async (req, res) => {
       });
     }
 
-    // Get last class_number
+    // get last class
     const { data: lastClass, error: lastError } = await supabase
       .from("class_session")
       .select("class_number")
       .eq("session_id", session_id)
       .order("class_number", { ascending: false })
-      .limit(1);
+      .limit(1)
+      .maybeSingle();
 
     if (lastError) throw lastError;
 
-    const classNumber =
-      lastClass && lastClass.length > 0 ? lastClass[0].class_number + 1 : 1;
+    const classNumber = lastClass ? lastClass.class_number + 1 : 1;
 
-    const class_name = `Class ${classNumber}`;
-
-    // Deactivate previous classes
+    // close all previous classes
     const { error: updateError } = await supabase
       .from("class_session")
       .update({ status: "closed" })
-      .eq("session_id", session_id)
-      .eq("status", "open");
+      .eq("session_id", session_id);
 
     if (updateError) throw updateError;
 
-    // Insert new class
+    // create new class
     const { data, error } = await supabase
       .from("class_session")
       .insert([
         {
           session_id,
           class_number: classNumber,
-          class_name,
+          class_name: `Class ${classNumber}`,
           class_date: class_date || new Date().toISOString(),
           status: "open",
           location_lat,
@@ -51,11 +48,15 @@ export const createClassSession = async (req, res) => {
           radius,
         },
       ])
-      .select();
+      .select()
+      .single();
 
     if (error) throw error;
 
-    res.status(201).json(data);
+    res.status(201).json({
+      message: "Class created successfully",
+      class: data,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
@@ -78,7 +79,6 @@ export const getClassSession = async (req, res) => {
     }
 
     res.json(data);
-
   } catch (err) {
     console.error("CATCH ERROR:", err);
     res.status(500).json({ error: err.message });

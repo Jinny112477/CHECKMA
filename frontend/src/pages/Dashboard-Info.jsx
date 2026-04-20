@@ -8,20 +8,20 @@ export default function DashboardInfo() {
   const selectedClass = location.state;
 
   const data = [
-    // {
-    //   firstname: "Vidsava",
-    //   surname: "Thammasat",
-    //   student_id: "6710740000",
-    //   time: "13.30",
-    //   status: "Present",
-    // },
-    // {
-    //   firstname: "Vidsava",
-    //   surname: "Thammasat",
-    //   student_id: "6710740001",
-    //   time: "09.00",
-    //   status: "Absent",
-    // },
+    {
+      firstname: "Vidsava",
+      surname: "Thammasat",
+      student_id: "6710740000",
+      time: "13.30",
+      status: "Present",
+    },
+    {
+      firstname: "Vidsava",
+      surname: "Thammasat",
+      student_id: "6710740001",
+      time: "09.00",
+      status: "Absent",
+    },
   ];
 
   const hasStudent = data.length > 0;
