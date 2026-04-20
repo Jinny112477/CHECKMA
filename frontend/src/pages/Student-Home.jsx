@@ -14,13 +14,12 @@ function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
     join: "bg-[#AFC1F3] text-[#4F6DB8]",
   };
 
+  const className =
+    `w-full px-4 py-2 rounded-xl flex items-center gap-2 font-semibold shadow transition ${variants[variant]}`;
+
   if (to) {
     return (
-      <Link
-        to={to}
-        onClick={onClick}
-        className={`w-full px-4 py-2 rounded-xl flex items-center gap-2 font-semibold shadow transition ${variants[variant]}`}
-      >
+      <Link to={to} onClick={onClick} className={className}>
         <Icon size={16} />
         {label}
       </Link>
@@ -28,10 +27,7 @@ function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
   }
 
   return (
-    <button
-      onClick={onClick}
-      className={`w-full px-4 py-2 rounded-xl flex items-center gap-2 font-semibold shadow transition ${variants[variant]}`}
-    >
+    <button onClick={onClick} className={className}>
       <Icon size={16} />
       {label}
     </button>
@@ -42,7 +38,6 @@ export default function HomeStudent() {
   const [openMenu, setOpenMenu] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
   const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   const headerRef = useRef(null);
   const joinRef = useRef(null);
@@ -50,26 +45,29 @@ export default function HomeStudent() {
   const { profile, handleSignOut } = useAuth();
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
 
-  const API_URL = import.meta.env.API_URL;
-
-  /* ===== mock data (เพิ่มการ์ดจากตรงนี้) ===== */
-  // const DEV_EMPTY = false; // true = ไม่มีวิชา ทดสอบการแสดง empty state
-
-  // const courses = DEV_EMPTY
-  //   ? []
-  //   : [
-  //       {
-  //         code: "SF321",
-  //         section: "760001",
-  //         name: "Data Communication and Computer Network 1",
-  //         teacher: "Aj.Piya Techateerawat",
-  //         room: "ENGR 310",
-  //         time: "13:30 - 16:30",
-  //         day: "MON",
-  //       },
-  //     ];
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const hasSubject = courses.length > 0;
+
+  const dayMap = {
+    Monday: "MON",
+    Tuesday: "TUE",
+    Wednesday: "WED",
+    Thursday: "THU",
+    Friday: "FRI",
+    Saturday: "SAT",
+    Sunday: "SUN",
+  };
+
+  //Day Mapping
+  const formatDay = (day) => {
+    return dayMap[day] || day;
+  };
+
+  //Time Mapping
+  const formatTime = (time) => {
+    return time.slice(0, 5);
+  };
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -77,52 +75,59 @@ export default function HomeStudent() {
         openMenu &&
         headerRef.current &&
         !headerRef.current.contains(e.target)
-      )
+      ) {
         setOpenMenu(false);
+      }
 
-      if (showJoin && joinRef.current && !joinRef.current.contains(e.target))
+      if (showJoin && joinRef.current && !joinRef.current.contains(e.target)) {
         setShowJoin(false);
+      }
     }
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openMenu, showJoin]);
 
-  // GET: fetch joined classes
+  // GET: fetch joined class
   useEffect(() => {
-  const fetchSessions = async () => {
-    try {
-      const res = await axios.get(
-        `${API_URL}/api/participants/join-session`,
-        {
-          params: {
-            user_id: profile?.id,
+    if (!profile?.id) return;
+
+    const fetchSessions = async () => {
+      try {
+        const res = await axios.get(
+          `${API_URL}/api/participants/join-session`,
+          {
+            params: {
+              user_id: profile.id,
+            },
           },
-        }
-      );
+        );
 
-      setCourses(res.data || []);
-    } catch (err) {
-      console.error("Failed to load sessions:", err);
-      setCourses([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+        const sessions = Array.isArray(res.data)
+          ? res.data
+          : res.data?.data || [];
 
-  if (profile?.id) fetchSessions();
-}, [profile]);
+        console.log("sessions:", sessions);
+        setCourses(sessions);
+      } catch (err) {
+        console.error("Failed to load sessions:", err);
+        setCourses([]);
+      }
+    };
+
+    fetchSessions();
+  }, [profile?.id]);
 
   return (
     <div className="min-h-screen w-full flex justify-center bg-[#FFFBEA]">
       <div
         className="relative
                     w-full max-w-[390px]
-                    min-h-screen
+                    h-screen
                     bg-[#4969B2]
                     shadow-none sm:shadow-xl
                     flex flex-col
-                    overflow-y-auto"
+                    overflow-hidden"
       >
         {/* ================= HEADER ================= */}
         <div
@@ -134,23 +139,17 @@ export default function HomeStudent() {
               <button onClick={() => setOpenMenu(!openMenu)}>
                 <Menu
                   size={28}
-                  className={`text-white transition-transform duration-300 ${
-                    openMenu ? "rotate-180" : "rotate-0"
-                  }`}
+                  className={`text-white transition ${openMenu ? "rotate-180" : ""}`}
                 />
               </button>
 
               <img src="/CHECKMA-logo-white.svg" className="h-7" />
 
-              {/* profile picture */}
               <Link to="/student/profile">
                 <button className="w-10 h-10 rounded-full bg-[#9DB2E3] overflow-hidden">
                   <img
                     src={avatar}
-                    onError={(e) => {
-                      e.target.src = "/NongCheckprofile.png";
-                    }}
-                    alt="Profile"
+                    onError={(e) => (e.target.src = "/NongCheckprofile.png")}
                     className="w-full h-full object-cover"
                   />
                 </button>
@@ -174,26 +173,17 @@ export default function HomeStudent() {
               </div>
             )}
 
-            <div className="flex items-end">
-              <div className="h-10 w-full rounded-t-[40px] bg-[#FFFBEA]" />
-            </div>
+            <div className="h-10 w-full rounded-t-[40px] bg-[#FFFBEA]" />
           </div>
         </div>
 
         {/* ================= CONTENT ================= */}
         <div className="flex-1 bg-[#FFFBEA] overflow-y-auto p-4 pb-24 pt-[120px]">
-          {/* ===== EMPTY STATE ===== */}
+          {/* EMPTY STATE */}
           {!hasSubject && (
-            <div
-              className="flex flex-col items-center justify-center h-full text-center gap-4
-                            animate-[fadeIn_0.6s_ease-out_forwards]"
-            >
-              <div
-                className="w-48 h-48 rounded-full bg-[#FFD6B0]
-                           flex items-center justify-center
-                           animate-[scaleIn_0.6s_ease-out_forwards]"
-              >
-                <img src="/NongCheck.svg" alt="empty" className="w-40 h-40" />
+            <div className="flex flex-col items-center justify-center h-full text-center gap-4">
+              <div className="w-48 h-48 rounded-full bg-[#FFD6B0] flex items-center justify-center">
+                <img src="/NongCheck.svg" className="w-40 h-40" />
               </div>
 
               <p className="text-[#FFB37A] font-semibold text-lg">
@@ -202,14 +192,20 @@ export default function HomeStudent() {
             </div>
           )}
 
-          {/* ===== COURSE CARDS ===== */}
+          {/* COURSE CARDS */}
           {hasSubject && (
             <div className="space-y-6">
-              {courses.map((course, index) => (
+              {courses.map((item, index) => (
                 <CourseCard
                   key={index}
-                  {...course}
-                  onSetting={() => console.log("Setting clicked:", course.code)}
+                  icon={item.icon}
+                  code={item.session_code}
+                  section={item.section}
+                  name={item.course_name}
+                  teacher={item.teacher}
+                  room={item.room}
+                  time={`${formatTime(item.start_time)} - ${formatTime(item.end_time)}`}
+                  day={formatDay(item.day)}
                 />
               ))}
             </div>
@@ -222,14 +218,13 @@ export default function HomeStudent() {
           className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-50 flex flex-col items-end gap-3 pr-4"
         >
           {showJoin && (
-            <div className="w-fit">
+            <div classname="w-fit">
               <MenuItem
                 icon={CirclePlus}
                 label="Join Class"
-                variant="join"
                 to="/student/join"
-                className="w-auto"
                 onClick={() => setShowJoin(false)}
+                variant="join"
               />
             </div>
           )}

@@ -1,6 +1,6 @@
 import { supabase } from "../lib/supabaseClient.js";
 
-// POST: join class
+// POST: join session
 export const joinClass = async (req, res) => {
   try {
     const { session_code, user_id } = req.body;
@@ -13,21 +13,19 @@ export const joinClass = async (req, res) => {
       return res.status(400).json({ error: "user_id is required" });
     }
 
-    // find session
     const { data: session, error: sessionError } = await supabase
       .from("sessions")
       .select("session_id")
       .eq("session_code", session_code)
-      .single();
+      .maybeSingle();
 
     if (sessionError || !session) {
       return res.status(404).json({ error: "Invalid session code" });
     }
 
-    // prevent duplicate join
     const { data: existing } = await supabase
       .from("session_participants")
-      .select("*")
+      .select("id")
       .eq("session_id", session.session_id)
       .eq("user_id", user_id)
       .maybeSingle();
@@ -36,15 +34,14 @@ export const joinClass = async (req, res) => {
       return res.status(400).json({ error: "Already joined this session" });
     }
 
-    // insert participant
     const { data, error } = await supabase
       .from("session_participants")
       .insert([
         {
           session_id: session.session_id,
-          user_id: user_id,
+          user_id,
           status: "accepted",
-          joined_at: new Date(),
+          joined_at: new Date().toISOString(),
         },
       ])
       .select();
@@ -56,7 +53,6 @@ export const joinClass = async (req, res) => {
       session_id: session.session_id,
       participant: data,
     });
-
   } catch (err) {
     console.error("JOIN SESSION ERROR:", err);
     res.status(500).json({ error: err.message });
@@ -75,12 +71,11 @@ export const getJoinedSession = async (req, res) => {
     const { data, error } = await supabase
       .from("student_sessions_view")
       .select("*")
-      .eq("user_id", user_id)
-      .order("start_time", { ascending: true });
+      .eq("user_id", user_id);
 
     if (error) throw error;
 
-    res.json(data);
+    res.json(data || []);
   } catch (err) {
     console.error("GET JOINED SESSION ERROR:", err);
     res.status(500).json({ error: err.message });

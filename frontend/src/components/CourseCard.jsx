@@ -27,7 +27,7 @@ export default function CourseCard({
         {/* header */}
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shrink-0">
-            <img src="/NongCheck.svg" className="w-8 h-8" />
+            {Icon ? <Icon size={28} className="text-[#F49A5E]" /> : <User size={28} />}
           </div>
 
           <div className="flex-1">
