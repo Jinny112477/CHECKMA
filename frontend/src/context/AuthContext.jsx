@@ -23,6 +23,7 @@ export default function AuthProvider({ children }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [signals, setSignals] = useState([]);
 
   const navigate = useNavigate();
 
@@ -55,6 +56,65 @@ export default function AuthProvider({ children }) {
   };
 
   const unsubscribe = (channel) => {
+    if (channel) supabase.removeChannel(channel);
+  };
+
+  // SIGNALS: handler
+  const fetchSignals = async (class_id) => {
+    try {
+      const res = await fetch(`${API_URL}/api/attendance/signal/${class_id}`);
+      const data = await res.json();
+
+      if (res.ok) {
+        setSignals(data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const subscribeSignals = (class_id) => {
+    const channel = supabase
+      .channel(`attendance-signals-${class_id}`)
+
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "attendance_signals",
+          filter: `class_id=eq.${class_id}`,
+        },
+        (payload) => {
+          setSignals((prev) => {
+            const exists = prev.find((s) => s.id === payload.new.id);
+            if (exists) return prev;
+            return [...prev, payload.new];
+          });
+        },
+      )
+
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "attendance_signals",
+          filter: `class_id=eq.${class_id}`,
+        },
+        (payload) => {
+          if (payload.new.status === "processed") {
+            setSignals((prev) => prev.filter((s) => s.id !== payload.new.id));
+          }
+        },
+      )
+
+      .subscribe();
+
+    return channel;
+  };
+
+  const unsubscribeSignals = (channel) => {
     if (channel) supabase.removeChannel(channel);
   };
 
@@ -294,6 +354,10 @@ export default function AuthProvider({ children }) {
         setProfile,
         loading,
         subscribeToParticipants,
+        signals,
+        fetchSignals,
+        unsubscribeSignals,
+        subscribeSignals,
         unsubscribe,
         handleGoogleAuthen,
         handleEmailLogin,

@@ -1,8 +1,12 @@
 import { Router } from "express";
-import { sendSignal } from "../controllers/signal.controller.js"
+import {  
+    sendSignal,
+    getSignals
+} from "../controllers/signal.controller.js"
 
 const router = Router();
 
-router.post("/signals", sendSignal); // POST: send signal
+router.post("/signal/:class_id", sendSignal); // POST: send signal
+router.get("/signal/:class_id", getSignals); // GET: fetch card from signal
 
 export default router;

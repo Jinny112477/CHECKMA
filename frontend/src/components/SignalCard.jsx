@@ -7,9 +7,9 @@ import { useState } from "react";
 
 
 export default function SignalCard({
-  firstname = "Vidsava",
-  surname = "Thammasat",
-  student_id = "6710740000"
+  firstname,
+  surname,
+  student_id
 }) {
 
   const [status, setStatus] = useState("");
