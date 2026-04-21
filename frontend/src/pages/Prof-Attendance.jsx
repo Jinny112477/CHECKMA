@@ -11,11 +11,49 @@ export default function AttendanceProf() {
   const [studentData, setStudentData] = useState([]);
 
   const number = studentData.length;
-  const { profile } = useAuth();
+  const { profile, subscribeToParticipants, unsubscribe } = useAuth();
   const { session_id } = useParams();
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
   const headerRef = useRef(null);
   const API_URL = import.meta.env.VITE_API_URL;
+
+  // REALTIME RENDER: fetch session participants
+  useEffect(() => {
+    if (!session_id) return;
+
+    let channel = null;
+    let isMounted = true;
+
+    const fetchParticipants = async () => {
+      try {
+        const res = await fetch(
+          `${API_URL}/api/participants/join-session/${session_id}`,
+        );
+        const result = await res.json();
+        console.log("✅ Fetched participants:", result);
+        if (isMounted) setStudentData(result);
+      } catch (err) {
+        console.error("❌ Fetch error:", err);
+      }
+    };
+
+    fetchParticipants();
+
+    const timer = setTimeout(() => {
+      if (!isMounted) return;
+
+      channel = subscribeToParticipants(session_id, (payload) => {
+        console.log("🔔 Realtime event received:", payload);
+        fetchParticipants();
+      });
+    }, 100);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+      if (channel) unsubscribe(channel);
+    };
+  }, [session_id]);
 
   // GET: Class by SESSION ID
   useEffect(() => {
@@ -36,24 +74,24 @@ export default function AttendanceProf() {
   }, [session_id]);
 
   // GET: fetch session participants
-  useEffect(() => {
-    if (!session_id) return;
+  // useEffect(() => {
+  //   if (!session_id) return;
 
-    const fetchParticipants = async () => {
-      try {
-        const res = await fetch(
-          `${API_URL}/api/participants/join-session/${session_id}`,
-        );
+  //   const fetchParticipants = async () => {
+  //     try {
+  //       const res = await fetch(
+  //         `${API_URL}/api/participants/join-session/${session_id}`,
+  //       );
 
-        const result = await res.json();
-        setStudentData(result);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+  //       const result = await res.json();
+  //       setStudentData(result);
+  //     } catch (err) {
+  //       console.error(err);
+  //     }
+  //   };
 
-    fetchParticipants();
-  }, [session_id]);
+  //   fetchParticipants();
+  // }, [session_id]);
 
   // POST: Create new class in session
   const handleCreateClass = () => {

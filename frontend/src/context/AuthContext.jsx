@@ -30,6 +30,34 @@ export default function AuthProvider({ children }) {
 
   const API_URL = import.meta.env.VITE_API_URL;
 
+  // SUPABASE REALTIME RENDERING
+  const subscribeToParticipants = (session_id, callback) => {
+    const channel = supabase
+      .channel(`session_participants:${session_id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "session_participants",
+          filter: `session_id=eq.${session_id}`,
+        },
+        (payload) => {
+          console.log("📡 Supabase raw event:", payload);
+          callback(payload);
+        },
+      )
+      .subscribe((status) => {
+        console.log("🔌 Subscription status:", status); // Must say SUBSCRIBED
+      });
+
+    return channel;
+  };
+
+  const unsubscribe = (channel) => {
+    if (channel) supabase.removeChannel(channel);
+  };
+
   // SUPABASE AUTHENTICATION
   useEffect(() => {
     // 1. Get initial session
@@ -87,14 +115,11 @@ export default function AuthProvider({ children }) {
         return;
       }
 
-      const res = await fetch(
-        `${API_URL}/api/users/profile`,
-        {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
+      const res = await fetch(`${API_URL}/api/users/profile`, {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
         },
-      );
+      });
 
       const data = await res.json();
 
@@ -209,20 +234,17 @@ export default function AuthProvider({ children }) {
         });
       }
 
-      const res = await fetch(
-        `${API_URL}/api/users/profile`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({
-            avatar_url: avatarUrl,
-            ...formData,
-          }),
+      const res = await fetch(`${API_URL}/api/users/profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
         },
-      );
+        body: JSON.stringify({
+          avatar_url: avatarUrl,
+          ...formData,
+        }),
+      });
 
       const data = await res.json();
 
@@ -271,6 +293,8 @@ export default function AuthProvider({ children }) {
         profile,
         setProfile,
         loading,
+        subscribeToParticipants,
+        unsubscribe,
         handleGoogleAuthen,
         handleEmailLogin,
         handleEmailSignup,
