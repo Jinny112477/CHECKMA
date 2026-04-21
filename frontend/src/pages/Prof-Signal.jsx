@@ -76,10 +76,10 @@ export default function SignalProf() {
 
         {/* SIGNAL CARDS */}
         <div className="p-6 space-y-4 overflow-y-auto">
-          {signals.length === 0 ? (
+          {localSignals.length === 0 ? (
             <p className="text-white text-center">Waiting for students...</p>
           ) : (
-            signals.map((signal) => (
+            localSignals.map((signal) => (
               <SignalCard
                 key={signal.id}
                 firstname={signal.users.student_info?.firstname}
@@ -87,9 +87,9 @@ export default function SignalProf() {
                 student_id={signal.users.student_info?.student_id}
                 session_id={signal.session_id}
                 class_id={signal.class_id}
-                onComplete={(id) => {
+                onComplete={(user_id) => {
                   setLocalSignals((prev) =>
-                    prev.filter((s) => s.user_id !== id),
+                    prev.filter((s) => s.user_id !== user_id),
                   );
                 }}
               />

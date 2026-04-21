@@ -7,18 +7,15 @@ export default function SignalCard({
   surname,
   student_id,
   class_id,
+  onComplete,
 }) {
   const [status, setStatus] = useState("");
+
   const API_URL = import.meta.env.VITE_API_URL;
   const { profile } = useAuth();
 
   const handleAttendance = async (statusType) => {
     try {
-      console.log({
-        student_id,
-        class_id,
-      });
-
       const res = await fetch(`${API_URL}/api/attend/check-in`, {
         method: "POST",
         headers: {
@@ -26,22 +23,22 @@ export default function SignalCard({
         },
         body: JSON.stringify({
           user_id: profile.id,
-          class_id: class_id, // ✅ only this matters
+          class_id,
           status: statusType,
         }),
       });
 
       const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.error);
-      }
+      if (!res.ok) throw new Error(data.error);
 
-      setStatus(statusType); // update UI after success
+      setStatus(statusType);
 
+      // ✅ ONLY remove card when needed
       if (statusType === "Present" || statusType === "Absent") {
-        onComplete(student_id);
+        onComplete?.(student_id);
       }
+
       console.log("Saved:", data);
     } catch (err) {
       console.error("Error:", err.message);
