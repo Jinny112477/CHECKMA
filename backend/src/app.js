@@ -9,6 +9,7 @@ import usersRoutes from "./routes/users.routes.js";
 import classroomRoutes from "./routes/classroom.routes.js";
 import classSessionRoutes from "./routes/classSession.routes.js";
 import signalRoutes from "./routes/signal.routes.js";
+import attendanceRoutes from "./routes/attendance.routes.js";
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -33,6 +34,7 @@ app.use("/api/users", usersRoutes);
 app.use("/api/sessions", classroomRoutes);
 app.use("/api/classes", classSessionRoutes);
 app.use("/api/attendance", signalRoutes);
+app.use("/api/attend", attendanceRoutes);
 
 app.get("/manifest.webmanifest", (req, res) => {
   res.sendFile(path.join(frontendPath, "manifest.webmanifest"));

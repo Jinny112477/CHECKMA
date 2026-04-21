@@ -52,21 +52,35 @@ export default function SignalStudent() {
 
     hasSentRef.current = true;
 
+    const getLocation = () => {
+      return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+      });
+    };
+
     const sendSignal = async () => {
       try {
         console.log("🚀 Sending signal...");
+
+        const position = await getLocation();
+
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
 
         const res = await fetch(
           `${API_URL}/api/attendance/signal/${class_id}`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ user_id: profile.id }),
+            body: JSON.stringify({
+              user_id: profile.id,
+              location_lat: lat,
+              location_lng: lng,
+            }),
           },
         );
 
         const data = await res.json();
-        console.log("📦 Response data:", data);
 
         if (res.ok) {
           setStatus("success");
@@ -78,7 +92,7 @@ export default function SignalStudent() {
       } catch (err) {
         console.error("🔥 Fetch error:", err);
         setStatus("error");
-        setMessage("Network error");
+        setMessage("Location or network error");
       }
     };
 

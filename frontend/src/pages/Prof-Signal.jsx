@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import SignalCard from "../components/SignalCard";
 import { Link, useParams } from "react-router-dom";
@@ -6,13 +6,9 @@ import { useAuth } from "../context/AuthContext";
 import { io } from "socket.io-client";
 
 export default function SignalProf() {
-  const {
-    profile,
-    signals,
-    fetchSignals,
-    subscribeSignals,
-    unsubscribeSignals,
-  } = useAuth();
+  const { profile, signals, fetchSignals } = useAuth();
+
+  const [localSignals, setLocalSignals] = useState([]);
 
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
   const headerRef = useRef(null);
@@ -20,22 +16,26 @@ export default function SignalProf() {
   const { session_id, class_id } = useParams();
   const socket = io(import.meta.env.VITE_API_URL);
 
+  useEffect(() => {
+    setLocalSignals(signals);
+  }, [signals]);
+
   // GET: fetch signal
-useEffect(() => {
-  if (!class_id) return;
+  useEffect(() => {
+    if (!class_id) return;
 
-  fetchSignals(class_id);
-
-  // listen for signal updates from backend
-  socket.on(`signals:${class_id}`, () => {
-    console.log("📡 Socket event received, refetching...");
     fetchSignals(class_id);
-  });
 
-  return () => {
-    socket.off(`signals:${class_id}`);
-  };
-}, [class_id])
+    // listen for signal updates from backend
+    socket.on(`signals:${class_id}`, () => {
+      console.log("📡 Socket event received, refetching...");
+      fetchSignals(class_id);
+    });
+
+    return () => {
+      socket.off(`signals:${class_id}`);
+    };
+  }, [class_id]);
 
   return (
     <div className="min-h-screen w-full flex justify-center bg-[#4969B2]">
@@ -85,6 +85,13 @@ useEffect(() => {
                 firstname={signal.users.student_info?.firstname}
                 surname={signal.users.student_info?.surname}
                 student_id={signal.users.student_info?.student_id}
+                session_id={signal.session_id}
+                class_id={signal.class_id}
+                onComplete={(id) => {
+                  setLocalSignals((prev) =>
+                    prev.filter((s) => s.user_id !== id),
+                  );
+                }}
               />
             ))
           )}
