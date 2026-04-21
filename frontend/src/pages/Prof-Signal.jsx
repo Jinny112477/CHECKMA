@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import SignalCard from "../components/SignalCard";
 import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { io } from "socket.io-client";
 
 export default function SignalProf() {
   const {
@@ -17,23 +18,24 @@ export default function SignalProf() {
   const headerRef = useRef(null);
 
   const { session_id, class_id } = useParams();
+  const socket = io(import.meta.env.VITE_API_URL);
 
   // GET: fetch signal
-  useEffect(() => {
-    if (!class_id) return;
+useEffect(() => {
+  if (!class_id) return;
 
+  fetchSignals(class_id);
+
+  // listen for signal updates from backend
+  socket.on(`signals:${class_id}`, () => {
+    console.log("📡 Socket event received, refetching...");
     fetchSignals(class_id);
+  });
 
-    const channel = subscribeSignals(class_id);
-
-    (payload) => {
-      console.log("REALTIME EVENT:", payload);
-    };
-
-    return () => {
-      unsubscribeSignals(channel);
-    };
-  }, [class_id]);
+  return () => {
+    socket.off(`signals:${class_id}`);
+  };
+}, [class_id])
 
   return (
     <div className="min-h-screen w-full flex justify-center bg-[#4969B2]">

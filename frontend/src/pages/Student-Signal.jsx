@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function SignalStudent() {
@@ -10,7 +10,7 @@ export default function SignalStudent() {
 
   const { session_id, class_id } = useParams();
 
-  const [status, setStatus] = useState("loading"); 
+  const [status, setStatus] = useState("loading");
   // loading | success | error
 
   const [message, setMessage] = useState("");
@@ -19,29 +19,51 @@ export default function SignalStudent() {
 
   const API_URL = import.meta.env.VITE_API_URL;
 
+  const navigate = useNavigate();
+
+  const handleBack = async () => {
+    console.log("handleBack fired");
+
+    const res = await fetch(
+      `${API_URL}/api/attendance/signal/${class_id}/cancel`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: profile.id }),
+      },
+    );
+
+    const data = await res.json();
+    console.log("Cancel response:", res.status, data); // 👈 what does this say?
+
+    navigate(`/student/attendance/${session_id}`);
+  };
+
+  // POST: send signal
   useEffect(() => {
-    if (!profile?.id || !class_id || hasSentRef.current) return;
+    console.log("Effect ran", {
+      profileId: profile?.id,
+      class_id,
+      hasSent: hasSentRef.current,
+    });
+
+    if (!profile?.id || !class_id) return;
+    if (hasSentRef.current) return;
 
     hasSentRef.current = true;
 
     const sendSignal = async () => {
       try {
         console.log("🚀 Sending signal...");
-        console.log("class_id:", class_id);
-        console.log("user_id:", profile.id);
 
         const res = await fetch(
           `${API_URL}/api/attendance/signal/${class_id}`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              user_id: profile.id,
-            }),
-          }
+            body: JSON.stringify({ user_id: profile.id }),
+          },
         );
-
-        console.log("📡 Response status:", res.status);
 
         const data = await res.json();
         console.log("📦 Response data:", data);
@@ -53,7 +75,6 @@ export default function SignalStudent() {
           setStatus("error");
           setMessage(data.error || "Failed to send signal");
         }
-
       } catch (err) {
         console.error("🔥 Fetch error:", err);
         setStatus("error");
@@ -62,18 +83,27 @@ export default function SignalStudent() {
     };
 
     sendSignal();
-  }, [profile, class_id]);
+
+    return () => {
+      // Use sendBeacon for reliability on unmount — fetch gets cancelled by browser
+      const payload = JSON.stringify({ user_id: profile.id });
+      const blob = new Blob([payload], { type: "application/json" });
+      navigator.sendBeacon(
+        `${API_URL}/api/attendance/signal/${class_id}/cancel`,
+        blob,
+      );
+    };
+  }, [profile?.id, class_id]);
 
   return (
     <div className="min-h-screen w-full flex justify-center bg-[#4969B2]">
       <div className="relative w-full max-w-[390px] h-screen bg-[#4969B2] flex flex-col overflow-hidden">
-
         {/* HEADER */}
         <div ref={headerRef} className="relative shrink-0">
           <header className="h-20 flex items-center justify-between px-5">
-            <Link to={`/student/attendance/${session_id}`} className="text-white">
+            <button onClick={handleBack} className="text-white">
               <ArrowLeft size={32} />
-            </Link>
+            </button>
 
             <img src="/CHECKMA-logo-white.svg" className="h-7" />
 
@@ -95,7 +125,6 @@ export default function SignalStudent() {
 
         {/* CONTENT */}
         <div className="flex flex-col items-center justify-center flex-1 gap-6">
-
           <img
             src="/NongCheckgif.GIF"
             alt="NongCheckgif"
@@ -105,9 +134,7 @@ export default function SignalStudent() {
           {/* STATUS */}
           <div className="text-white text-center px-6">
             {status === "loading" && (
-              <p className="text-lg font-semibold">
-                Sending signal...
-              </p>
+              <p className="text-lg font-semibold">Sending signal...</p>
             )}
 
             {status === "success" && (
@@ -121,14 +148,11 @@ export default function SignalStudent() {
 
             {status === "error" && (
               <>
-                <p className="text-lg font-semibold text-red-300">
-                  ❌ Failed
-                </p>
+                <p className="text-lg font-semibold text-red-300">❌ Failed</p>
                 <p className="text-sm mt-2 opacity-80">{message}</p>
               </>
             )}
           </div>
-
         </div>
       </div>
     </div>

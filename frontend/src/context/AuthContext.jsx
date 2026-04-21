@@ -62,8 +62,10 @@ export default function AuthProvider({ children }) {
   // SIGNALS: handler
   const fetchSignals = async (class_id) => {
     try {
+      console.log("📡 Fetching signals for class_id:", class_id); // 👈 add this
       const res = await fetch(`${API_URL}/api/attendance/signal/${class_id}`);
       const data = await res.json();
+      console.log("📦 Signals response:", data); // 👈 and this
 
       if (res.ok) {
         setSignals(data);
@@ -73,43 +75,56 @@ export default function AuthProvider({ children }) {
     }
   };
 
-  const subscribeSignals = (class_id) => {
+  const subscribeSignals = (class_id, onNewSignal) => {
     const channel = supabase
       .channel(`attendance-signals-${class_id}`)
-
       .on(
         "postgres_changes",
         {
           event: "INSERT",
           schema: "public",
           table: "attendance_signals",
-          filter: `class_id=eq.${class_id}`,
+          // no filter
         },
         (payload) => {
-          setSignals((prev) => {
-            const exists = prev.find((s) => s.id === payload.new.id);
-            if (exists) return prev;
-            return [...prev, payload.new];
-          });
+          console.log("📡 INSERT:", payload);
+          if (onNewSignal) onNewSignal(payload);
+          else fetchSignals(class_id);
         },
       )
-
       .on(
         "postgres_changes",
         {
           event: "UPDATE",
           schema: "public",
           table: "attendance_signals",
-          filter: `class_id=eq.${class_id}`,
+          // no filter
         },
         (payload) => {
+          console.log("📡 UPDATE:", payload);
           if (payload.new.status === "processed") {
             setSignals((prev) => prev.filter((s) => s.id !== payload.new.id));
           }
         },
       )
-
-      .subscribe();
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "attendance_signals",
+          // no filter
+        },
+        (payload) => {
+          console.log("🗑️ DELETE:", payload);
+          if (onNewSignal) onNewSignal(payload);
+          else
+            setSignals((prev) => prev.filter((s) => s.id !== payload.old.id));
+        },
+      )
+      .subscribe((status) => {
+        console.log("🔌 Signals subscription status:", status);
+      });
 
     return channel;
   };

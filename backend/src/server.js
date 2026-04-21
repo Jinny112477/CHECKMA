@@ -25,11 +25,7 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("User connected:", socket.id);
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
-  });
+  socket.on("disconnect", () => {});
 });
 
 // Start server
@@ -38,3 +34,5 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`Backend + Socket.IO running on port ${PORT}`);
 });
+
+export { io };

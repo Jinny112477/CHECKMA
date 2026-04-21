@@ -9,6 +9,7 @@ export default function AttendanceProf() {
 
   const [classData, setClassData] = useState(null);
   const [studentData, setStudentData] = useState([]);
+  const [activeClassId, setActiveClassId] = useState(null);
 
   const number = studentData.length;
   const { profile, subscribeToParticipants, unsubscribe } = useAuth();
@@ -62,9 +63,16 @@ export default function AttendanceProf() {
         const res = await fetch(
           `${API_URL}/api/sessions/classrooms/${session_id}`,
         );
-
         const data = await res.json();
         setClassData(data);
+
+        // 👈 fetch open class to get class_id
+        const classRes = await fetch(
+          `${API_URL}/api/classes/class-session/${session_id}`,
+        );
+        const classes = await classRes.json();
+        const openClass = classes.find((c) => c.status === "open");
+        setActiveClassId(openClass?.id || null);
       } catch (err) {
         console.error(err);
       }
@@ -72,26 +80,6 @@ export default function AttendanceProf() {
 
     if (session_id) fetchClass();
   }, [session_id]);
-
-  // GET: fetch session participants
-  // useEffect(() => {
-  //   if (!session_id) return;
-
-  //   const fetchParticipants = async () => {
-  //     try {
-  //       const res = await fetch(
-  //         `${API_URL}/api/participants/join-session/${session_id}`,
-  //       );
-
-  //       const result = await res.json();
-  //       setStudentData(result);
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   };
-
-  //   fetchParticipants();
-  // }, [session_id]);
 
   // POST: Create new class in session
   const handleCreateClass = () => {
@@ -212,8 +200,12 @@ export default function AttendanceProf() {
 
           {/* Buttons */}
           <div className="flex my-4">
-            <Link to={`/prof/signal/${session_id}`} className="flex-1">
+            <Link
+              to={`/prof/signal/${session_id}/${activeClassId}`}
+              className="flex-1"
+            >
               <button
+                disabled={!activeClassId}
                 className="w-full bg-[#F49A5E] text-[#FFFBEA] py-2 
                 rounded-xl font-bold hover:bg-[#EB9358] transition"
               >

@@ -41,10 +41,10 @@ function App() {
       <Route path="/role" element={<RoleSelect />} />
       
       <Route path="/student/attendance/:session_id" element={<AttendanceStudent />} />
-      <Route path="/student/signal/:session_id" element={<SignalStudent />} />
+      <Route path="/student/signal/:session_id/:class_id" element={<SignalStudent />} />
 
       <Route path="/prof/attendance/:session_id" element={<AttendanceProf />} />
-      <Route path="/prof/signal/:session_id" element={<SignalProf />} />
+      <Route path="/prof/signal/:session_id/:class_id" element={<SignalProf />} />
       <Route path="/prof/dashboard/:session_id" element={<Dashboard />} />
       <Route path="/prof/dashboard-info/:session_id/:id" element={<DashboardInfo />} />
       <Route path="/prof/edit-course/:session_id" element={<EditProf />} />
