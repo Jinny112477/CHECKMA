@@ -111,3 +111,44 @@ export const getParticipantById = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// DELETE: delete participants and all it dependencies
+export const deleteSessionParticipants = async (req, res) => {
+  try {
+    const { session_id, user_id } = req.params;
+
+    const { data: classes, error: classError } = await supabase
+      .from("class_session")
+      .select("id")
+      .eq("session_id", session_id);
+
+    if (classError) throw classError;
+
+    const classIds = classes.map((c) => c.id);
+
+    // if this user have dependency in atttendance_records delete them as well
+    if (classIds.length > 0) {
+      const { error: recError } = await supabase
+        .from("attendance_records")
+        .delete()
+        .eq("user_id", user_id)
+        .in("class_id", classIds);
+
+      if (recError) throw recError;
+    }
+
+    const { data, error } = await supabase
+      .from("session_participants")
+      .delete()
+      .eq("user_id", user_id)
+      .eq("session_id", session_id)
+      .select();
+
+    if (error) throw error;
+
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};

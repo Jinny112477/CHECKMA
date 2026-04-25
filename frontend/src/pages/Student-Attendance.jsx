@@ -4,85 +4,111 @@ import { Link, useParams } from "react-router-dom";
 
 import AttendanceCard from "../components/AttendanceCard";
 import { useAuth } from "../context/AuthContext";
+import { supabase } from "../lib/supabaseClient";
 
 export default function AttendanceStudent() {
-  const data = [
-    {
-      classNum: "Class 1",
-      date: "19/01/2026",
-      time: "13.30",
-      status: "Present",
-    },
-    {
-      classNum: "Class 2",
-      date: "20/01/2026",
-      time: "09.00",
-      status: "Absent",
-    },
-    { classNum: "Class 3", date: "25/01/2026", time: "09.00", status: "Late" },
-  ];
+  const [attendanceData, setAttendanceData] = useState([]);
 
   const [classData, setClassData] = useState(null);
   const [activeClassId, setActiveClassId] = useState(null);
 
-  const total = data.length;
-  const { profile } = useAuth();
+  const total = attendanceData.length;
+  const { profile, authUserId } = useAuth();
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
   const headerRef = useRef(null);
   const { session_id } = useParams();
   const API_URL = import.meta.env.VITE_API_URL;
 
-  const presentCount = data.filter((d) => d.status === "Present").length;
-  const lateCount = data.filter((d) => d.status === "Late").length;
-  const absentCount = data.filter((d) => d.status === "Absent").length;
+  // BAR CALC
+  const presentCount = attendanceData.filter(
+    (d) => d.status === "Present",
+  ).length;
+  const lateCount = attendanceData.filter((d) => d.status === "Late").length;
+  const absentCount = attendanceData.filter(
+    (d) => d.status === "Absent",
+  ).length;
 
   const presentPercent = (presentCount / total) * 100;
   const latePercent = (lateCount / total) * 100;
   const absentPercent = (absentCount / total) * 100;
 
-  // GET: Class by SESSION ID
+  // REALTIME RENDER: listen for attendance changes
   useEffect(() => {
-    const fetchClass = async () => {
-      try {
-        const res = await fetch(
-          `${API_URL}/api/sessions/classrooms/${session_id}`,
-        );
+    if (!authUserId || !session_id) return;
 
-        const data = await res.json();
-        setClassData(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+    const channel = supabase
+      .channel(`attendance-${session_id}-${authUserId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "attendance_records",
+          filter: `user_id=eq.${authUserId}`,
+        },
+        (payload) => {
+          console.log("📡 Attendance change:", payload);
+          // Refetch attendance data on any change
+          fetch(`${API_URL}/api/attend/check-in/${session_id}/${authUserId}`)
+            .then((res) => res.json())
+            .then((data) => setAttendanceData(data))
+            .catch(console.error);
+        },
+      )
+      .subscribe();
 
-    if (session_id) fetchClass();
-  }, [session_id]);
+    return () => supabase.removeChannel(channel);
+  }, [authUserId, session_id]);
 
-  // GET: active class in session
+  //Time Mapping
+  const formatTime = (time) => {
+    if (!time) return "-"; // In case student doesn't check
+    return time.slice(11, 16);
+  };
+
+  // GET: Class by SESSION ID + active class
   useEffect(() => {
-    const fetchClass = async () => {
+    const fetchClassData = async () => {
       try {
-        // fetch session info (course name etc.)
-        const res = await fetch(
-          `${API_URL}/api/sessions/classrooms/${session_id}`,
-        );
-        const data = await res.json();
-        setClassData(data);
+        const [sessionRes, classRes] = await Promise.all([
+          fetch(`${API_URL}/api/sessions/classrooms/${session_id}`),
+          fetch(`${API_URL}/api/classes/class-session/${session_id}`),
+        ]);
 
-        // fetch the open class to get class_id
-        const classRes = await fetch(
-          `${API_URL}/api/classes/class-session/${session_id}`,
-        );
+        const sessionData = await sessionRes.json();
         const classes = await classRes.json();
+
+        setClassData(sessionData);
+
         const openClass = classes.find((c) => c.status === "open");
-        setActiveClassId(openClass?.id || null); // 👈 grab the open class id
+        setActiveClassId(openClass?.id || null);
       } catch (err) {
         console.error(err);
       }
     };
 
-    if (session_id) fetchClass();
+    if (session_id) fetchClassData();
   }, [session_id]);
+
+  // GET: joined class session
+  useEffect(() => {
+    const fetchAttendance = async () => {
+      try {
+        console.log("Fetching with authUserId:", authUserId);
+        const res = await fetch(
+          `${API_URL}/api/attend/check-in/${session_id}/${authUserId}`,
+        );
+        const data = await res.json();
+        setAttendanceData(data);
+      } catch (err) {
+        console.error("CATCH ERROR: ", err);
+      }
+    };
+
+    if (session_id && authUserId) {
+      fetchAttendance();
+    }
+  }, [session_id, authUserId]);
 
   return (
     <div className="min-h-screen w-full flex justify-center bg-[#FFFBEA]">
@@ -179,8 +205,18 @@ export default function AttendanceStudent() {
 
           {/* ===== Cards ===== */}
           <div className="space-y-4">
-            {data.map((item, index) => (
-              <AttendanceCard key={index} {...item} />
+            {attendanceData.map((item) => (
+              <AttendanceCard
+                key={item.id} // ← use id, not session_id
+                classNum={item.class_name}
+                date={
+                  item?.class_date
+                    ? new Date(item.class_date).toLocaleDateString("en-GB")
+                    : "-"
+                }
+                time={formatTime(item.check_in_time)} // ← now flat, not nested
+                status={item.status} // ← now flat, not nested
+              />
             ))}
           </div>
 

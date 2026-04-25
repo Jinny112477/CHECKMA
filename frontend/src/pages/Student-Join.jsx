@@ -37,7 +37,7 @@ export default function JoinStudent() {
 
             console.log(data);
             alert("Joined successfully");
-            navigate("/student/home"); // Change to card later
+            navigate("/student/home");
         } catch (err) {
             console.error(err);
             alert("Something went wrong");
@@ -90,7 +90,7 @@ export default function JoinStudent() {
                                     type="text"
                                     placeholder="Enter the class code"
                                     value={sessionCode}
-                                    onChange={(e) => setSessionCode(e.target.value)}
+                                    onChange={(e) => setSessionCode(e.target.value.toUpperCase().slice(0, 6))}
                                     className="w-full px-3 py-3 outline-none bg-transparent
                                 placeholder:text-[#9DB2E3] placeholder:font-normal"
                                 />

@@ -19,9 +19,8 @@ export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(undefined);
   const [loading, setLoading] = useState(true);
+  const [authUserId, setAuthUserId] = useState(null);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [signals, setSignals] = useState([]);
 
@@ -172,6 +171,13 @@ export default function AuthProvider({ children }) {
 
     // 3. Cleanup listener
     return () => listener.subscription.unsubscribe();
+  }, []);
+
+  // FETCH AUTH USER
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setAuthUserId(user?.id ?? null);
+    });
   }, []);
 
   // FETCH USER PROFILE: handler
@@ -365,6 +371,7 @@ export default function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         user,
+        authUserId,
         profile,
         setProfile,
         loading,

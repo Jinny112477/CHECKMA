@@ -4,31 +4,70 @@ import { Link, useLocation, useParams } from "react-router-dom";
 import InfoCard from "../components/InfoCard";
 
 export default function DashboardInfo() {
+  const [data, setData] = useState([]);
+  const [changes, setChanges] = useState({});
+
   const location = useLocation();
   const selectedClass = location.state;
-
-  const data = [
-    {
-      firstname: "Vidsava",
-      surname: "Thammasat",
-      student_id: "6710740000",
-      time: "13.30",
-      status: "Present",
-    },
-    {
-      firstname: "Vidsava",
-      surname: "Thammasat",
-      student_id: "6710740001",
-      time: "09.00",
-      status: "Absent",
-    },
-  ];
-
   const hasStudent = data.length > 0;
   const headerRef = useRef(null);
   const { session_id } = useParams();
+  const API_URL = import.meta.env.VITE_API_URL;
+
+  //Time Mapping
+  const formatTime = (time) => {
+    if (!time) return "-"; // In case student doesn't check
+    return time.slice(11, 16);
+  };
+
+  // GET: fetch all class attenders
+  useEffect(() => {
+    if (!selectedClass?.id) return;
+
+    const fetchAttendance = async () => {
+      try {
+        const res = await fetch(
+          `${API_URL}/api/attend/class-attendance/${session_id}/${selectedClass.id}`,
+        );
+        const result = await res.json();
+        setData(result);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchAttendance();
+  }, [session_id, selectedClass?.id]);
+
+  // Data change: handler
+  const handleChange = (user_id, newStatus) => {
+    setChanges((prev) => ({
+      ...prev,
+      [user_id]: newStatus,
+    }));
+  };
 
   // Save state: handler
+  const handleSave = async () => {
+    try {
+      await Promise.all(
+        Object.entries(changes).map(([user_id, status]) =>
+          fetch(
+            `${API_URL}/api/attend/class-attendance/${selectedClass.id}/${user_id}`,
+            {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ status }),
+            },
+          ),
+        ),
+      );
+      setChanges({}); // clear after save
+      alert("Saved!");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="min-h-screen w-full flex justify-center bg-[#4969B2]">
@@ -90,7 +129,9 @@ export default function DashboardInfo() {
               </div>
             </div>
 
-            <button className="bg-[#6BBF84] text-white text-sm py-1 px-4 rounded-lg font-bold ml-auto">
+            <button 
+              onClick={handleSave}
+              className="bg-[#6BBF84] text-white text-sm py-1 px-4 rounded-lg font-bold ml-auto">
               Save
             </button>
           </div>
@@ -111,8 +152,16 @@ export default function DashboardInfo() {
           {/* ===== STUDENT LIST ===== */}
           {hasStudent && (
             <div className="space-y-4">
-              {data.map((item, index) => (
-                <InfoCard key={index} {...item} />
+              {data.map((item) => (
+                <InfoCard
+                  key={item.user_id}
+                  firstname={item.firstname}
+                  surname={item.surname}
+                  student_id={item.student_id}
+                  time={formatTime(item.check_in_time)}
+                  status={item.status}
+                  onChange={(newStatus) => handleChange(item.user_id, newStatus)}
+                />
               ))}
             </div>
           )}

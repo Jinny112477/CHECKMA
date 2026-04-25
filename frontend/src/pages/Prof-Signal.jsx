@@ -86,6 +86,7 @@ export default function SignalProf() {
                 firstname={signal.users.student_info?.firstname}
                 surname={signal.users.student_info?.surname}
                 student_id={signal.users.student_info?.student_id}
+                user_uuid={signal.user_id}
                 session_id={signal.session_id}
                 class_id={signal.class_id}
                 onComplete={(user_id) => {

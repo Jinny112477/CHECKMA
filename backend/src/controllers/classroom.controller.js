@@ -122,7 +122,7 @@ export const editClassroom = async (req, res) => {
     }
 
     const { data, error } = await supabase
-      .from(sessions)
+      .from("sessions")
       .update({
         icon,
         course_name,
@@ -153,4 +153,65 @@ export const editClassroom = async (req, res) => {
   }
 };
 
-// DELETE: delete classroom
+// DELETE: delete classroom and all its dependencies
+export const deleteClassroom = async (req, res) => {
+  try {
+    const { session_id } = req.params;
+
+    // Get all class IDs in this session
+    const { data: classes, error: classError } = await supabase
+      .from("class_session")
+      .select("id")
+      .eq("session_id", session_id);
+
+    if (classError) throw classError;
+
+    const classIds = classes.map((c) => c.id);
+
+    // Delete attendance_records (if have)
+    if (classIds.length > 0) {
+      const { error: recError } = await supabase
+        .from("attendance_records")
+        .delete()
+        .in("class_id", classIds);
+
+      if (recError) throw recError;
+    }
+
+    // Delete class_session (if have)
+    if (classIds.length > 0) {
+      const { error: classDelError } = await supabase
+        .from("class_session")
+        .delete()
+        .eq("session_id", session_id);
+
+      if (classDelError) throw classDelError;
+    }
+
+    // Delete session_participants
+    const { error: participantError } = await supabase
+      .from("session_participants")
+      .delete()
+      .eq("session_id", session_id);
+
+    if (participantError) throw participantError;
+
+    // Delete the session itself
+    const { data, error } = await supabase
+      .from("sessions")
+      .delete()
+      .eq("session_id", session_id)
+      .select();
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({ message: "Classroom not found" });
+    }
+
+    res.json({ message: "Classroom deleted successfully", data });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};

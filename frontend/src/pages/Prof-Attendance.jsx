@@ -3,19 +3,19 @@ import { ArrowLeft, ClipboardList, ShieldPlus } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import StudentList from "../components/StudentList";
 import { useAuth } from "../context/AuthContext";
+import LoadingScreen from "../components/LoadingScreen.jsx";
 
 export default function AttendanceProf() {
-  // เปลี่ยน const data เป็น useState (Temp)
-
   const [classData, setClassData] = useState(null);
   const [studentData, setStudentData] = useState([]);
   const [activeClassId, setActiveClassId] = useState(null);
 
-  const number = studentData.length;
   const { profile, subscribeToParticipants, unsubscribe } = useAuth();
   const { session_id } = useParams();
+
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
   const headerRef = useRef(null);
+  const number = studentData.length;
   const API_URL = import.meta.env.VITE_API_URL;
 
   // REALTIME RENDER: fetch session participants
@@ -31,10 +31,10 @@ export default function AttendanceProf() {
           `${API_URL}/api/participants/join-session/${session_id}`,
         );
         const result = await res.json();
-        console.log("✅ Fetched participants:", result);
+        console.log("Fetched participants:", result);
         if (isMounted) setStudentData(result);
       } catch (err) {
-        console.error("❌ Fetch error:", err);
+        console.error("Fetch error:", err);
       }
     };
 
@@ -87,10 +87,9 @@ export default function AttendanceProf() {
       async (pos) => {
         try {
           const res = await fetch(`${API_URL}/api/classes/class-session`, {
+            // 👈 fix URL
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               session_id,
               location_lat: pos.coords.latitude,
@@ -108,6 +107,7 @@ export default function AttendanceProf() {
 
           const data = await res.json();
           console.log("New class:", data);
+          alert("New class created!")
         } catch (err) {
           console.error("Fetch error:", err);
         }
@@ -117,6 +117,29 @@ export default function AttendanceProf() {
         alert("Please allow location access");
       },
     );
+  };
+
+  // DELETE: delete participants
+  const handleStudentDelete = async (user_id) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to remove this student?",
+    );
+    if (!confirmed) return; // 👈 stop if cancelled
+
+    try {
+      const res = await fetch(
+        `${API_URL}/api/participants/join-session/${session_id}/${user_id}`,
+        { method: "DELETE" },
+      );
+
+      if (!res.ok) throw new Error("Failed to delete");
+
+      setStudentData((prev) => prev.filter((s) => s.user_id !== user_id));
+      alert("Student removed successfully!"); // 👈 success alert
+    } catch (err) {
+      console.error(err);
+      alert("Failed to remove student."); // 👈 error alert
+    }
   };
 
   return (
@@ -236,15 +259,13 @@ export default function AttendanceProf() {
           </div>
 
           <div className="space-y-4">
-            {studentData.map((item, index) => (
+            {studentData.map((item) => (
               <StudentList
                 key={item.student_id}
                 student_id={item.users.student_info?.student_id}
                 firstname={item.users.student_info?.firstname}
                 surname={item.users.student_info?.surname}
-                onDelete={() =>
-                  setStudentData((prev) => prev.filter((_, i) => i !== index))
-                }
+                onDelete={() => handleStudentDelete(item.user_id)}
               />
             ))}
           </div>

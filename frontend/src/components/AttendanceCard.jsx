@@ -1,8 +1,8 @@
 export default function AttendanceCard({
-  classNum = "Class 1",
-  date = "19/01/2026",
-  time = "13.30",
-  status = "Present",
+  classNum,
+  date,
+  time,
+  status,
 }) {
     const statusColor = {
     Present: "text-[#6BBF84]",

@@ -42,7 +42,9 @@ export default function HomeProf() {
   const [showJoin, setShowJoin] = useState(false);
   const [courses, setCourses] = useState([]);
 
-  const [profProfile, setProfProfile] = useState({ //formData: Prof. profile
+  // formData
+  const [profProfile, setProfProfile] = useState({
+    //formData: Prof. profile
     firstname: "",
     surname: "",
   });
@@ -52,9 +54,10 @@ export default function HomeProf() {
   const { profile, handleSignOut } = useAuth(); // Auth function
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
   const { user } = useAuth();
-  
+
   const API_URL = import.meta.env.VITE_API_URL;
 
+  //Day Mapping
   const dayMap = {
     Monday: "MON",
     Tuesday: "TUE",
@@ -65,13 +68,12 @@ export default function HomeProf() {
     Sunday: "SUN",
   };
 
-  //Day Mapping
   const formatDay = (day) => {
     return dayMap[day] || day;
   };
 
   //Time Mapping
-  const formatTime = (time) => { 
+  const formatTime = (time) => {
     return time.slice(0, 5);
   };
 
@@ -104,8 +106,9 @@ export default function HomeProf() {
 
         const data = await res.json();
 
-        setCourses(Array.isArray(data) ? data : data.courses || data.data || []);
-
+        setCourses(
+          Array.isArray(data) ? data : data.courses || data.data || [],
+        );
       } catch (err) {
         console.error("Fetch classes error:", err);
       }
@@ -124,9 +127,34 @@ export default function HomeProf() {
     });
   }, [profile]);
 
+  // DELETE: delete classroom
+  const handleDeleteClassroom = async (session_id) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this course? This will remove all classes and attendance records.",
+    );
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch(
+        `${API_URL}/api/sessions/classrooms/${session_id}`,
+        {
+          method: "DELETE",
+        },
+      );
+
+      if (!res.ok) throw new Error("Failed to delete");
+
+      setCourses((prev) => prev.filter((c) => c.session_id !== session_id));
+      alert("Course deleted successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete course.");
+    }
+  };
+
   const hasSubject = courses.length > 0;
-  
-  return (         
+
+  return (
     <div className="min-h-screen w-full flex justify-center bg-[#FFFBEA]">
       <div
         className="relative
@@ -147,8 +175,9 @@ export default function HomeProf() {
               <button onClick={() => setOpenMenu(!openMenu)}>
                 <Menu
                   size={28}
-                  className={`text-white transition-transform duration-300 ${openMenu ? "rotate-180" : "rotate-0"
-                    }`}
+                  className={`text-white transition-transform duration-300 ${
+                    openMenu ? "rotate-180" : "rotate-0"
+                  }`}
                 />
               </button>
 
@@ -230,7 +259,7 @@ export default function HomeProf() {
                   time={`${formatTime(course.start_time)} - ${formatTime(course.end_time)}`}
                   day={formatDay(course.day)}
                   onSetting={() => console.log("Setting:", course.session_id)}
-                  //onDelete={...}
+                  onDelete={() => handleDeleteClassroom(course.session_id)}
                 />
               ))}
             </div>
@@ -256,8 +285,9 @@ export default function HomeProf() {
 
           <button
             onClick={() => setShowJoin(!showJoin)}
-            className={`flex-shrink-0 w-14 h-14 rounded-full bg-[#4969B2] flex items-center justify-center text-white transition-transform duration-300 ${showJoin ? "rotate-45" : ""
-              }`}
+            className={`flex-shrink-0 w-14 h-14 rounded-full bg-[#4969B2] flex items-center justify-center text-white transition-transform duration-300 ${
+              showJoin ? "rotate-45" : ""
+            }`}
           >
             <Plus size={28} />
           </button>
