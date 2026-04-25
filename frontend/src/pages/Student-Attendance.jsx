@@ -1,47 +1,132 @@
 import { useEffect, useRef, useState } from "react";
-import {ArrowLeft} from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
 
 import AttendanceCard from "../components/AttendanceCard";
 import { useAuth } from "../context/AuthContext";
+import { supabase } from "../lib/supabaseClient";
 
 export default function AttendanceStudent() {
+  const [attendanceData, setAttendanceData] = useState([]);
 
-  const data = [
-    { classNum: "Class 1", date: "19/01/2026", time: "13.30", status: "Present" },
-    { classNum: "Class 2", date: "20/01/2026", time: "09.00", status: "Absent" },
-    { classNum: "Class 3", date: "25/01/2026", time: "09.00", status: "Late" }
-  ];
+  const [classData, setClassData] = useState(null);
+  const [activeClassId, setActiveClassId] = useState(null);
 
-  const total = data.length;
-  const { profile } = useAuth();
+  const total = attendanceData.length;
+  const { profile, authUserId } = useAuth();
   const avatar = profile?.avatar_url || "/NongCheckprofile.png";
   const headerRef = useRef(null);
+  const { session_id } = useParams();
+  const API_URL = import.meta.env.VITE_API_URL;
 
-  const presentCount = data.filter(d => d.status === "Present").length;
-  const lateCount = data.filter(d => d.status === "Late").length;
-  const absentCount = data.filter(d => d.status === "Absent").length;
+  // BAR CALC
+  const presentCount = attendanceData.filter(
+    (d) => d.status === "Present",
+  ).length;
+  const lateCount = attendanceData.filter((d) => d.status === "Late").length;
+  const absentCount = attendanceData.filter(
+    (d) => d.status === "Absent",
+  ).length;
 
   const presentPercent = (presentCount / total) * 100;
   const latePercent = (lateCount / total) * 100;
   const absentPercent = (absentCount / total) * 100;
 
+  // REALTIME RENDER: listen for attendance changes
+  useEffect(() => {
+    if (!authUserId || !session_id) return;
+
+    const channel = supabase
+      .channel(`attendance-${session_id}-${authUserId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "attendance_records",
+          filter: `user_id=eq.${authUserId}`,
+        },
+        (payload) => {
+          console.log("📡 Attendance change:", payload);
+          // Refetch attendance data on any change
+          fetch(`${API_URL}/api/attend/check-in/${session_id}/${authUserId}`)
+            .then((res) => res.json())
+            .then((data) => setAttendanceData(data))
+            .catch(console.error);
+        },
+      )
+      .subscribe();
+
+    return () => supabase.removeChannel(channel);
+  }, [authUserId, session_id]);
+
+  //Time Mapping
+  const formatTime = (time) => {
+    if (!time) return "-"; // In case student doesn't check
+    return time.slice(11, 16);
+  };
+
+  // GET: Class by SESSION ID + active class
+  useEffect(() => {
+    const fetchClassData = async () => {
+      try {
+        const [sessionRes, classRes] = await Promise.all([
+          fetch(`${API_URL}/api/sessions/classrooms/${session_id}`),
+          fetch(`${API_URL}/api/classes/class-session/${session_id}`),
+        ]);
+
+        const sessionData = await sessionRes.json();
+        const classes = await classRes.json();
+
+        setClassData(sessionData);
+
+        const openClass = classes.find((c) => c.status === "open");
+        setActiveClassId(openClass?.id || null);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    if (session_id) fetchClassData();
+  }, [session_id]);
+
+  // GET: joined class session
+  useEffect(() => {
+    const fetchAttendance = async () => {
+      try {
+        console.log("Fetching with authUserId:", authUserId);
+        const res = await fetch(
+          `${API_URL}/api/attend/check-in/${session_id}/${authUserId}`,
+        );
+        const data = await res.json();
+        setAttendanceData(data);
+      } catch (err) {
+        console.error("CATCH ERROR: ", err);
+      }
+    };
+
+    if (session_id && authUserId) {
+      fetchAttendance();
+    }
+  }, [session_id, authUserId]);
+
   return (
     <div className="min-h-screen w-full flex justify-center bg-[#FFFBEA]">
-      <div className="relative
+      <div
+        className="relative
                     w-full max-w-[390px]
                     h-screen
                     bg-[#4969B2]
                     shadow-none sm:shadow-xl
                     flex flex-col
-                    overflow-hidden">
-
+                    overflow-hidden"
+      >
         {/* ================= HEADER ================= */}
         <div ref={headerRef} className="relative shrink-0">
           <header className="h-20 flex items-center justify-between px-5">
             {/* back arrow */}
             <Link to="/student/home" className="top-6 left-6 text-white">
-                <ArrowLeft size={32} />
+              <ArrowLeft size={32} />
             </Link>
 
             <img src="/CHECKMA-logo-white.svg" className="h-7" />
@@ -66,27 +151,25 @@ export default function AttendanceStudent() {
         {/* Class name */}
         <div className="ml-8 my-5">
           <h1 className="text-5xl font-bold text-white">
-            SF321
+            {classData?.course_id || "-"}
           </h1>
           <p className="mt-3 text-sm text-white font-medium">
-              Data Communication and Computer Network 1<br />
-              Section 760001
+            {classData?.course_name || "-"}
+            <br />
+            Section {classData?.section || "-"}
           </p>
         </div>
 
         {/* ================= CONTENT ================= */}
         <div className="flex-1 bg-[#FFFBEA] rounded-t-[40px] overflow-y-auto p-8 flex flex-col">
-
           {/* ===== Progress Section ===== */}
           <div className="rounded-full p-2 space-y-2 mb-6">
-
             <p className="text-xl font-bold text-[#9DB2E3]">
               From <span className="text-[#4969B2]">{total}</span> Classes
             </p>
 
             {/* Progress Bar */}
             <div className="w-full h-4 bg-gray-300 rounded-full overflow-hidden flex">
-  
               {/* Present */}
               <div
                 className="h-full bg-[#6BBF84]"
@@ -104,7 +187,6 @@ export default function AttendanceStudent() {
                 className="h-full bg-[#D45F52]"
                 style={{ width: `${absentPercent}%` }}
               />
-
             </div>
 
             {/* Status Text */}
@@ -123,22 +205,35 @@ export default function AttendanceStudent() {
 
           {/* ===== Cards ===== */}
           <div className="space-y-4">
-            {data.map((item, index) => (
-              <AttendanceCard key={index} {...item} />
+            {attendanceData.map((item) => (
+              <AttendanceCard
+                key={item.id} // ← use id, not session_id
+                classNum={item.class_name}
+                date={
+                  item?.class_date
+                    ? new Date(item.class_date).toLocaleDateString("en-GB")
+                    : "-"
+                }
+                time={formatTime(item.check_in_time)} // ← now flat, not nested
+                status={item.status} // ← now flat, not nested
+              />
             ))}
           </div>
 
           {/* check button */}
-          <Link to="/student/signal" className="mt-auto pt-6">
+          <Link
+            to={`/student/signal/${session_id}/${activeClassId}`}
+            className="mt-auto pt-6"
+          >
             <button
+              disabled={!activeClassId} // 👈 disable if no open class
               className="w-full bg-[#F49A5E] text-[#FFFBEA] py-3 sm:py-4 mt-auto mb-8
-              rounded-2xl font-bold hover:bg-[#EB9358] transition"
+    rounded-2xl font-bold hover:bg-[#EB9358] transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               CHECK!
             </button>
           </Link>
         </div>
-   
       </div>
     </div>
   );

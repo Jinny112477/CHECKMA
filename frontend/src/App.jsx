@@ -39,13 +39,15 @@ function App() {
       <Route path="/student/profile" element={<ProfileStudent />} />
       <Route path="/prof/profile" element={<ProfileProf />} />
       <Route path="/role" element={<RoleSelect />} />
-      <Route path="/student/attendance" element={<AttendanceStudent />} />
-      <Route path="/student/signal" element={<SignalStudent />} />
-      <Route path="/prof/attendance" element={<AttendanceProf />} />
-      <Route path="/prof/signal" element={<SignalProf />} />
-      <Route path="/prof/dashboard" element={<Dashboard />} />
-      <Route path="/prof/dashboard-info" element={<DashboardInfo />} />
-      <Route path="/prof/edit-course" element={<EditProf />} />
+      
+      <Route path="/student/attendance/:session_id" element={<AttendanceStudent />} />
+      <Route path="/student/signal/:session_id/:class_id" element={<SignalStudent />} />
+
+      <Route path="/prof/attendance/:session_id" element={<AttendanceProf />} />
+      <Route path="/prof/signal/:session_id/:class_id" element={<SignalProf />} />
+      <Route path="/prof/dashboard/:session_id" element={<Dashboard />} />
+      <Route path="/prof/dashboard-info/:session_id/:id" element={<DashboardInfo />} />
+      <Route path="/prof/edit-course/:session_id" element={<EditProf />} />
     </Routes>
   );
 }
