@@ -3,7 +3,6 @@ import { ArrowLeft, ClipboardList, ShieldPlus } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import StudentList from "../components/StudentList";
 import { useAuth } from "../context/AuthContext";
-import LoadingScreen from "../components/LoadingScreen.jsx";
 
 export default function AttendanceProf() {
   const [classData, setClassData] = useState(null);
