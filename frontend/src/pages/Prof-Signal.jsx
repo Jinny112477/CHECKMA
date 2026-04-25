@@ -16,6 +16,7 @@ export default function SignalProf() {
   const { session_id, class_id } = useParams();
   const socket = io(import.meta.env.VITE_API_URL);
 
+  // Set Signals
   useEffect(() => {
     setLocalSignals(signals);
   }, [signals]);

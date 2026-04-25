@@ -101,7 +101,7 @@ export const sendSignal = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("🔥 SERVER ERROR:", err);
+    console.error("SERVER ERROR:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -131,7 +131,7 @@ export const getSignals = async (req, res) => {
 
     if (error) throw error;
 
-    return res.status(200).json(data); // 👈 return data not message
+    return res.status(200).json(data);
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to fetch signals" });

@@ -1,11 +1,12 @@
 import { ArrowLeft, DoorOpen } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function JoinStudent() {
     const [sessionCode, setSessionCode] = useState("");
     const { user } = useAuth();
+    const navigate = useNavigate();
     const API_URL = import.meta.env.VITE_API_URL;
 
     // POST: join class handler
@@ -36,6 +37,7 @@ export default function JoinStudent() {
 
             console.log(data);
             alert("Joined successfully");
+            navigate("/student/home"); // Change to card later
         } catch (err) {
             console.error(err);
             alert("Something went wrong");
