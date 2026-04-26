@@ -353,10 +353,10 @@ export default function AuthProvider({ children }) {
   };
 
   // SET TOKEN SESSION
-  const setSessionFromURL = async (accessToken, refrechToken) => {
+  const setSessionFromURL = async (accessToken, refreshToken) => {
     return await supabase.auth.setSession({
       access_token: accessToken,
-      refrechToken: refrechToken,
+      refreshToken: refreshToken,
     });
   };
 
