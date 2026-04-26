@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ArrowLeft, Pencil } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import IconProfile from "../components/IconProfile";
 import { useAuth } from "../context/AuthContext";
 import AlertModal from "../components/AlertModal";
@@ -14,6 +14,8 @@ export default function CreateProf() {
   const [open, setOpen] = useState(false);
 
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   //Form Data
   const [formData, setFormData] = useState({
@@ -77,7 +79,7 @@ export default function CreateProf() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/classrooms", {
+      const res = await fetch(`${API_URL}/api/sessions/classrooms`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -280,7 +282,10 @@ export default function CreateProf() {
             description={modalConfig.description}
             type={modalConfig.type}
             confirmText="OK"
-            onConfirm={() => setOpen(false)}
+            onConfirm={() => {
+              setOpen(false);
+              navigate("/prof/home");
+            }}
           />
 
         </div>

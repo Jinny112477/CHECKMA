@@ -19,14 +19,118 @@ export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(undefined);
   const [loading, setLoading] = useState(true);
+  const [authUserId, setAuthUserId] = useState(null);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [signals, setSignals] = useState([]);
 
   const navigate = useNavigate();
 
   const initialSessionChecked = useRef(false);
+
+  const API_URL = import.meta.env.VITE_API_URL;
+
+  // SUPABASE REALTIME RENDERING
+  const subscribeToParticipants = (session_id, callback) => {
+    const channel = supabase
+      .channel(`session_participants:${session_id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "session_participants",
+          filter: `session_id=eq.${session_id}`,
+        },
+        (payload) => {
+          console.log("📡 Supabase raw event:", payload);
+          callback(payload);
+        },
+      )
+      .subscribe((status) => {
+        console.log("🔌 Subscription status:", status); // Must say SUBSCRIBED
+      });
+
+    return channel;
+  };
+
+  const unsubscribe = (channel) => {
+    if (channel) supabase.removeChannel(channel);
+  };
+
+  // SIGNALS: handler
+  const fetchSignals = async (class_id) => {
+    try {
+      console.log("📡 Fetching signals for class_id:", class_id); // 👈 add this
+      const res = await fetch(`${API_URL}/api/attendance/signal/${class_id}`);
+      const data = await res.json();
+      console.log("📦 Signals response:", data); // 👈 and this
+
+      if (res.ok) {
+        setSignals(data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const subscribeSignals = (class_id, onNewSignal) => {
+    const channel = supabase
+      .channel(`attendance-signals-${class_id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "attendance_signals",
+          // no filter
+        },
+        (payload) => {
+          console.log("📡 INSERT:", payload);
+          if (onNewSignal) onNewSignal(payload);
+          else fetchSignals(class_id);
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "attendance_signals",
+          // no filter
+        },
+        (payload) => {
+          console.log("📡 UPDATE:", payload);
+          if (payload.new.status === "processed") {
+            setSignals((prev) => prev.filter((s) => s.id !== payload.new.id));
+          }
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "attendance_signals",
+          // no filter
+        },
+        (payload) => {
+          console.log("🗑️ DELETE:", payload);
+          if (onNewSignal) onNewSignal(payload);
+          else
+            setSignals((prev) => prev.filter((s) => s.id !== payload.old.id));
+        },
+      )
+      .subscribe((status) => {
+        console.log("🔌 Signals subscription status:", status);
+      });
+
+    return channel;
+  };
+
+  const unsubscribeSignals = (channel) => {
+    if (channel) supabase.removeChannel(channel);
+  };
 
   // SUPABASE AUTHENTICATION
   useEffect(() => {
@@ -69,6 +173,13 @@ export default function AuthProvider({ children }) {
     return () => listener.subscription.unsubscribe();
   }, []);
 
+  // FETCH AUTH USER
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setAuthUserId(user?.id ?? null);
+    });
+  }, []);
+
   // FETCH USER PROFILE: handler
   const fetchProfile = useCallback(async (userId) => {
     setLoading(true);
@@ -85,14 +196,11 @@ export default function AuthProvider({ children }) {
         return;
       }
 
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/users/profile`,
-        {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
+      const res = await fetch(`${API_URL}/api/users/profile`, {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
         },
-      );
+      });
 
       const data = await res.json();
 
@@ -207,20 +315,17 @@ export default function AuthProvider({ children }) {
         });
       }
 
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/users/profile`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({
-            avatar_url: avatarUrl,
-            ...formData,
-          }),
+      const res = await fetch(`${API_URL}/api/users/profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
         },
-      );
+        body: JSON.stringify({
+          avatar_url: avatarUrl,
+          ...formData,
+        }),
+      });
 
       const data = await res.json();
 
@@ -266,9 +371,16 @@ export default function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         user,
+        authUserId,
         profile,
         setProfile,
         loading,
+        subscribeToParticipants,
+        signals,
+        fetchSignals,
+        unsubscribeSignals,
+        subscribeSignals,
+        unsubscribe,
         handleGoogleAuthen,
         handleEmailLogin,
         handleEmailSignup,

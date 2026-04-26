@@ -4,8 +4,12 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 // Routes import
+import participantsRoutes from "./routes/participant.routes.js";
 import usersRoutes from "./routes/users.routes.js";
 import classroomRoutes from "./routes/classroom.routes.js";
+import classSessionRoutes from "./routes/classSession.routes.js";
+import signalRoutes from "./routes/signal.routes.js";
+import attendanceRoutes from "./routes/attendance.routes.js";
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -15,7 +19,10 @@ const frontendPath = path.join(__dirname, "../../frontend/dist");
 // Middleware: CORS
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: [
+      "http://localhost:5173",
+    "https://checkma-inky.vercel.app"
+    ],
     credentials: true,
   }),
 );
@@ -24,9 +31,13 @@ app.use(
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-// API
+//  API ROUTES
 app.use("/api/users", usersRoutes);
-app.use("/api", classroomRoutes);
+app.use("/api/sessions", classroomRoutes);
+app.use("/api/classes", classSessionRoutes);
+app.use("/api/participants", participantsRoutes);
+app.use("/api/attendance", signalRoutes);
+app.use("/api/attend", attendanceRoutes);
 
 app.get("/manifest.webmanifest", (req, res) => {
   res.sendFile(path.join(frontendPath, "manifest.webmanifest"));

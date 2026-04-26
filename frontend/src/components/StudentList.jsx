@@ -2,9 +2,9 @@ import { CircleUser, Trash2 } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 
 export default function StudentList({
-  firstname = "Vidsava",
-  surname = "Thammasat",
-  student_id = "6710740000",
+  firstname,
+  surname,
+  student_id,
   onDelete,
 }) {
   const cardRef = useRef(null);

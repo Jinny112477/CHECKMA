@@ -4,7 +4,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ResetPassword from "./pages/Reset-Password";
 import NewPassword from "./pages/New-Password";
-import CheckEmail from "./pages/Check-email";
+import CheckEmail from "./pages/Check-Email";
 import HomeStudent from "./pages/Student-Home";
 import HomeProf from "./pages/Prof-Home";
 import JoinStudent from "./pages/Student-Join";
@@ -14,7 +14,7 @@ import ProfileProf from "./pages/Prof-Profile";
 import RoleSelect from "./pages/Role-Select";
 import AttendanceStudent from "./pages/Student-Attendance"
 import SignalStudent from "./pages/Student-Signal";
-import AttendanceProf from "./pages/Prof-attendance";
+import AttendanceProf from "./pages/Prof-Attendance";
 import SignalProf from "./pages/Prof-Signal";
 import Dashboard from "./pages/Dashboard";
 import DashboardInfo from "./pages/Dashboard-Info";
@@ -39,13 +39,15 @@ function App() {
       <Route path="/student/profile" element={<ProfileStudent />} />
       <Route path="/prof/profile" element={<ProfileProf />} />
       <Route path="/role" element={<RoleSelect />} />
-      <Route path="/student/attendance" element={<AttendanceStudent />} />
-      <Route path="/student/signal" element={<SignalStudent />} />
-      <Route path="/prof/attendance" element={<AttendanceProf />} />
-      <Route path="/prof/signal" element={<SignalProf />} />
-      <Route path="/prof/dashboard" element={<Dashboard />} />
-      <Route path="/prof/dashboard-info" element={<DashboardInfo />} />
-      <Route path="/prof/edit-course" element={<EditProf />} />
+      
+      <Route path="/student/attendance/:session_id" element={<AttendanceStudent />} />
+      <Route path="/student/signal/:session_id/:class_id" element={<SignalStudent />} />
+
+      <Route path="/prof/attendance/:session_id" element={<AttendanceProf />} />
+      <Route path="/prof/signal/:session_id/:class_id" element={<SignalProf />} />
+      <Route path="/prof/dashboard/:session_id" element={<Dashboard />} />
+      <Route path="/prof/dashboard-info/:session_id/:id" element={<DashboardInfo />} />
+      <Route path="/prof/edit-course/:session_id" element={<EditProf />} />
     </Routes>
   );
 }

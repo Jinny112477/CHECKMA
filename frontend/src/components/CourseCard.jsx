@@ -5,8 +5,11 @@ import {
   CalendarDays
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { resolveIcon } from "./IconProfile.jsx"; 
 
 export default function CourseCard({
+  session_id,
+  icon,
   code,
   section,
   name,
@@ -14,16 +17,18 @@ export default function CourseCard({
   room,
   time,
   day,
-  onSetting,
 }) {
+
+  const Icon = resolveIcon(icon);
+  
   return (
-    <Link to="/student/attendance" className="block">
+    <Link to={`/student/attendance/${session_id}`} className="block">
       <div className="relative bg-[#FFEB83] rounded-2xl p-4 shadow space-y-4">
 
         {/* header */}
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shrink-0">
-            <img src="/NongCheck.svg" className="w-8 h-8" />
+            {Icon ? <Icon size={28} className="text-[#F49A5E]" /> : <User size={28} />}
           </div>
 
           <div className="flex-1">
