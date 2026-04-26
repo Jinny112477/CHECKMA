@@ -47,7 +47,7 @@ export default function DashboardInfo() {
     }));
   };
 
-  // Save state: handler
+  // PATCH: Save state: handler
   const handleSave = async () => {
     try {
       await Promise.all(
