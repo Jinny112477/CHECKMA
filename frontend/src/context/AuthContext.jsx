@@ -132,6 +132,33 @@ export default function AuthProvider({ children }) {
     if (channel) supabase.removeChannel(channel);
   };
 
+  // FETCH USER PROFILE: handler
+  const fetchProfile = useCallback(async (session) => {
+    // ✅ Add this guard
+    if (!session?.access_token) {
+      console.warn("fetchProfile called with no access_token", session);
+      setProfile(null);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/api/users/profile`, {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      const data = await res.json();
+      setProfile(data);
+    } catch (err) {
+      console.error("FETCH PROFILE ERROR:", err);
+      setProfile(null);
+    }
+
+    setLoading(false);
+  }, []);
+
   // SUPABASE AUTHENTICATION
   useEffect(() => {
     // 1. Get initial session
@@ -177,33 +204,6 @@ export default function AuthProvider({ children }) {
     supabase.auth.getUser().then(({ data: { user } }) => {
       setAuthUserId(user?.id ?? null);
     });
-  }, []);
-
-  // FETCH USER PROFILE: handler
-  const fetchProfile = useCallback(async (session) => {
-    // ✅ Add this guard
-    if (!session?.access_token) {
-      console.warn("fetchProfile called with no access_token", session);
-      setProfile(null);
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const res = await fetch(`${API_URL}/api/users/profile`, {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
-
-      const data = await res.json();
-      setProfile(data);
-    } catch (err) {
-      console.error("FETCH PROFILE ERROR:", err);
-      setProfile(null);
-    }
-
-    setLoading(false);
   }, []);
 
   //GOOGLE SIGNUP/LOGIN : handler
