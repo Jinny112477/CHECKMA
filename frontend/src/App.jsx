@@ -14,7 +14,7 @@ import ProfileProf from "./pages/Prof-Profile";
 import RoleSelect from "./pages/Role-Select";
 import AttendanceStudent from "./pages/Student-Attendance"
 import SignalStudent from "./pages/Student-Signal";
-import AttendanceProf from "./pages/Prof-attendance";
+import AttendanceProf from "./pages/Prof-Attendance";
 import SignalProf from "./pages/Prof-Signal";
 import Dashboard from "./pages/Dashboard";
 import DashboardInfo from "./pages/Dashboard-Info";
