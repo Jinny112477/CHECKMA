@@ -157,7 +157,7 @@ export default function AuthProvider({ children }) {
     }
 
     setLoading(false);
-  }, []);
+  }, [API_URL]);
 
   // SUPABASE AUTHENTICATION
   useEffect(() => {
