@@ -19,10 +19,7 @@ const frontendPath = path.join(__dirname, "../../frontend/dist");
 // Middleware: CORS
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://checkma-inky.vercel.app"
-    ],
+    origin: ["*"],
     credentials: true,
   }),
 );
