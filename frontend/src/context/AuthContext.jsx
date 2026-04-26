@@ -149,15 +149,21 @@ export default function AuthProvider({ children }) {
     // 2. Listen for auth state changes
     const { data: listener } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        // ← add "const { data: listener } ="
         if (!initialSessionChecked.current) return;
-        setUser(session?.user ?? null);
 
-        if (session?.user) {
-          fetchProfile(session);
-        } else {
+        // ✅ Only handle these specific events, ignore TOKEN_REFRESHED etc.
+        if (event === "SIGNED_OUT") {
+          setUser(null);
           setProfile(null);
           setLoading(false);
+          return;
+        }
+
+        if (event === "SIGNED_IN" || event === "USER_UPDATED") {
+          setUser(session?.user ?? null);
+          if (session?.user) {
+            fetchProfile(session);
+          }
         }
       },
     );
@@ -175,7 +181,9 @@ export default function AuthProvider({ children }) {
 
   // FETCH USER PROFILE: handler
   const fetchProfile = useCallback(async (session) => {
-    if (!session) {
+    // ✅ Add this guard
+    if (!session?.access_token) {
+      console.warn("fetchProfile called with no access_token", session);
       setProfile(null);
       setLoading(false);
       return;
