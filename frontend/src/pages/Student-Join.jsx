@@ -2,6 +2,8 @@ import { ArrowLeft, DoorOpen } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import AlertModal from "../components/AlertModal";
+
 
 export default function JoinStudent() {
     const [sessionCode, setSessionCode] = useState("");
@@ -9,38 +11,38 @@ export default function JoinStudent() {
     const navigate = useNavigate();
     const API_URL = import.meta.env.VITE_API_URL;
 
+    // ALERT
+    const [alertConfig, setAlertConfig] = useState({
+        open: false, title: "", description: "", type: "info",
+        });
+        const closeAlert = () => setAlertConfig((prev) => ({ ...prev, open: false }));
+
     // POST: join class handler
     const handleJoin = async () => {
         try {
             if (!sessionCode) {
-                alert("Please enter class code");
-                return;
+            setAlertConfig({ open: true, title: "Oops!", description: "Please enter class code.", type: "info" });
+            return;
             }
 
             const res = await fetch(`${API_URL}/api/participants/join-session`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    session_code: sessionCode,
-                    user_id: user.id,
-                }),
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ session_code: sessionCode, user_id: user.id }),
             });
 
             const data = await res.json();
 
             if (!res.ok) {
-                alert(data.error);
-                return;
+            setAlertConfig({ open: true, title: "Failed", description: data.error, type: "danger" });
+            return;
             }
 
             console.log(data);
-            alert("Joined successfully");
-            navigate("/student/home");
+            setAlertConfig({ open: true, title: "Joined!", description: "You have joined the class successfully!", type: "success" });
         } catch (err) {
             console.error(err);
-            alert("Something went wrong");
+            setAlertConfig({ open: true, title: "Error", description: "Something went wrong.", type: "danger" });
         }
     };
 
@@ -112,6 +114,19 @@ export default function JoinStudent() {
                 >
                     Join
                 </button>
+
+                <AlertModal
+                    open={alertConfig.open}
+                    onClose={closeAlert}
+                    title={alertConfig.title}
+                    description={alertConfig.description}
+                    type={alertConfig.type}
+                    confirmText="OK"
+                    onConfirm={() => {
+                        closeAlert();
+                        if (alertConfig.type === "success") navigate("/student/home");
+                    }}
+                />
             </div>
         </div>
     );

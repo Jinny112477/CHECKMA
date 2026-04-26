@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Menu, Settings, LogOut, Plus, CirclePlus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import AlertModal from "../components/AlertModal";
 
 import ProfCourseCard from "../components/ProfCourseCard.jsx";
 
@@ -127,28 +128,40 @@ export default function HomeProf() {
     });
   }, [profile]);
 
+  // ALERT
+  const [alertConfig, setAlertConfig] = useState({
+    open: false, title: "", description: "", type: "info",
+  });
+  const closeAlert = () => setAlertConfig((prev) => ({ ...prev, open: false }));
+  const [deleteTarget, setDeleteTarget] = useState(null);
+
   // DELETE: delete classroom
-  const handleDeleteClassroom = async (session_id) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this course? This will remove all classes and attendance records.",
-    );
-    if (!confirmed) return;
+  const handleDeleteClassroom = (session_id) => {
+    setDeleteTarget(session_id);
+    setAlertConfig({
+      open: true,
+      title: "Delete Course",
+      description: "Are you sure you want to delete this course? This will remove all classes and attendance records.",
+      type: "danger",
+    });
+  };
+
+  const executeDelete = async () => {
+    closeAlert();
+    if (!deleteTarget) return;
 
     try {
-      const res = await fetch(
-        `${API_URL}/api/sessions/classrooms/${session_id}`,
-        {
-          method: "DELETE",
-        },
-      );
-
+      const res = await fetch(`${API_URL}/api/sessions/classrooms/${deleteTarget}`, {
+        method: "DELETE",
+      });
       if (!res.ok) throw new Error("Failed to delete");
-
-      setCourses((prev) => prev.filter((c) => c.session_id !== session_id));
-      alert("Course deleted successfully!");
+      setCourses((prev) => prev.filter((c) => c.session_id !== deleteTarget));
+      setAlertConfig({ open: true, title: "Deleted!", description: "Course deleted successfully!", type: "success" });
     } catch (err) {
       console.error(err);
-      alert("Failed to delete course.");
+      setAlertConfig({ open: true, title: "Error", description: "Failed to delete course.", type: "danger" });
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -292,6 +305,18 @@ export default function HomeProf() {
             <Plus size={28} />
           </button>
         </div>
+
+        <AlertModal
+          open={alertConfig.open}
+          onClose={closeAlert}
+          title={alertConfig.title}
+          description={alertConfig.description}
+          type={alertConfig.type}
+          confirmText={deleteTarget ? "Delete" : "OK"}
+          cancelText={deleteTarget ? "Cancel" : undefined}
+          onConfirm={deleteTarget ? executeDelete : closeAlert}
+          onCancel={closeAlert}
+        />
       </div>
     </div>
   );

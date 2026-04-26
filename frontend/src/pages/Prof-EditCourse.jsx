@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ArrowLeft, Pencil } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import IconProfile from "../components/IconProfile";
+import AlertModal from "../components/AlertModal";
 
 export default function EditProf() {
   const [selectedIcon, setSelectedIcon] = useState("CodeXml");
@@ -54,25 +55,27 @@ export default function EditProf() {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  // ALERT
+  const [alertConfig, setAlertConfig] = useState({
+    open: false, title: "", description: "", type: "info",
+  });
+  const closeAlert = () => setAlertConfig((prev) => ({ ...prev, open: false }));
+
   // PUT: edit classroom
   const handleEditClassroom = async () => {
     try {
-      const res = await fetch(
-        `${API_URL}/api/sessions/classrooms/${session_id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...formData, icon: selectedIcon }),
-        },
-      );
+      const res = await fetch(`${API_URL}/api/sessions/classrooms/${session_id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, icon: selectedIcon }),
+      });
 
       if (!res.ok) throw new Error("Failed to save");
 
-      alert("Saved!");
-      navigate("/prof/home");
+      setAlertConfig({ open: true, title: "Saved!", description: "Course updated successfully!", type: "success" });
     } catch (err) {
       console.error(err);
-      alert("Failed to save.");
+      setAlertConfig({ open: true, title: "Error", description: "Failed to save course.", type: "danger" });
     }
   };
 
@@ -252,6 +255,19 @@ export default function EditProf() {
         >
           Save
         </button>
+
+        <AlertModal
+          open={alertConfig.open}
+          onClose={closeAlert}
+          title={alertConfig.title}
+          description={alertConfig.description}
+          type={alertConfig.type}
+          confirmText="OK"
+          onConfirm={() => {
+            closeAlert();
+            if (alertConfig.type === "success") navigate("/prof/home");
+          }}
+        />
       </div>
     </div>
   );

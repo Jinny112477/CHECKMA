@@ -3,6 +3,7 @@ import { ArrowLeft, ClipboardList, ShieldPlus } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import StudentList from "../components/StudentList";
 import { useAuth } from "../context/AuthContext";
+import AlertModal from "../components/AlertModal";
 
 export default function AttendanceProf() {
   const [classData, setClassData] = useState(null);
@@ -80,6 +81,12 @@ export default function AttendanceProf() {
     if (session_id) fetchClass();
   }, [session_id]);
 
+  // ALERT
+  const [alertConfig, setAlertConfig] = useState({
+    open: false, title: "", description: "", type: "info",
+  });
+  const closeAlert = () => setAlertConfig((prev) => ({ ...prev, open: false }));
+
   // POST: Create new class in session
   const handleCreateClass = () => {
     navigator.geolocation.getCurrentPosition(
@@ -100,44 +107,54 @@ export default function AttendanceProf() {
           if (!res.ok) {
             const text = await res.text();
             console.error("Server error:", text);
-            alert("Failed to create class");
+            setAlertConfig({ open: true, title: "Failed", description: "Failed to create class.", type: "danger" });
             return;
           }
 
           const data = await res.json();
           console.log("New class:", data);
-          alert("New class created!")
+          setAlertConfig({ open: true, title: "Success!", description: "New class created!", type: "success" });
         } catch (err) {
           console.error("Fetch error:", err);
         }
       },
       (err) => {
         console.error("Geolocation error:", err);
-        alert("Please allow location access");
+        setAlertConfig({ open: true, title: "Location Required", description: "Please allow location access to create a class.", type: "info" });
       },
     );
   };
 
   // DELETE: delete participants
-  const handleStudentDelete = async (user_id) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to remove this student?",
-    );
-    if (!confirmed) return; // 👈 stop if cancelled
+  const [deleteTarget, setDeleteTarget] = useState(null); // เก็บ user_id ที่จะลบ
+
+  const confirmDelete = (user_id) => {
+    setDeleteTarget(user_id);
+    setAlertConfig({
+      open: true,
+      title: "Remove Student",
+      description: "Are you sure you want to remove this student?",
+      type: "danger",
+    });
+  };
+
+  const executeDelete = async () => {
+    closeAlert();
+    if (!deleteTarget) return;
 
     try {
       const res = await fetch(
-        `${API_URL}/api/participants/join-session/${session_id}/${user_id}`,
-        { method: "DELETE" },
+        `${API_URL}/api/participants/join-session/${session_id}/${deleteTarget}`,
+        { method: "DELETE" }
       );
-
       if (!res.ok) throw new Error("Failed to delete");
-
-      setStudentData((prev) => prev.filter((s) => s.user_id !== user_id));
-      alert("Student removed successfully!"); // 👈 success alert
+      setStudentData((prev) => prev.filter((s) => s.user_id !== deleteTarget));
+      setAlertConfig({ open: true, title: "Removed!", description: "Student removed successfully!", type: "success" });
     } catch (err) {
       console.error(err);
-      alert("Failed to remove student."); // 👈 error alert
+      setAlertConfig({ open: true, title: "Error", description: "Failed to remove student.", type: "danger" });
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -264,11 +281,23 @@ export default function AttendanceProf() {
                 student_id={item.users.student_info?.student_id}
                 firstname={item.users.student_info?.firstname}
                 surname={item.users.student_info?.surname}
-                onDelete={() => handleStudentDelete(item.user_id)}
+                onDelete={() => confirmDelete(item.user_id)}
               />
             ))}
           </div>
         </div>
+
+        <AlertModal
+          open={alertConfig.open}
+          onClose={closeAlert}
+          title={alertConfig.title}
+          description={alertConfig.description}
+          type={alertConfig.type}
+          confirmText={deleteTarget ? "Remove" : "OK"}
+          cancelText={deleteTarget ? "Cancel" : undefined}
+          onConfirm={deleteTarget ? executeDelete : closeAlert}
+          onCancel={closeAlert}
+        />
       </div>
     </div>
   );
