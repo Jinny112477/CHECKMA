@@ -136,14 +136,11 @@ export default function AuthProvider({ children }) {
   useEffect(() => {
     // 1. Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log(session);
-
       initialSessionChecked.current = true;
-
       setUser(session?.user ?? null);
 
       if (session?.user) {
-        fetchProfile(session.user.id);
+        fetchProfile(session);
       } else {
         setLoading(false);
       }
@@ -152,20 +149,16 @@ export default function AuthProvider({ children }) {
     // 2. Listen for auth state changes
     const { data: listener } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        // prevent duplicate call on first load
+        // ← add "const { data: listener } ="
         if (!initialSessionChecked.current) return;
-
         setUser(session?.user ?? null);
 
         if (session?.user) {
-          fetchProfile(session.user.id);
+          fetchProfile(session);
         } else {
           setProfile(null);
           setLoading(false);
         }
-
-        console.log("EVENT:", event);
-        console.log("SESSION:", session);
       },
     );
 
