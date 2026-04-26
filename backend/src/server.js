@@ -22,7 +22,7 @@ const io = new Server(server, {
   cors: {
     origin: [
       "http://localhost:5173",
-      process.env.FRONTEND_URL
+    "https://checkma-inky.vercel.app"
     ],
     methods: ["GET", "POST"],
     credentials: true
