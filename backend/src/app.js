@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
 import { fileURLToPath } from "url";
 
 // Routes import
@@ -11,38 +12,20 @@ import signalRoutes from "./routes/signal.routes.js";
 import attendanceRoutes from "./routes/attendance.routes.js";
 
 const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const frontendPath = path.join(__dirname, "../../frontend/dist");
 
 // Middleware: CORS
-// app.use(
-//   cors({
-//     origin: ["http://localhost:5173", "https://checkma-inky.vercel.app"],
-//     credentials: true,
-//   }),
-// );
-
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://checkma-inky.vercel.app",
-];
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-
-    return callback(new Error("Not allowed by CORS"));
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
-
-app.use(cors(corsOptions));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+    "https://checkma-inky.vercel.app"
+    ],
+    credentials: true,
+  }),
+);
 
 // Body parser : File limitation
 app.use(express.json({ limit: "50mb" }));
@@ -55,5 +38,17 @@ app.use("/api/classes", classSessionRoutes);
 app.use("/api/participants", participantsRoutes);
 app.use("/api/attendance", signalRoutes);
 app.use("/api/attend", attendanceRoutes);
+
+app.get("/manifest.webmanifest", (req, res) => {
+  res.sendFile(path.join(frontendPath, "manifest.webmanifest"));
+});
+
+// Static frontend
+app.use(express.static(frontendPath));
+
+// Catch-all
+app.use((req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
+});
 
 export default app;

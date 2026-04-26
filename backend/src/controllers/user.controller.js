@@ -1,6 +1,6 @@
 import { supabase } from "../lib/supabaseClient.js";
 
-// GET: Fetch user profile
+// GET USER PROFILE
 export const getUserProfile = async (req, res) => {
   try {
     const userId = req.user.sub;
@@ -63,22 +63,23 @@ export const getUserProfile = async (req, res) => {
 };
 
 
-// PUT: update user profile
+// UPDATE USER PROFILE
 export const updateUserProfile = async (req, res) => {
   try {
+    console.log("BODY:", req.body);
+    console.log("USER:", req.user);
+
     const userId = req.user.sub;
+
     const { avatar_url, firstname, surname, student_id, faculty, major } = req.body;
 
-    // ✅ Fix: conditional + error capture together
+    const { error: userError } = await supabase;
     if (avatar_url !== undefined && avatar_url !== null) {
-      const { error: userError } = await supabase
-        .from("users")
-        .update({ avatar_url })
-        .eq("id", userId);
+      await supabase.from("users").update({ avatar_url }).eq("id", userId);
+    }
 
-      if (userError) {
-        return res.status(500).json({ error: "Failed to update avatar" });
-      }
+    if (userError) {
+      return res.status(500).json({ error: "Failed to update user" });
     }
 
     const { data: userData, error: roleError } = await supabase
@@ -91,27 +92,50 @@ export const updateUserProfile = async (req, res) => {
       return res.status(500).json({ error: "Failed to fetch role" });
     }
 
+    // If student, update student_info
     if (userData.role === "student") {
       const { error } = await supabase
         .from("student_info")
-        .upsert({ id: userId, firstname, surname, student_id, faculty, major },
-          { onConflict: "id" }
-        );
+        .upsert({
+          id: userId,
+          firstname,
+          surname,
+          student_id,
+          faculty,
+          major,
+        },
+        { onConflict: "id" },
+      );
 
-      if (error) return res.status(500).json({ error: error.message });
+      if (error) {
+        console.log("STUDENT UPSERT ERROR:", error);
+        return res.status(500).json({ error: error.message });
+      }
     }
 
+    // If professor, update prof_info
     if (userData.role === "professor") {
       const { error } = await supabase
         .from("prof_info")
-        .upsert({ id: userId, firstname, surname });
+        .upsert({
+          id: userId,
+          firstname,
+          surname,
+      });
 
-      if (error) return res.status(500).json({ error: "Failed to update professor info" });
+      if (error) {
+        return res
+          .status(500)
+          .json({ error: "Failed to update professor info" });
+      }
     }
 
     res.json({ message: "Profile updated successfully" });
   } catch (err) {
     console.error("UPDATE ERROR:", err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      error: err.message,
+      stack: err.stack,
+    });
   }
 };

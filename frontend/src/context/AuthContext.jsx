@@ -132,42 +132,18 @@ export default function AuthProvider({ children }) {
     if (channel) supabase.removeChannel(channel);
   };
 
-  // FETCH USER PROFILE: handler
-  const fetchProfile = useCallback(async (session) => {
-    // ✅ Add this guard
-    if (!session?.access_token) {
-      console.warn("fetchProfile called with no access_token", session);
-      setProfile(null);
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const res = await fetch(`${API_URL}/api/users/profile`, {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
-
-      const data = await res.json();
-      setProfile(data);
-    } catch (err) {
-      console.error("FETCH PROFILE ERROR:", err);
-      setProfile(null);
-    }
-
-    setLoading(false);
-  }, [API_URL]);
-
   // SUPABASE AUTHENTICATION
   useEffect(() => {
     // 1. Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log(session);
+
       initialSessionChecked.current = true;
+
       setUser(session?.user ?? null);
 
       if (session?.user) {
-        fetchProfile(session);
+        fetchProfile(session.user.id);
       } else {
         setLoading(false);
       }
@@ -176,22 +152,20 @@ export default function AuthProvider({ children }) {
     // 2. Listen for auth state changes
     const { data: listener } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        // prevent duplicate call on first load
         if (!initialSessionChecked.current) return;
 
-        // ✅ Only handle these specific events, ignore TOKEN_REFRESHED etc.
-        if (event === "SIGNED_OUT") {
-          setUser(null);
+        setUser(session?.user ?? null);
+
+        if (session?.user) {
+          fetchProfile(session.user.id);
+        } else {
           setProfile(null);
           setLoading(false);
-          return;
         }
 
-        if (event === "SIGNED_IN" || event === "USER_UPDATED") {
-          setUser(session?.user ?? null);
-          if (session?.user) {
-            fetchProfile(session);
-          }
-        }
+        console.log("EVENT:", event);
+        console.log("SESSION:", session);
       },
     );
 
@@ -204,6 +178,39 @@ export default function AuthProvider({ children }) {
     supabase.auth.getUser().then(({ data: { user } }) => {
       setAuthUserId(user?.id ?? null);
     });
+  }, []);
+
+  // FETCH USER PROFILE: handler
+  const fetchProfile = useCallback(async (userId) => {
+    setLoading(true);
+
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      console.log(session);
+
+      if (!session) {
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
+
+      const res = await fetch(`${API_URL}/api/users/profile`, {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      setProfile(data);
+    } catch (err) {
+      console.error("FETCH PROFILE ERROR:", err);
+      setProfile(null);
+    }
+
+    setLoading(false);
   }, []);
 
   //GOOGLE SIGNUP/LOGIN : handler
@@ -353,10 +360,10 @@ export default function AuthProvider({ children }) {
   };
 
   // SET TOKEN SESSION
-  const setSessionFromURL = async (accessToken, refreshToken) => {
+  const setSessionFromURL = async (accessToken, refrechToken) => {
     return await supabase.auth.setSession({
       access_token: accessToken,
-      refreshToken: refreshToken,
+      refrechToken: refrechToken,
     });
   };
 
