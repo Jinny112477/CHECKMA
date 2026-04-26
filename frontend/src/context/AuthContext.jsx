@@ -181,21 +181,14 @@ export default function AuthProvider({ children }) {
   }, []);
 
   // FETCH USER PROFILE: handler
-  const fetchProfile = useCallback(async (userId) => {
-    setLoading(true);
+  const fetchProfile = useCallback(async (session) => {
+    if (!session) {
+      setProfile(null);
+      setLoading(false);
+      return;
+    }
 
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      console.log(session);
-
-      if (!session) {
-        setProfile(null);
-        setLoading(false);
-        return;
-      }
-
       const res = await fetch(`${API_URL}/api/users/profile`, {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
@@ -203,7 +196,6 @@ export default function AuthProvider({ children }) {
       });
 
       const data = await res.json();
-
       setProfile(data);
     } catch (err) {
       console.error("FETCH PROFILE ERROR:", err);
