@@ -93,7 +93,7 @@ export default function SignalCard({
                 : "text-[#D45F52]"
           }`}
         >
-          {status} ✓
+          {status} ✅
         </span>
       ) : (
         <>
