@@ -29,6 +29,8 @@ const io = new Server(server, {
   },
 });
 
+app.options("*", cors());
+
 io.on("connection", (socket) => {
   socket.on("disconnect", () => {});
 });
