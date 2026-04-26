@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, House } from "lucide-react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import InfoCard from "../components/InfoCard";
+import AlertModal from "../components/AlertModal";
 
 export default function DashboardInfo() {
   const [data, setData] = useState([]);
@@ -47,25 +48,29 @@ export default function DashboardInfo() {
     }));
   };
 
+  // ALERT
+  const [alertConfig, setAlertConfig] = useState({
+    open: false, title: "", description: "", type: "info",
+  });
+  const closeAlert = () => setAlertConfig((prev) => ({ ...prev, open: false }));
+
   // PATCH: Save state: handler
   const handleSave = async () => {
     try {
       await Promise.all(
         Object.entries(changes).map(([user_id, status]) =>
-          fetch(
-            `${API_URL}/api/attend/class-attendance/${selectedClass.id}/${user_id}`,
-            {
-              method: "PATCH",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ status }),
-            },
-          ),
-        ),
+          fetch(`${API_URL}/api/attend/class-attendance/${selectedClass.id}/${user_id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status }),
+          })
+        )
       );
-      setChanges({}); // clear after save
-      alert("Saved!");
+      setChanges({});
+      setAlertConfig({ open: true, title: "Saved!", description: "Attendance has been saved successfully.", type: "success" });
     } catch (err) {
       console.error(err);
+      setAlertConfig({ open: true, title: "Error", description: "Failed to save attendance.", type: "danger" });
     }
   };
 
@@ -166,6 +171,16 @@ export default function DashboardInfo() {
             </div>
           )}
         </div>
+
+      <AlertModal
+        open={alertConfig.open}
+        onClose={closeAlert}
+        title={alertConfig.title}
+        description={alertConfig.description}
+        type={alertConfig.type}
+        confirmText="OK"
+        onConfirm={closeAlert}
+      />
       </div>
     </div>
   );

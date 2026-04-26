@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Menu, Settings, LogOut, House, Pencil } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import AlertModal from "../components/AlertModal";
 
 /* ===== reusable menu item ===== */
 function MenuItem({ icon: Icon, label, onClick, variant = "primary", to }) {
@@ -95,16 +96,37 @@ export default function ProfileStudent() {
     });
   };
 
+  // เพิ่ม state สำหรับ AlertModal
+  const [alertConfig, setAlertConfig] = useState({
+    open: false,
+    title: "",
+    description: "",
+    type: "info",
+  });
+
+  // helper ปิด modal
+  const closeAlert = () => setAlertConfig((prev) => ({ ...prev, open: false }));
+
   // HANDLE SAVE: function simplify
   const handleSave = async () => {
     const { error } = await updateProfile(formData, selectedFile);
 
     if (error) {
-      alert("Update failed");
+      setAlertConfig({
+        open: true,
+        title: "Update Failed",
+        description: "Something went wrong. Please try again.",
+        type: "danger",
+      });
       return;
     }
 
-    alert("Profile updated successfully!");
+    setAlertConfig({
+      open: true,
+      title: "Success!",
+      description: "Profile updated successfully!",
+      type: "success",
+    });
   };
 
   // STUDENT PROFILE: form data differences (student)
@@ -348,6 +370,16 @@ export default function ProfileStudent() {
             </button>
           </div>
         </div>
+
+        <AlertModal
+          open={alertConfig.open}
+          onClose={closeAlert}
+          title={alertConfig.title}
+          description={alertConfig.description}
+          type={alertConfig.type}
+          confirmText="OK"
+          onConfirm={closeAlert}
+        />
       </div>
     </div>
   );
