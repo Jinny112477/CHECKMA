@@ -10,7 +10,7 @@ const router = Router();
 
 router.post("/join-session", joinClass); // POST: join session
 router.get("/join-session",  getJoinedSession); // GET: fetch joined session
-router.get("/join-session/:session_id", getParticipantById); // GET; fetch session participants
+router.get("/join-session/:session_id", getParticipantById); // GET: fetch session participants
 router.delete("/join-session/:session_id/:user_id", deleteSessionParticipants); // DELETE: delete session participants
 
 export default router;

@@ -4,7 +4,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ResetPassword from "./pages/Reset-Password";
 import NewPassword from "./pages/New-Password";
-import CheckEmail from "./pages/Check-email";
+import CheckEmail from "./pages/Check-Email";
 import HomeStudent from "./pages/Student-Home";
 import HomeProf from "./pages/Prof-Home";
 import JoinStudent from "./pages/Student-Join";

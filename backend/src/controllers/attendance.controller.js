@@ -124,7 +124,7 @@ export const getClassAttendance = async (req, res) => {
   }
 };
 
-// PUT: edit users status
+// PATCH: edit users status
 export const editStudentStatus = async (req, res) => {
   try {
     const { class_id, user_id } = req.params;

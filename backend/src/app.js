@@ -29,10 +29,10 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 //  API ROUTES
-app.use("/api/participants", participantsRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/sessions", classroomRoutes);
 app.use("/api/classes", classSessionRoutes);
+app.use("/api/participants", participantsRoutes);
 app.use("/api/attendance", signalRoutes);
 app.use("/api/attend", attendanceRoutes);
 

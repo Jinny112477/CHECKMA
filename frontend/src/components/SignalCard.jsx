@@ -13,7 +13,7 @@ export default function SignalCard({
 
   const API_URL = import.meta.env.VITE_API_URL;
 
-  // if already check display status only
+  // POST: attendance checking
   const handleAttendance = async (statusType) => {
     console.log("Sending:", {
       user_id: user_uuid,
@@ -39,6 +39,7 @@ export default function SignalCard({
 
       setStatus(statusType);
 
+      // if already checked shows only status
       if (statusType === "Present" || statusType === "Absent") {
         onComplete?.(student_id);
       }
